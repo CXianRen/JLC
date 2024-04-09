@@ -15,8 +15,7 @@ endif
 
 # llvm config
 LLVM_CC_CONFIG = `llvm-config --cxxflags` -fexceptions
-LLVM_LD_CONFIG = `llvm-config --ldflags --libs --system-libs`
-
+LLVM_LD_CONFIG = `llvm-config --ldflags --libs core --system-libs`
 
 BUILD_DIR := build
 SRC_DIR := src
@@ -25,6 +24,10 @@ PARSER_DIR := parser
 TYPECHECKER_DIR := typechecker
 LLVM_DIR := llvm
 COMMON_DIR := common
+
+# for test docker, due to the dependenced libraries are not installed correctly.
+LIBS_DIR := libs
+LD_FLAGS = -L$(BUILD_DIR)/$(LIBS_DIR)
 
 
 PARSER_DIR_H_FILES := $(wildcard $(SRC_DIR)/$(PARSER_DIR)/*.H)
@@ -64,7 +67,6 @@ $(info "COMMON_DIR_OBJS:"$(COMMON_DIR_OBJS))
 endif
 
 
-
 CC_INCLUDES := -I$(SRC_DIR) \
 			   -I$(SRC_DIR)/$(PARSER_DIR) \
 			   -I$(SRC_DIR)/$(TYPECHECKER_DIR) \
@@ -83,7 +85,9 @@ clean:
 	mkdir -p $(BUILD_DIR)/$(TYPECHECKER_DIR)
 	mkdir -p $(BUILD_DIR)/$(LLVM_DIR)
 	mkdir -p $(BUILD_DIR)/$(COMMON_DIR)
-
+# this folder is for test docker, due to the dependenced libraries are not installed.
+	mkdir -p $(BUILD_DIR)/$(LIBS_DIR)
+	bash scripts/docker_fix.sh $(BUILD_DIR)/$(LIBS_DIR)
 
 # generate the object files
 $(BUILD_DIR)/$(COMMON_DIR)/%.o: $(SRC_DIR)/$(COMMON_DIR)/%.C $(HEADERS) 
@@ -108,7 +112,7 @@ $(BUILD_DIR)/$(LLVM_DIR)/%.o: $(SRC_DIR)/$(LLVM_DIR)/%.C $(HEADERS)
 jlc: $(OBJS) $(SRC_DIR)/jlc.cpp
 	@echo "Building jlc..."
 	$(CC) $(CCFLAGS) $(LLVM_CC_CONFIG) \
-		$(CC_INCLUDES) $(OBJS) $(SRC_DIR)/jlc.cpp $(LLVM_LD_CONFIG) -o jlc 
+		$(CC_INCLUDES) $(OBJS) $(SRC_DIR)/jlc.cpp $(LD_FLAGS) $(LLVM_LD_CONFIG)  -o jlc 
 
 # remove this target, because we just need to generate it once,
 # thus, we generate it manually.
