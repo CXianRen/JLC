@@ -13,7 +13,7 @@ class JLCTypeChecker : public Skeleton
 {
 public:
   Context globalContext;
-  type_enum temp_type;
+  JLCType temp_type;
 
   std::string temp_ident;
   std::string temp_exp_type;
@@ -44,9 +44,8 @@ public:
   void visitDecl(Decl *p);
   void visitNoInit(NoInit *p);
   void visitInit(Init *p);
-  void visitInitElem(InitElem *p);
   void visitAss(Ass *p);
-  void visitArrayAss(ArrayAss *p);
+  // void visitArrayAss(ArrayAss *p);
   void visitIncr(Incr *p);
   void visitDecr(Decr *p);
   void visitRet(Ret *p);
@@ -54,21 +53,19 @@ public:
   void visitCond(Cond *p);
   void visitCondElse(CondElse *p);
   void visitWhile(While *p);
-  void visitForBlk(ForBlk *p);
-  void visitForLoop(ForLoop *p);
   void visitSExp(SExp *p);
   void visitInt(Int *p);
   void visitDoub(Doub *p);
   void visitBool(Bool *p);
   void visitVoid(Void *p);
-  void visitIntArray(IntArray *p);
-  void visitDoubArray(DoubArray *p);
-  void visitBoolArray(BoolArray *p);
+  // void visitIntArray(IntArray *p);
+  // void visitDoubArray(DoubArray *p);
+  // void visitBoolArray(BoolArray *p);
   void visitFun(Fun *p);
   void visitEVar(EVar *p);
-  void visitEArrayLen(EArrayLen *p);
-  void visitEArrayNew(EArrayNew *p);
-  void visitEArray(EArray *p);
+  // void visitEArrayLen(EArrayLen *p);
+  // void visitEArrayNew(EArrayNew *p);
+  // void visitEArray(EArray *p);
   void visitELitInt(ELitInt *p);
   void visitELitDoub(ELitDoub *p);
   void visitELitTrue(ELitTrue *p);
@@ -106,6 +103,19 @@ public:
   // void visitString(String x);
   // void visitIdent(Ident x);
 
+// for array
+  // void visitBracketsOpt(BracketsOpt *p);
+  // void visitDimExpr(DimExpr *p);
+  void visitAssArr(AssArr *p);
+  void visitArrayType(ArrayType *p);
+  // void visitBracketsEmpty(BracketsEmpty *p);
+  void visitENewArray(ENewArray *p);
+  void visitDim(Dim *p);
+  void visitEDot(EDot *p);
+  void visitEAcc(EAcc *p);
+  // void visitListBracketsOpt(ListBracketsOpt *p);
+  // void visitListDimExpr(ListDimExpr *p);
+  void visitForLoop(ForLoop *p);
 };
 
 

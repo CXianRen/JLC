@@ -9,12 +9,38 @@ std::string to_string(type_enum t) {
     case FUN: return "fun";
     case CHAR: return "char";
     case STRING: return "string";
-    case INTARRAY: return "int[]";
-    case DOUBARRAY: return "double[]";
-    case BOOLARRAY: return "bool[]";
+    case ARRAY: return "array";
     case UNDEFINED: return "undefined";
   }
   return "unknown";
+}
+
+std::string to_string(const JLCType & t) {
+  if(t.type != ARRAY) {
+    return to_string(t.type);
+  }
+  std::string res = to_string(t.base_type);
+  for(int i = 0; i < t.brackets_count; i++) {
+    res += "[]";
+  }
+  return res;
+}
+
+bool JLCType::operator==(const JLCType &t) const	{
+		// basic type
+		if (type != t.type)
+		{
+			return false;
+		}
+		// array
+		if (type == ARRAY)
+		{
+			if (base_type != t.base_type || brackets_count != t.brackets_count)
+			{
+				return false;
+			}
+		}
+    return true;	
 }
 
 

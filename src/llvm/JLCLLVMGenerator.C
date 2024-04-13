@@ -34,8 +34,8 @@ static const std::string GeneratorName = "JLCLLVMGenerator";
   @return: llvm::Type*
   @param: type_enum t
 */
-llvm::Type* JLCLLVMGenerator::convertType(type_enum t){
-  switch (t)
+llvm::Type* JLCLLVMGenerator::convertType(JLCType t){
+  switch (t.type)
   {
   case INT:
     return llvm::Type::getInt32Ty(*LLVM_Context_);
@@ -49,6 +49,8 @@ llvm::Type* JLCLLVMGenerator::convertType(type_enum t){
     return llvm::Type::getInt8Ty(*LLVM_Context_);
   case STRING: // the atcually out is ptr not i8*, is it ok? @todo
     return llvm::Type::getInt8PtrTy(*LLVM_Context_);
+  case ARRAY: // actual is ptr type, @todo: better design?
+    return llvm::Type::getInt32PtrTy(*LLVM_Context_);
   default:
     std::cerr << "Error, Unknown type:" << to_string(t) << std::endl;
     exit(1);
@@ -60,6 +62,37 @@ void JLCLLVMGenerator::addExternalFunc(){
   {
     addFuncDeclearation(func.second);
   }  
+  // adding calloc function declearation
+
+  // @todo: when pointer type is support we can use "addFuncDeclearation"
+  std::vector<llvm::Type*> createNDimArray_args;
+  createNDimArray_args.push_back(llvm::Type::getInt32PtrTy(*LLVM_Context_)); // dim_array
+  createNDimArray_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_)); // dim_array_size
+  createNDimArray_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_)); // element size
+
+  auto createNDimArray_type = llvm::FunctionType::get(
+      llvm::Type::getInt8PtrTy(*LLVM_Context_), createNDimArray_args, false);
+  auto createNDimArray_func = llvm::Function::Create(
+      createNDimArray_type, 
+      llvm::Function::ExternalLinkage, 
+      "createNDimArray", 
+      LLVM_module_.get());
+
+  // add ptr @getElement_N_ptr(ptr %array, i32 * %idx_arr, i32 %idx_count ,i32 %max_dim , i32 %elem_size)
+  // std::vector<llvm::Type*> getElementNPtr_args;
+  // getElementNPtr_args.push_back(llvm::Type::getInt8PtrTy(*LLVM_Context_)); // array
+  // getElementNPtr_args.push_back(llvm::Type::getInt32PtrTy(*LLVM_Context_)); // idx_arr
+  // getElementNPtr_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_)); // idx_count
+  // getElementNPtr_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_)); // max_dim
+  // getElementNPtr_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_)); // elem_size
+
+  // auto getElementNPtr_type = llvm::FunctionType::get(
+  //     llvm::Type::getInt8PtrTy(*LLVM_Context_), getElementNPtr_args, false);
+  // auto getElementNPtr_func = llvm::Function::Create(
+  //     getElementNPtr_type, 
+  //     llvm::Function::ExternalLinkage, 
+  //     "getElement_N_ptr", 
+  //     LLVM_module_.get());
 }
 
 void JLCLLVMGenerator::addFuncDeclearation(Frame &frame){
@@ -256,6 +289,22 @@ void JLCLLVMGenerator::visitDecl(Decl *decl)
   /* Code For Decl Goes Here */
   if (decl->type_) decl->type_->accept(this);
   auto temp_decl_type = temp_type;
+
+
+  // declare the type of specific data type, like array
+  switch (temp_decl_type.type)
+  {
+    case ARRAY:
+      // @TODO: there should be a better way to store the array type, 
+      //  like using getTypeByName of llvm api.
+      DefineAndGetArrayType(
+          JLCType(ARRAY, temp_decl_type.type, temp_decl_type.brackets_count));
+      // x_array_type should be int_arr_type, double_arr_type, bool_arr_type, ptr_arr_type
+      break;
+    default:
+      break;
+  }
+
   for (auto & item : *(decl->listitem_)){
     temp_type = temp_decl_type; // !! this is important, as the type will pase to the next level
     item->accept(this);
@@ -481,14 +530,23 @@ void JLCLLVMGenerator::visitNoInit(NoInit *no_init)
   frame.addVar(no_init->ident_, temp_decl_type);
 
   
-  llvm::Constant* init_val = nullptr;
-  switch (temp_decl_type)
+  llvm::Value* init_val = nullptr;
+  switch (temp_decl_type.type)
   {
+  case BOOL:
+    init_val = llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(1, 0));
+    break;
   case INT:
     init_val = llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 0));
     break;
   case DOUB:
     init_val = llvm::ConstantFP::get(*LLVM_Context_, llvm::APFloat(0.0));
+    break;
+  case ARRAY:
+      // declare a local 0 size array, only with length 0
+      init_val = LLVM_builder_->CreateAlloca(llvm::Type::getInt32Ty(*LLVM_Context_), nullptr, "null_arr");
+      // store the null value to the array (set length to 0)
+      LLVM_builder_->CreateStore(llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 0)), init_val);
     break;
   default:
     break;
@@ -496,17 +554,16 @@ void JLCLLVMGenerator::visitNoInit(NoInit *no_init)
   /*todo: this should be an optional part, 
     which initialize the variable when allocates the memory
     now we just first allocate the memory, and then use sort to initialize the memory
+    auto alloca = LLVM_builder_->CreateAlloca(convertType(temp_decl_type), init_val, no_init->ident_);
   */ 
-  // auto alloca = LLVM_builder_->CreateAlloca(convertType(temp_type), init_val, no_init->ident_);
-  auto alloca = LLVM_builder_->CreateAlloca(convertType(temp_type), nullptr, no_init->ident_);
+
+  auto alloca = LLVM_builder_->CreateAlloca(convertType(temp_decl_type), nullptr, no_init->ident_);
+
+
   addVarToBlockMap(no_init->ident_, alloca);
   if (init_val != nullptr)
   {
     LLVM_builder_->CreateStore(init_val, alloca);
-    //@TODO: a better way to add comments
-    llvm::MDNode* N = llvm::MDNode::get(*LLVM_Context_, 
-      llvm::MDString::get(*LLVM_Context_, "Default value: 0"));
-    alloca->setMetadata("comment", N);
   }
 }
 
@@ -535,26 +592,26 @@ void JLCLLVMGenerator::visitInit(Init *init)
 void JLCLLVMGenerator::visitInt(Int *int_)
 {
   /* Code For Int Goes Here */
-  temp_type = INT;
+  temp_type = JLCType(INT);
 
 }
 
 void JLCLLVMGenerator::visitDoub(Doub *doub)
 {
   /* Code For Doub Goes Here */
-  temp_type = DOUB;
+  temp_type = JLCType(DOUB);
 }
 
 void JLCLLVMGenerator::visitBool(Bool *bool_)
 {
   /* Code For Bool Goes Here */
-  temp_type = BOOL;
+  temp_type = JLCType(BOOL);
 }
 
 void JLCLLVMGenerator::visitVoid(Void *void_)
 {
   /* Code For Void Goes Here */
-  temp_type = VOID;
+  temp_type = JLCType(VOID);
 }
 
 void JLCLLVMGenerator::visitFun(Fun *fun)
@@ -573,10 +630,14 @@ void JLCLLVMGenerator::visitEVar(EVar *e_var)
   temp_type = frame.getVarType(e_var->ident_);
   // visitIdent(e_var->ident_);
   
+  DEBUG_PRINT("Visit EVar: " + e_var->ident_ +  " type: " + to_string(temp_type));
+
   // when we access a variable, we need to load the value from the memory
   // llvm load 
   llvm::Value* var = getVarFromBlockMap(e_var->ident_);
   setLLVMTempValue( LLVM_builder_->CreateLoad(convertType(temp_type), var, e_var->ident_));
+  DEBUG_PRINT("Load variable: " + e_var->ident_);
+  // @todo: maybe still need maintain the type of the variable
 }
 
 void JLCLLVMGenerator::visitELitInt(ELitInt *e_lit_int)
@@ -584,10 +645,10 @@ void JLCLLVMGenerator::visitELitInt(ELitInt *e_lit_int)
   /* Code For ELitInt Goes Here */
 
   visitInteger(e_lit_int->integer_);
-  temp_type = INT;
+  temp_type = JLCType(INT);
   
   // llvm constant
-  setLLVMTempValue( llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, e_lit_int->integer_)));
+  setLLVMTempValue(llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, e_lit_int->integer_)));
 
 }
 
@@ -596,7 +657,7 @@ void JLCLLVMGenerator::visitELitDoub(ELitDoub *e_lit_doub)
   /* Code For ELitDoub Goes Here */
 
   visitDouble(e_lit_doub->double_);
-  temp_type = DOUB;
+  temp_type = JLCType(DOUB);
   // llvm constant
   setLLVMTempValue(llvm::ConstantFP::get(*LLVM_Context_, llvm::APFloat(e_lit_doub->double_)));
 }
@@ -605,7 +666,7 @@ void JLCLLVMGenerator::visitELitTrue(ELitTrue *e_lit_true)
 {
   /* Code For ELitTrue Goes Here */
 
-  temp_type = BOOL;
+  temp_type = JLCType(BOOL);
   // llvm constant 
   setLLVMTempValue( llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(1, 1)));
 
@@ -614,7 +675,7 @@ void JLCLLVMGenerator::visitELitTrue(ELitTrue *e_lit_true)
 void JLCLLVMGenerator::visitELitFalse(ELitFalse *e_lit_false)
 {
   /* Code For ELitFalse Goes Here */
-  temp_type = BOOL;
+  temp_type = JLCType(BOOL);
   // llvm constant
   setLLVMTempValue( llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(1, 0)));
 }
@@ -643,13 +704,14 @@ void JLCLLVMGenerator::visitEApp(EApp *e_app)
   }
   DEBUG_PRINT("EApp create call")
   setLLVMTempValue( LLVM_builder_->CreateCall(llvm_func, args, tag));
+  temp_type = globalContext.getFrame(e_app->ident_).returnType;
   DEBUG_PRINT("Call function: " + e_app->ident_);
 }
 
 void JLCLLVMGenerator::visitEString(EString *e_string)
 {
   /* Code For EString Goes Here */
-  temp_type = STRING;
+  temp_type = JLCType(STRING);
   
   // check if the string is already in the global context
   // @TODO: this is not a good way to store the string, 
@@ -1038,4 +1100,381 @@ void JLCLLVMGenerator::visitNE(NE *ne)
 {
   /* Code For NE Goes Here */
   temp_op = eNE;
+}
+/*---------------- for array ------------------*/ 
+
+llvm::Type* JLCLLVMGenerator::DefineAndGetArrayType(JLCType type){
+  // if dimension is 1, then it is a normal array
+  // there only int array, double array, bool array, and ptr array (for multi-dimension array)
+  std::string type_name;
+  if (type.brackets_count == 1){
+    // basic type
+    type_name = to_string(type.base_type) + "_array_type";
+   
+    if (array_type_map.find(type_name) == array_type_map.end()){
+      DEBUG_PRINT("Define new type: " + type_name);
+      llvm::Type* x_array_type = llvm::StructType::create(*LLVM_Context_, 
+      {llvm::Type::getInt32Ty(*LLVM_Context_), 
+      llvm::ArrayType::get(convertType(JLCType(type.base_type)), 0)}, 
+      type_name);
+      array_type_map[type_name] = x_array_type;
+    }
+  }else{
+    // array of array
+    type_name = "ptr_array_type";
+    if (array_type_map.find(type_name) == array_type_map.end()){
+      DEBUG_PRINT("Define new type: " + type_name + " triiger type:" + to_string(type));
+      llvm::Type* x_array_type = llvm::StructType::create(*LLVM_Context_,
+      {llvm::Type::getInt32Ty(*LLVM_Context_),
+      llvm::ArrayType::get(convertType(type), 0)},
+      type_name);
+      array_type_map[type_name] = x_array_type;
+      
+    }
+  }
+  return array_type_map[type_name];
+}
+
+void JLCLLVMGenerator::visitDim(Dim *dim)
+{
+  /* Code For Dim Goes Here */
+
+  if (dim->expr_) dim->expr_->accept(this);
+  auto expr_llvm_value = llvm_temp_value_;
+}
+
+void JLCLLVMGenerator::visitArrayType(ArrayType *array_type){
+  /* Code For ArrayType Goes Here */
+  
+  if (array_type->type_) array_type->type_->accept(this);
+  // element type
+  auto temp_array_type = temp_type;
+  // bracket number
+  auto num = array_type->listbracketsopt_->size();
+  temp_type = JLCType(ARRAY, temp_array_type.type, num);
+}
+
+
+void JLCLLVMGenerator::visitENewArray(ENewArray *e_new_array)
+{
+  /* Code For ENewArray Goes Here */
+  DEBUG_PRINT("Visit ENewArray");
+  if (e_new_array->type_) e_new_array->type_->accept(this);
+  auto local_type = temp_type;
+  
+  DEBUG_PRINT("ENewArray type: " + to_string(local_type));
+  std::vector<llvm::Value*> dims;
+  // collect the dimensions
+  for (auto & dim : *(e_new_array->listdimexpr_)){
+    dim->accept(this);
+    dims.push_back(llvm_temp_value_);
+  }
+
+  // create the array with alloc function to store the dimension
+  // dim array is a array of int
+  auto dim_array_type = llvm::ArrayType::get(llvm::Type::getInt32Ty(*LLVM_Context_), dims.size());
+  auto dim_array = LLVM_builder_->CreateAlloca(dim_array_type, nullptr, "dim_array");
+  // store the dimension to the array
+  for (size_t i = 0; i < dims.size(); i++){
+    auto dim_idx_ptr = LLVM_builder_->CreateGEP(
+      llvm::Type::getInt32Ty(*LLVM_Context_),
+      dim_array,
+      {llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, i))},
+      "dim_ptr");
+    LLVM_builder_->CreateStore(dims[i], dim_idx_ptr);
+  }
+  // get base type size
+  	// %p = getelementptr base type, ptr null, i32 1
+	  // %s = ptrtoint ptr %p to i32
+  auto p = LLVM_builder_->CreateGEP(
+      convertType(local_type),
+      llvm::ConstantPointerNull::get(llvm::Type::getInt32PtrTy(*LLVM_Context_)),
+      llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 1)),
+      "p");
+
+  auto base_type_size = LLVM_builder_->CreatePtrToInt(
+      p,
+      llvm::Type::getInt32Ty(*LLVM_Context_), 
+      "s"
+    );
+  
+  // create the array with calloc function
+  auto llvm_func = LLVM_module_->getFunction("createNDimArray");
+  if (llvm_func == nullptr){
+    DEBUG_PRINT("createNDimArray function is not found");
+  }
+  
+  auto temp_array = LLVM_builder_->CreateCall(llvm_func, 
+      { 
+        dim_array,
+        llvm::ConstantInt::get(
+          *LLVM_Context_, llvm::APInt(32, dims.size())),
+        base_type_size
+      },
+      "temp_array"
+  );
+  setLLVMTempValue(temp_array);
+  temp_type = JLCType(ARRAY, local_type.type, dims.size());
+}
+
+
+void JLCLLVMGenerator::visitEDot(EDot *e_dot)
+{
+  /* Code For EDot Goes Here */
+
+  if (e_dot->expr_) e_dot->expr_->accept(this);
+  auto left_value = llvm_temp_value_;
+  visitIdent(e_dot->ident_);
+
+  // llvm load 
+  auto len = LLVM_builder_->CreateLoad(convertType(INT), left_value, "len");
+
+  setLLVMTempValue(len);
+}
+
+void JLCLLVMGenerator::visitEAcc(EAcc *e_acc)
+{
+  /* Code For EAcc Goes Here */
+  // Returning the address or the value is determined by the left_value_flag
+  auto local_left_value_flag = left_value_flag; 
+  DEBUG_PRINT("visitEAcc: left_value_flag:"<< local_left_value_flag);
+
+  if (e_acc->expr_) e_acc->expr_->accept(this); // will get an addres
+  auto left_value = llvm_temp_value_;
+  
+  // why we can not just look for the type in var map? 
+  // case: new int[10].lenght. is just a temp value, didnot register in the var map
+  auto local_type = temp_type;  
+  DEBUG_PRINT("visitEAcc: left side var type: " + to_string(local_type));
+
+  // collect the dimensions
+  std::vector<llvm::Value*> dims;
+  for (auto & dim : *(e_acc->listdimexpr_)){
+    dim->accept(this);
+    dims.push_back(llvm_temp_value_);
+  }
+
+  // the dimension of the array must >=1, otherwise, it will not get into this function
+  // we don't check the bound of the array here
+
+  // handle [] operation
+  auto start_ptr = left_value;
+  llvm::Value* val = nullptr;
+
+  for (size_t i = 0; i < dims.size(); i++){
+    auto dim_val = dims[i];
+    if (i!=0){
+      start_ptr = val;
+    }
+    // skip the length field
+    start_ptr = LLVM_builder_->CreateGEP(
+      llvm::Type::getInt32Ty(*LLVM_Context_),
+      start_ptr,
+      {llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 1))},
+      "ptr");
+    // get the element address 
+    llvm::Type* element_type = llvm::Type::getInt32PtrTy(*LLVM_Context_);
+    if (i == local_type.brackets_count - 1){
+      // which means this is the last dimension, access the basic type
+      element_type = convertType(JLCType(local_type.base_type));
+    }
+    start_ptr = LLVM_builder_->CreateGEP(
+        element_type,
+        start_ptr,
+        {dim_val},
+        "e_ptr"
+    );
+    // load the value of the element
+    val = LLVM_builder_->CreateLoad(element_type, start_ptr, "arr_e");
+  
+  }
+  if (local_left_value_flag){
+    // if we are querying a left-value, then we return the address
+    DEBUG_PRINT("visitEAcc: return address");
+    setLLVMTempValue(start_ptr);
+  }else{
+    DEBUG_PRINT("visitEAcc: return value");
+    setLLVMTempValue(val);
+  }
+  
+  // pass the type to upper level
+  int dim = e_acc->listdimexpr_->size();
+  // accessing the base type
+  if(dim == local_type.brackets_count){
+    temp_type = JLCType(local_type.base_type);
+  }
+  // still an array
+  else if(dim < local_type.brackets_count){
+    temp_type = JLCType(ARRAY, local_type.base_type, local_type.brackets_count - dim);
+  }else{
+    // should not reach here
+    ERRPR_HANDLE("visitEAcc: should not reach here")
+  }
+  
+}
+
+void JLCLLVMGenerator::visitAssArr(AssArr *ass_arr)
+{
+  /* Code For AssArr Goes Here */
+  DEBUG_PRINT(" visitAssArr");
+  // informing lower level we are quering a left-value (writable, address)
+  left_value_flag = true; 
+  if (ass_arr->expr_1) ass_arr->expr_1->accept(this);
+  left_value_flag = false;
+  auto l_value = llvm_temp_value_;
+  auto l_type = temp_type;
+
+  if (ass_arr->expr_2) ass_arr->expr_2->accept(this);
+  auto r_value = llvm_temp_value_;
+  auto r_type = temp_type;
+
+  temp_type = l_type;
+
+  // generate a stor instruction
+  LLVM_builder_->CreateStore(r_value, l_value);
+
+}
+
+
+
+void JLCLLVMGenerator::visitForLoop(ForLoop *for_loop)
+{
+  /* Code For ForLoop Goes Here */
+  auto & func = globalContext.currentFrame();
+
+  if (for_loop->type_) for_loop->type_->accept(this);
+  auto element_type = temp_type;
+  auto local_e_name = for_loop->ident_;
+
+  // new logical block 
+  func.newBlock();
+  addBlockVarMap();
+  // add the element to the block
+  func.addVar(local_e_name, element_type);
+
+  left_value_flag = true;
+  if (for_loop->expr_) for_loop->expr_->accept(this);
+  left_value_flag = false;
+  auto arr_type = temp_type;
+  auto arr_ptr_value = llvm_temp_value_;
+  
+  /* generate code for this 
+  * for (int a : arr){
+
+  }
+  conver to 
+  { // logical block start  
+   i = 0          // inner 
+   l = arr.lenght // ineer
+   while(i<l){
+     i= i +1;
+     a = *(arr+i) // arr[i]
+     
+     // loop body
+
+   }
+  } // logical block end 
+  */
+  
+  // allocate the memory for the index
+  auto i_alloca = LLVM_builder_->CreateAlloca(
+    llvm::Type::getInt32Ty(*LLVM_Context_), nullptr, "i");
+  // store the value to the memory
+  LLVM_builder_->CreateStore(
+    llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 0)),
+    i_alloca
+  );
+
+  // get the length of the array
+  auto len_ptr = LLVM_builder_->CreateGEP(
+    llvm::Type::getInt32Ty(*LLVM_Context_),
+    arr_ptr_value,
+    {llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 0))},
+    "len_ptr"
+  );
+  auto len = LLVM_builder_->CreateLoad(
+    llvm::Type::getInt32Ty(*LLVM_Context_),
+    len_ptr,
+    "len"
+  );
+
+  // skip the length field
+  auto data_ptr = LLVM_builder_->CreateGEP(
+    llvm::Type::getInt32Ty(*LLVM_Context_),
+    arr_ptr_value,
+    {llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 1))},
+    "data_ptr"
+  ); 
+  // create a new block for the loop
+  auto current_block = LLVM_builder_->GetInsertBlock();
+  auto parent = current_block->getParent();
+  auto cond_block = llvm::BasicBlock::Create(
+      *LLVM_Context_, "for.cond", parent);
+  auto loop_block = llvm::BasicBlock::Create(
+      *LLVM_Context_, "for.loop", parent);
+  auto end_block = llvm::BasicBlock::Create(
+      *LLVM_Context_, "for.end", parent);
+
+  // jump to the cond block
+  LLVM_builder_->CreateBr(cond_block);
+  LLVM_builder_->SetInsertPoint(cond_block);
+
+  // load the value of i
+  auto i_value = LLVM_builder_->CreateLoad(
+    llvm::Type::getInt32Ty(*LLVM_Context_),
+    i_alloca,
+    "i"
+  );
+  // compare i and len
+  auto cond = LLVM_builder_->CreateICmpSLT(i_value, len, "cond");
+  
+  // jump to the loop block or end block
+  LLVM_builder_->CreateCondBr(cond, loop_block, end_block);
+  LLVM_builder_->SetInsertPoint(loop_block);
+
+  // get the value of i
+  i_value = LLVM_builder_->CreateLoad(
+    llvm::Type::getInt32Ty(*LLVM_Context_),
+    i_alloca,
+    "i"
+  );
+  // get the address of the element
+  auto element_ptr = LLVM_builder_->CreateGEP(
+    convertType(element_type), //todo
+    data_ptr,
+    {i_value},
+    "e_ptr"
+  );
+  // load the value of the element when accessing the var by EVar,
+  // it will load the value from the memory
+  // auto element_value = LLVM_builder_->CreateLoad(
+  //   convertType(element_type), //todo
+  //   element_ptr,
+  //   "e"
+  // );
+  // add to the block map
+  addVarToBlockMap(local_e_name, element_ptr);
+
+  // update the value of i
+  auto i_plus_1 = LLVM_builder_->CreateAdd(
+    i_value,
+    llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 1)),
+    "i_plus_1"
+  );
+  // @todo maybe ushe phi will be better
+  LLVM_builder_->CreateStore(i_plus_1, i_alloca);
+
+  // for body
+  if (for_loop->stmt_) for_loop->stmt_->accept(this);
+  
+  // jump to the cond block, for the next iteration
+  LLVM_builder_->CreateBr(cond_block);
+  
+
+  // end block , it will be terminated by other statement
+  LLVM_builder_->SetInsertPoint(end_block);
+
+  removeBlockVarMap();
+  func.releaseBlock();
+
 }

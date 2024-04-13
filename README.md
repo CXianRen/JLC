@@ -122,3 +122,81 @@ int main () {
   }
 }
 ```
+
+# extension 
+
++ priority of array operation 
+``` c 
+//
+printInt(arr.length);
+
+//
+while (j<a.length) 
+
+// 
+int [] res = new int [a . length];
+
+//
+a [i] = a [i + 1];
+
+// 
+a[a.length - 1]= x ;
+
+//
+res = res + a[i] * b[i];
+
+//
+printInt(new int[foo(7)].length);
+
+//
+array(3)[2] = 1;
+printInt(array(3)[0]);
+
+//
+printInt((new int[3])[2]);
+```
+
+# priority of C (partial) 
+
+1: () [] . ->
+
+2: "+" "-" "++" "--" "!" "*" "&" "sizeof" "(type)"
+
+3: "*" "/" "%", multiplication operation
+
+4: + - 
+
+5: << >>
+
+6: <<= =>>
+
+7: == !=
+
+11: &&
+
+12: ||
+
+14: = 
+
+15: ,
+
+
+# JLC
+
+6: Elit  interger, double, true, false
+6: EVar ()
+6: EApp (function call) Ident "(" ")"
+
+5: Neg(-), Not(!)
+
+4: Emul 
+
+3: Add
+
+2: Rel < > != ==
+
+1: Eand
+
+0: Eor
+
+

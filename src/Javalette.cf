@@ -28,13 +28,12 @@ NoInit.    Item ::= Ident ;
 
 Init.      Item ::= Ident "=" Expr ;
 
-InitElem.  Item ::= Ident ":" Expr ;
-
 separator nonempty Item "," ;
 
 Ass.       Stmt ::= Ident "=" Expr  ";" ;
 
-ArrayAss.  Stmt ::= Expr  "=" Expr  ";" ;
+AssArr.    Stmt ::= Expr "=" Expr  ";" ;
+-- @todo: it can merger with Ass, if have enough time. 
 
 Incr.      Stmt ::= Ident "++"  ";" ;
 
@@ -50,9 +49,7 @@ CondElse.  Stmt ::= "if" "(" Expr ")" Stmt "else" Stmt  ;
 
 While.     Stmt ::= "while" "(" Expr ")" Stmt ;
 
-ForBlk.    Stmt ::= "(" Type Item ")" Stmt ;
-
-ForLoop.   Stmt ::= "for" Stmt ;
+ForLoop.   Stmt ::= "for" "(" Type Ident ":" Expr ")" Stmt ;
 
 SExp.      Stmt ::= Expr  ";" ;
 
@@ -66,37 +63,40 @@ Bool.      Type ::= "boolean" ;
 
 Void.      Type ::= "void" ;
 
-IntArray.  Type ::= "int []" ;
-
-DoubArray. Type ::= "double []" ;
-
-BoolArray. Type ::= "boolean []" ;
-
 internal   Fun. Type ::= Type "(" [Type] ")" ;
 
 separator  Type "," ;
 
+ArrayType. Type ::= Type [BracketsOpt] ;
+
+BracketsEmpty.   BracketsOpt ::= "[]" ;
+
+separator nonempty BracketsOpt "";
+
 -- Expressions ---------------------------------------------
+ENewArray. Expr6 ::= "new" Type [DimExpr] ;
 
-EVar.      Expr6 ::= Ident ;
+Dim.       DimExpr ::= "[" Expr "]" ;
 
-ELitInt.   Expr6 ::= Integer ;
+terminator nonempty DimExpr "" ;
 
-ELitDoub.  Expr6 ::= Double ;
+EDot.      Expr6 ::= Expr6 "." Ident ;
 
-ELitTrue.  Expr6 ::= "true" ;
+EAcc.      Expr7 ::= Expr7 [DimExpr];
 
-ELitFalse. Expr6 ::= "false" ;
+ELitInt.   Expr7 ::= Integer ;
 
-EApp.      Expr6 ::= Ident "(" [Expr] ")" ;
+ELitDoub.  Expr7 ::= Double ;
 
-EString.   Expr6 ::= String ;
+ELitTrue.  Expr7 ::= "true" ;
 
-EArrayNew. Expr6 ::= "new" Type "[" Expr6 "]" ;
+ELitFalse. Expr7 ::= "false" ;
 
-EArrayLen. Expr6 ::= Expr6 "." Expr6 ;
+EString.   Expr7 ::= String ;
 
-EArray.    Expr5 ::= Expr6 "[" Expr "]" ;
+EVar.      Expr7 ::= Ident ;
+
+EApp.      Expr7 ::= Ident "(" [Expr] ")" ;
 
 Neg.       Expr5 ::= "-" Expr6 ;
 
@@ -112,7 +112,7 @@ EAnd.      Expr1 ::= Expr2 "&&" Expr1 ;
 
 EOr.       Expr ::= Expr1 "||" Expr ;
 
-coercions  Expr 6 ;
+coercions  Expr 7 ;
 
 separator  Expr "," ;
 

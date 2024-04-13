@@ -30,12 +30,43 @@ enum type_enum
 	FUN,
 	CHAR,
 	STRING,
-	INTARRAY,
-	DOUBARRAY,
-	BOOLARRAY,
+	ARRAY,
 	UNDEFINED
 };
 std::string to_string(type_enum t);
+
+class JLCType{
+public:
+	type_enum type;
+	// for array
+	type_enum base_type;
+	int brackets_count; // dimension of the array
+
+	JLCType(type_enum type, type_enum base_type = UNDEFINED, int brackets_count = 0)
+		: type(type), base_type(base_type), brackets_count(brackets_count) {}
+	JLCType() = default;
+	~JLCType() = default;
+	// reload operator ==
+	bool operator==(const JLCType &t) const;
+	bool operator==(const type_enum &t) const { 
+		return type == t; 
+	}
+	bool operator!=(const JLCType &t) const { 
+		return !(*this == t); 
+	}
+	
+	bool operator!=(const type_enum &t) const { 
+		return type != t; 
+	}
+	
+
+	// copy constructor
+	//JLCType(const JLCType &t) : 
+	//	type(t.type), base_type(t.base_type), 
+	//	brackets_count(t.brackets_count) {}
+
+};
+std::string to_string(const JLCType & t);
 
 // for each parameter, declared CVARiable, we create a new CVAR object
 class CVAR
@@ -44,7 +75,7 @@ public:
 	CVAR() = default;
 	~CVAR() = default;
 	std::string name;
-	type_enum type;
+	JLCType type;
 };
 
 // for each block, we create a new CBlk object
@@ -61,7 +92,8 @@ public:
 	std::map<std::string, CVAR> CVARiables; // map of CVARiables
 	CBlk *parent = nullptr;					// parent block
 
-	void addVar(const std::string &name, type_enum type)
+	// base_type and brackets_count are used for array
+	void addVar(const std::string &name, JLCType type)
 	{
 		CVAR CVARiable;
 		CVARiable.name = name;
@@ -80,18 +112,18 @@ class Frame
 {
 public:
 	Frame() = default;
-	Frame(std::string name) : name(name), returnType(UNDEFINED) {}
+	Frame(std::string name) : name(name), returnType() {}
 	~Frame() = default;
 	std::string name;									 // name of the function
-	type_enum returnType;								 // return type of the function
-	std::vector<std::pair<std::string, type_enum>> args; // save the arguments of the function
+	JLCType returnType;								 // return type of the function
+	std::vector<std::pair<std::string, JLCType>> args; // save the arguments of the function
 
 	CBlk *blk = nullptr; // block of the function
 
 	// chcek if the argument is declared
 	bool isExistArg(const std::string &name);
 
-	void addArg(const std::string &name, type_enum type)
+	void addArg(const std::string &name, JLCType type)
 	{
 		args.push_back(std::make_pair(name, type));
 	}
@@ -108,10 +140,12 @@ public:
 		delete temp;
 	}
 
-	void addVar(const std::string &name, type_enum type)
+	void addVar(const std::string &name, JLCType type)
 	{
+
 		blk->addVar(name, type);
 	}
+
 
 	bool isExistVar(const std::string &name)
 	{
@@ -135,7 +169,7 @@ public:
 		return false;
 	}
 
-	type_enum getVarType(const std::string &name)
+	JLCType getVarType(const std::string &name)
 	{
 		CBlk *temp = blk;
 		while (temp)
@@ -154,8 +188,8 @@ public:
 				return arg.second;
 			}
 		}
-		return UNDEFINED;
-	}
+		return JLCType(UNDEFINED);
+	}	
 };
 
 // Context is a class that holds the current state of the program.
@@ -167,30 +201,30 @@ public:
 		{
 			addFrame("printInt");
 			auto &frame = getFrame("printInt");
-			frame.returnType = VOID;
-			frame.addArg("a", INT);
+			frame.returnType = JLCType(VOID);
+			frame.addArg("a", JLCType(INT));
 		}
 		{
 			addFrame("printDouble");
 			auto &frame = getFrame("printDouble");
-			frame.returnType = VOID;
-			frame.addArg("a", DOUB);
+			frame.returnType = JLCType(VOID);
+			frame.addArg("a", JLCType(DOUB));
 		}
 		{
 			addFrame("printString");
 			auto &frame = getFrame("printString");
-			frame.returnType = VOID;
-			frame.addArg("a", STRING);
+			frame.returnType = JLCType(VOID);
+			frame.addArg("a", JLCType(STRING));
 		}
 		{
 			addFrame("readInt");
 			auto &frame = getFrame("readInt");
-			frame.returnType = INT;
+			frame.returnType = JLCType(INT);
 		}
 		{
 			addFrame("readDouble");
 			auto &frame = getFrame("readDouble");
-			frame.returnType = DOUB;
+			frame.returnType = JLCType(DOUB);
 		}
 }
 

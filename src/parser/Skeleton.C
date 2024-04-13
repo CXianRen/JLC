@@ -17,7 +17,9 @@ void Skeleton::visitBlk(Blk *t) {} //abstract class
 void Skeleton::visitStmt(Stmt *t) {} //abstract class
 void Skeleton::visitItem(Item *t) {} //abstract class
 void Skeleton::visitType(Type *t) {} //abstract class
+void Skeleton::visitBracketsOpt(BracketsOpt *t) {} //abstract class
 void Skeleton::visitExpr(Expr *t) {} //abstract class
+void Skeleton::visitDimExpr(DimExpr *t) {} //abstract class
 void Skeleton::visitAddOp(AddOp *t) {} //abstract class
 void Skeleton::visitMulOp(MulOp *t) {} //abstract class
 void Skeleton::visitRelOp(RelOp *t) {} //abstract class
@@ -91,12 +93,12 @@ void Skeleton::visitAss(Ass *ass)
 
 }
 
-void Skeleton::visitArrayAss(ArrayAss *array_ass)
+void Skeleton::visitAssArr(AssArr *ass_arr)
 {
-  /* Code For ArrayAss Goes Here */
+  /* Code For AssArr Goes Here */
 
-  if (array_ass->expr_1) array_ass->expr_1->accept(this);
-  if (array_ass->expr_2) array_ass->expr_2->accept(this);
+  if (ass_arr->expr_1) ass_arr->expr_1->accept(this);
+  if (ass_arr->expr_2) ass_arr->expr_2->accept(this);
 
 }
 
@@ -159,20 +161,13 @@ void Skeleton::visitWhile(While *while_)
 
 }
 
-void Skeleton::visitForBlk(ForBlk *for_blk)
-{
-  /* Code For ForBlk Goes Here */
-
-  if (for_blk->type_) for_blk->type_->accept(this);
-  if (for_blk->item_) for_blk->item_->accept(this);
-  if (for_blk->stmt_) for_blk->stmt_->accept(this);
-
-}
-
 void Skeleton::visitForLoop(ForLoop *for_loop)
 {
   /* Code For ForLoop Goes Here */
 
+  if (for_loop->type_) for_loop->type_->accept(this);
+  visitIdent(for_loop->ident_);
+  if (for_loop->expr_) for_loop->expr_->accept(this);
   if (for_loop->stmt_) for_loop->stmt_->accept(this);
 
 }
@@ -199,15 +194,6 @@ void Skeleton::visitInit(Init *init)
 
   visitIdent(init->ident_);
   if (init->expr_) init->expr_->accept(this);
-
-}
-
-void Skeleton::visitInitElem(InitElem *init_elem)
-{
-  /* Code For InitElem Goes Here */
-
-  visitIdent(init_elem->ident_);
-  if (init_elem->expr_) init_elem->expr_->accept(this);
 
 }
 
@@ -239,27 +225,6 @@ void Skeleton::visitVoid(Void *void_)
 
 }
 
-void Skeleton::visitIntArray(IntArray *int_array)
-{
-  /* Code For IntArray Goes Here */
-
-
-}
-
-void Skeleton::visitDoubArray(DoubArray *doub_array)
-{
-  /* Code For DoubArray Goes Here */
-
-
-}
-
-void Skeleton::visitBoolArray(BoolArray *bool_array)
-{
-  /* Code For BoolArray Goes Here */
-
-
-}
-
 void Skeleton::visitFun(Fun *fun)
 {
   /* Code For Fun Goes Here */
@@ -269,11 +234,46 @@ void Skeleton::visitFun(Fun *fun)
 
 }
 
-void Skeleton::visitEVar(EVar *e_var)
+void Skeleton::visitArrayType(ArrayType *array_type)
 {
-  /* Code For EVar Goes Here */
+  /* Code For ArrayType Goes Here */
 
-  visitIdent(e_var->ident_);
+  if (array_type->type_) array_type->type_->accept(this);
+  if (array_type->listbracketsopt_) array_type->listbracketsopt_->accept(this);
+
+}
+
+void Skeleton::visitBracketsEmpty(BracketsEmpty *brackets_empty)
+{
+  /* Code For BracketsEmpty Goes Here */
+
+
+}
+
+void Skeleton::visitENewArray(ENewArray *e_new_array)
+{
+  /* Code For ENewArray Goes Here */
+
+  if (e_new_array->type_) e_new_array->type_->accept(this);
+  if (e_new_array->listdimexpr_) e_new_array->listdimexpr_->accept(this);
+
+}
+
+void Skeleton::visitEDot(EDot *e_dot)
+{
+  /* Code For EDot Goes Here */
+
+  if (e_dot->expr_) e_dot->expr_->accept(this);
+  visitIdent(e_dot->ident_);
+
+}
+
+void Skeleton::visitEAcc(EAcc *e_acc)
+{
+  /* Code For EAcc Goes Here */
+
+  if (e_acc->expr_) e_acc->expr_->accept(this);
+  if (e_acc->listdimexpr_) e_acc->listdimexpr_->accept(this);
 
 }
 
@@ -307,15 +307,6 @@ void Skeleton::visitELitFalse(ELitFalse *e_lit_false)
 
 }
 
-void Skeleton::visitEApp(EApp *e_app)
-{
-  /* Code For EApp Goes Here */
-
-  visitIdent(e_app->ident_);
-  if (e_app->listexpr_) e_app->listexpr_->accept(this);
-
-}
-
 void Skeleton::visitEString(EString *e_string)
 {
   /* Code For EString Goes Here */
@@ -324,30 +315,20 @@ void Skeleton::visitEString(EString *e_string)
 
 }
 
-void Skeleton::visitEArrayNew(EArrayNew *e_array_new)
+void Skeleton::visitEVar(EVar *e_var)
 {
-  /* Code For EArrayNew Goes Here */
+  /* Code For EVar Goes Here */
 
-  if (e_array_new->type_) e_array_new->type_->accept(this);
-  if (e_array_new->expr_) e_array_new->expr_->accept(this);
+  visitIdent(e_var->ident_);
 
 }
 
-void Skeleton::visitEArrayLen(EArrayLen *e_array_len)
+void Skeleton::visitEApp(EApp *e_app)
 {
-  /* Code For EArrayLen Goes Here */
+  /* Code For EApp Goes Here */
 
-  if (e_array_len->expr_1) e_array_len->expr_1->accept(this);
-  if (e_array_len->expr_2) e_array_len->expr_2->accept(this);
-
-}
-
-void Skeleton::visitEArray(EArray *e_array)
-{
-  /* Code For EArray Goes Here */
-
-  if (e_array->expr_1) e_array->expr_1->accept(this);
-  if (e_array->expr_2) e_array->expr_2->accept(this);
+  visitIdent(e_app->ident_);
+  if (e_app->listexpr_) e_app->listexpr_->accept(this);
 
 }
 
@@ -412,6 +393,14 @@ void Skeleton::visitEOr(EOr *e_or)
 
   if (e_or->expr_1) e_or->expr_1->accept(this);
   if (e_or->expr_2) e_or->expr_2->accept(this);
+
+}
+
+void Skeleton::visitDim(Dim *dim)
+{
+  /* Code For Dim Goes Here */
+
+  if (dim->expr_) dim->expr_->accept(this);
 
 }
 
@@ -528,6 +517,22 @@ void Skeleton::visitListItem(ListItem *list_item)
 void Skeleton::visitListType(ListType *list_type)
 {
   for (ListType::iterator i = list_type->begin() ; i != list_type->end() ; ++i)
+  {
+    (*i)->accept(this);
+  }
+}
+
+void Skeleton::visitListBracketsOpt(ListBracketsOpt *list_brackets_opt)
+{
+  for (ListBracketsOpt::iterator i = list_brackets_opt->begin() ; i != list_brackets_opt->end() ; ++i)
+  {
+    (*i)->accept(this);
+  }
+}
+
+void Skeleton::visitListDimExpr(ListDimExpr *list_dim_expr)
+{
+  for (ListDimExpr::iterator i = list_dim_expr->begin() ; i != list_dim_expr->end() ; ++i)
   {
     (*i)->accept(this);
   }

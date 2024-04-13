@@ -64,7 +64,11 @@ extern yyscan_t javalette__initialize_lexer(FILE * inp);
   ListItem* listitem_;
   Type* type_;
   ListType* listtype_;
+  BracketsOpt* bracketsopt_;
+  ListBracketsOpt* listbracketsopt_;
   Expr* expr_;
+  DimExpr* dimexpr_;
+  ListDimExpr* listdimexpr_;
   ListExpr* listexpr_;
   AddOp* addop_;
   MulOp* mulop_;
@@ -141,7 +145,12 @@ extern int yylex(YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner);
 %type <listitem_> ListItem
 %type <type_> Type
 %type <listtype_> ListType
+%type <bracketsopt_> BracketsOpt
+%type <listbracketsopt_> ListBracketsOpt
 %type <expr_> Expr6
+%type <dimexpr_> DimExpr
+%type <listdimexpr_> ListDimExpr
+%type <expr_> Expr7
 %type <expr_> Expr5
 %type <expr_> Expr4
 %type <expr_> Expr3
@@ -179,7 +188,7 @@ Stmt : _SEMI { $$ = new Empty(); }
   | Blk { $$ = new BStmt($1); }
   | Type ListItem _SEMI { std::reverse($2->begin(),$2->end()) ;$$ = new Decl($1, $2); }
   | _IDENT_ _EQ Expr _SEMI { $$ = new Ass($1, $3); }
-  | Expr _EQ Expr _SEMI { $$ = new ArrayAss($1, $3); }
+  | Expr _EQ Expr _SEMI { $$ = new AssArr($1, $3); }
   | _IDENT_ _DPLUS _SEMI { $$ = new Incr($1); }
   | _IDENT_ _DMINUS _SEMI { $$ = new Decr($1); }
   | _KW_return Expr _SEMI { $$ = new Ret($2); }
@@ -187,13 +196,11 @@ Stmt : _SEMI { $$ = new Empty(); }
   | _KW_if _LPAREN Expr _RPAREN Stmt { $$ = new Cond($3, $5); }
   | _KW_if _LPAREN Expr _RPAREN Stmt _KW_else Stmt { $$ = new CondElse($3, $5, $7); }
   | _KW_while _LPAREN Expr _RPAREN Stmt { $$ = new While($3, $5); }
-  | _LPAREN Type Item _RPAREN Stmt { $$ = new ForBlk($2, $3, $5); }
-  | _KW_for Stmt { $$ = new ForLoop($2); }
+  | _KW_for _LPAREN Type _IDENT_ _COLON Expr _RPAREN Stmt { $$ = new ForLoop($3, $4, $6, $8); }
   | Expr _SEMI { $$ = new SExp($1); }
 ;
 Item : _IDENT_ { $$ = new NoInit($1); }
   | _IDENT_ _EQ Expr { $$ = new Init($1, $3); }
-  | _IDENT_ _COLON Expr { $$ = new InitElem($1, $3); }
 ;
 ListItem : Item { $$ = new ListItem(); $$->push_back($1); }
   | Item _COMMA ListItem { $3->push_back($1); $$ = $3; }
@@ -202,27 +209,37 @@ Type : _KW_int { $$ = new Int(); }
   | _KW_double { $$ = new Doub(); }
   | _KW_boolean { $$ = new Bool(); }
   | _KW_void { $$ = new Void(); }
-  | _KW_int _EMPTYBRACK { $$ = new IntArray(); }
-  | _KW_double _EMPTYBRACK { $$ = new DoubArray(); }
-  | _KW_boolean _EMPTYBRACK { $$ = new BoolArray(); }
+  | Type ListBracketsOpt { std::reverse($2->begin(),$2->end()) ;$$ = new ArrayType($1, $2); }
 ;
 ListType : /* empty */ { $$ = new ListType(); }
   | Type { $$ = new ListType(); $$->push_back($1); }
   | Type _COMMA ListType { $3->push_back($1); $$ = $3; }
 ;
-Expr6 : _IDENT_ { $$ = new EVar($1); }
+BracketsOpt : _EMPTYBRACK { $$ = new BracketsEmpty(); }
+;
+ListBracketsOpt : BracketsOpt { $$ = new ListBracketsOpt(); $$->push_back($1); }
+  | BracketsOpt ListBracketsOpt { $2->push_back($1); $$ = $2; }
+;
+Expr6 : _KW_new Type ListDimExpr { std::reverse($3->begin(),$3->end()) ;$$ = new ENewArray($2, $3); }
+  | Expr6 _DOT _IDENT_ { $$ = new EDot($1, $3); }
+  | Expr7 { $$ = $1; }
+;
+DimExpr : _LBRACK Expr _RBRACK { $$ = new Dim($2); }
+;
+ListDimExpr : DimExpr { $$ = new ListDimExpr(); $$->push_back($1); }
+  | DimExpr ListDimExpr { $2->push_back($1); $$ = $2; }
+;
+Expr7 : Expr7 ListDimExpr { std::reverse($2->begin(),$2->end()) ;$$ = new EAcc($1, $2); }
   | _INTEGER_ { $$ = new ELitInt($1); }
   | _DOUBLE_ { $$ = new ELitDoub($1); }
   | _KW_true { $$ = new ELitTrue(); }
   | _KW_false { $$ = new ELitFalse(); }
-  | _IDENT_ _LPAREN ListExpr _RPAREN { std::reverse($3->begin(),$3->end()) ;$$ = new EApp($1, $3); }
   | _STRING_ { $$ = new EString($1); }
-  | _KW_new Type _LBRACK Expr6 _RBRACK { $$ = new EArrayNew($2, $4); }
-  | Expr6 _DOT Expr6 { $$ = new EArrayLen($1, $3); }
+  | _IDENT_ { $$ = new EVar($1); }
+  | _IDENT_ _LPAREN ListExpr _RPAREN { std::reverse($3->begin(),$3->end()) ;$$ = new EApp($1, $3); }
   | _LPAREN Expr _RPAREN { $$ = $2; }
 ;
-Expr5 : Expr6 _LBRACK Expr _RBRACK { $$ = new EArray($1, $3); }
-  | _MINUS Expr6 { $$ = new Neg($2); }
+Expr5 : _MINUS Expr6 { $$ = new Neg($2); }
   | _BANG Expr6 { $$ = new Not($2); }
   | Expr6 { $$ = $1; }
 ;
