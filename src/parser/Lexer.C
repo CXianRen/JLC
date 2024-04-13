@@ -587,11 +587,11 @@ static const flex_int16_t yy_accept[130] =
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,   64,   62,   61,   61,   16,   47,
        41,   22,   62,    1,    2,   20,   19,    3,   15,   14,
-       21,   59,    8,    6,   23,    7,   25,   60,   12,   13,
+       21,   59,   10,    6,   23,    7,   25,   60,   12,   13,
        60,   60,   60,   60,   60,   60,   60,   60,   60,   60,
         4,   62,    5,   63,   50,   49,   48,   57,   55,   56,
        51,   52,   53,   54,   45,   46,   45,   28,   41,   17,
-        9,   10,   43,   42,    0,   59,   24,   27,   26,   60,
+        8,    9,   43,   42,    0,   59,   24,   27,   26,   60,
        11,   60,   60,   60,   60,   60,   34,   60,   60,   60,
        60,   60,   60,   18,   44,   42,   58,   60,   60,   60,
 
@@ -1182,17 +1182,17 @@ return _EQ;
 case 8:
 YY_RULE_SETUP
 #line 78 "Javalette.l"
-return _COLON;
+return _DPLUS;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 79 "Javalette.l"
-return _DPLUS;
+return _DMINUS;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 80 "Javalette.l"
-return _DMINUS;
+return _COLON;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP

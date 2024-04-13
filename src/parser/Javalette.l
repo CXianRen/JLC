@@ -75,9 +75,9 @@ IDENT [a-zA-Z0-9'_]
 <INITIAL>"}"      	 return _RBRACE;
 <INITIAL>";"      	 return _SEMI;
 <INITIAL>"="      	 return _EQ;
-<INITIAL>":"      	 return _COLON;
 <INITIAL>"++"      	 return _DPLUS;
 <INITIAL>"--"      	 return _DMINUS;
+<INITIAL>":"      	 return _COLON;
 <INITIAL>"[]"      	 return _EMPTYBRACK;
 <INITIAL>"["      	 return _LBRACK;
 <INITIAL>"]"      	 return _RBRACK;

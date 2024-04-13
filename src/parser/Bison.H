@@ -125,13 +125,17 @@ union YYSTYPE
   ListItem* listitem_;
   Type* type_;
   ListType* listtype_;
+  BracketsOpt* bracketsopt_;
+  ListBracketsOpt* listbracketsopt_;
   Expr* expr_;
+  DimExpr* dimexpr_;
+  ListDimExpr* listdimexpr_;
   ListExpr* listexpr_;
   AddOp* addop_;
   MulOp* mulop_;
   RelOp* relop_;
 
-#line 135 "Bison.H"
+#line 139 "Bison.H"
 
 };
 typedef union YYSTYPE YYSTYPE;

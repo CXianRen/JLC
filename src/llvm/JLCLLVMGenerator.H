@@ -22,7 +22,7 @@ class JLCLLVMGenerator : public Skeleton
 {
 public:
   Context globalContext;
-  type_enum temp_type;
+  JLCType temp_type;
   op_enum temp_op;
 
   JLCLLVMGenerator(): LLVM_Context_(std::make_unique<llvm::LLVMContext>()),
@@ -44,6 +44,15 @@ private:
   std::unique_ptr<llvm::IRBuilder<>> LLVM_builder_;
 
   llvm::Value * llvm_temp_value_;
+
+  bool left_value_flag = false;
+
+  // for saving the type of the array
+  // @TODO: there should be a better way to store the array type, 
+  //  like using getTypeByName of llvm api.
+  std::map<std::string, llvm::Type*> array_type_map;
+
+  llvm::Type* DefineAndGetArrayType(JLCType type);
 
   // for saving the block of the value
   // @TODO: there are should be a better way to do this
@@ -93,7 +102,7 @@ private:
   }
 
   // type conversion
-  llvm::Type *convertType(type_enum type);
+  llvm::Type *convertType(JLCType type);
   // add inner/external function to the head of the ll file
   // for example, printInt, printDouble, printString, printBool
   void addExternalFunc();
@@ -173,6 +182,20 @@ public:
   // void visitDouble(Double x);
   // void visitString(String x);
   // void visitIdent(Ident x);
+
+// for array
+  // void visitBracketsOpt(BracketsOpt *p);
+  // void visitDimExpr(DimExpr *p);
+  void visitAssArr(AssArr *p);
+  void visitArrayType(ArrayType *p);
+  // void visitBracketsEmpty(BracketsEmpty *p);
+  void visitENewArray(ENewArray *p);
+  void visitDim(Dim *p);
+  void visitEDot(EDot *p);
+  void visitEAcc(EAcc *p);
+  // void visitListBracketsOpt(ListBracketsOpt *p);
+  // void visitListDimExpr(ListDimExpr *p);
+  void visitForLoop(ForLoop *p);
 
 };
 
