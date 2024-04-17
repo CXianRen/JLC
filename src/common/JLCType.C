@@ -20,7 +20,7 @@ std::string to_string(const JLCType & t) {
     return to_string(t.type);
   }
   std::string res = to_string(t.base_type);
-  for(int i = 0; i < t.brackets_count; i++) {
+  for(int i = 0; i < t.dimension; i++) {
     res += "[]";
   }
   return res;
@@ -35,20 +35,10 @@ bool JLCType::operator==(const JLCType &t) const	{
 		// array
 		if (type == ARRAY)
 		{
-			if (base_type != t.base_type || brackets_count != t.brackets_count)
+			if (base_type != t.base_type || dimension != t.dimension)
 			{
 				return false;
 			}
 		}
     return true;	
 }
-
-
-bool Frame::isExistArg(const std::string& name){
-	for(const auto & arg : args){
-	  if(arg.first == name){
-		return true;
-	  }
-	}
-	return false;
-} 

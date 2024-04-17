@@ -21,7 +21,7 @@
 class JLCLLVMGenerator : public Skeleton
 {
 public:
-  Context globalContext;
+  JLCContext globalContext;
   JLCType temp_type;
   op_enum temp_op;
 
@@ -107,7 +107,7 @@ private:
   // for example, printInt, printDouble, printString, printBool
   void addExternalFunc();
 
-  void addFuncDeclearation(Frame &frame);
+  void addFuncDeclearation(JLCFunc &frame);
 
 public:
   // void visitProg(Prog *p);

@@ -78,6 +78,8 @@ void JLCLLVMGenerator::addExternalFunc(){
       "createNDimArray", 
       LLVM_module_.get());
 
+  (void)createNDimArray_func; // make compiler happy
+
   // add ptr @getElement_N_ptr(ptr %array, i32 * %idx_arr, i32 %idx_count ,i32 %max_dim , i32 %elem_size)
   // std::vector<llvm::Type*> getElementNPtr_args;
   // getElementNPtr_args.push_back(llvm::Type::getInt8PtrTy(*LLVM_Context_)); // array
@@ -95,7 +97,7 @@ void JLCLLVMGenerator::addExternalFunc(){
   //     LLVM_module_.get());
 }
 
-void JLCLLVMGenerator::addFuncDeclearation(Frame &frame){
+void JLCLLVMGenerator::addFuncDeclearation(JLCFunc &frame){
   // see the tutorial about llvm: 
   std::string func_name = frame.name;
   auto llvm_return_type = convertType(frame.returnType);
@@ -129,11 +131,11 @@ void JLCLLVMGenerator::visitProgram(Program *program)
     FnDef* fn_def = reinterpret_cast<FnDef*>(*top_def);
     visitIdent(fn_def->ident_);
     // add the function to the global context
-    globalContext.addFrame(fn_def->ident_);
-    globalContext.currentFrameName = fn_def->ident_;
+    globalContext.addFunc(fn_def->ident_);
+    globalContext.currentFuncName = fn_def->ident_;
 
     // update the function return type
-    Frame& func = globalContext.getFrame(fn_def->ident_);
+    auto& func = globalContext.getFunc(fn_def->ident_);
     fn_def->type_->accept(this);
     func.returnType = temp_type;
 
@@ -180,14 +182,14 @@ void JLCLLVMGenerator::visitProgram(Program *program)
 void JLCLLVMGenerator::visitFnDef(FnDef *fn_def)
 {
   /* Code For FnDef Goes Here */
-  globalContext.currentFrameName = fn_def->ident_; // set context to the current function
+  globalContext.currentFuncName = fn_def->ident_; // set context to the current function
 
   // reset inner variables before visiting the function body
   block_var_map_list.clear();
 
   // create a new block 
   DEBUG_PRINT("Create the entry block")
-  auto & func = globalContext.currentFrame();
+  auto & func = globalContext.currentFunc();
   func.newBlock();
   addBlockVarMap();
   // add a new block to the function
@@ -249,7 +251,7 @@ void JLCLLVMGenerator::visitArgument(Argument *argument)
     if (argument->type_) argument->type_->accept(this);
     DEBUG_PRINT("\tArgument name: " + argument->ident_ + 
       "\tArgument type: " + to_string(temp_type));
-    Frame& func = globalContext.getFrame(globalContext.currentFrameName);
+    auto& func = globalContext.getFunc(globalContext.currentFuncName);
     // add the argument to the function
     func.addArg(argument->ident_, temp_type);
 }
@@ -273,7 +275,7 @@ void JLCLLVMGenerator::visitBStmt(BStmt *b_stmt)
 {
   /* Code For BStmt Goes Here */
   DEBUG_PRINT( "[" + GeneratorName  +"]" + " visiting BStmt");
-  auto & func = globalContext.currentFrame();
+  auto & func = globalContext.currentFunc();
   func.newBlock();
   addBlockVarMap(); // this 
 
@@ -298,7 +300,7 @@ void JLCLLVMGenerator::visitDecl(Decl *decl)
       // @TODO: there should be a better way to store the array type, 
       //  like using getTypeByName of llvm api.
       DefineAndGetArrayType(
-          JLCType(ARRAY, temp_decl_type.type, temp_decl_type.brackets_count));
+          JLCType(ARRAY, temp_decl_type.type, temp_decl_type.dimension));
       // x_array_type should be int_arr_type, double_arr_type, bool_arr_type, ptr_arr_type
       break;
     default:
@@ -396,12 +398,13 @@ void JLCLLVMGenerator::visitCond(Cond *cond)
   LLVM_builder_->CreateCondBr(expr_llvm_value, cond_true_block, cond_end_block);
   LLVM_builder_->SetInsertPoint(cond_true_block);
 
-  auto func = globalContext.currentFrame();
+  auto func = globalContext.currentFunc();
   func.newBlock(); // just logic block, no need to create a label
   addBlockVarMap();// just logic block, no need to create a label
 
   if (cond->stmt_) cond->stmt_->accept(this);
   auto stmt_llvm_value = llvm_temp_value_;
+  (void) stmt_llvm_value; // make compiler happy
 
   func.releaseBlock(); // release the logic block
   removeBlockVarMap(); // release the logic block
@@ -435,11 +438,13 @@ void JLCLLVMGenerator::visitCondElse(CondElse *cond_else)
   LLVM_builder_->CreateCondBr(expr_llvm_value, cond_true_block, cond_else_block);
   LLVM_builder_->SetInsertPoint(cond_true_block);
 
-  auto func = globalContext.currentFrame();
+  auto func = globalContext.currentFunc();
   func.newBlock(); // just logic block, no need to create a label
   addBlockVarMap();// just logic block, no need to create a label
   if (cond_else->stmt_1) cond_else->stmt_1->accept(this);
   auto stmt_1_llvm_value = llvm_temp_value_;
+  (void)stmt_1_llvm_value; // make compiler happy
+
   func.releaseBlock(); // release the logic block
   removeBlockVarMap(); // release the logic block
 
@@ -459,6 +464,7 @@ void JLCLLVMGenerator::visitCondElse(CondElse *cond_else)
   addBlockVarMap();// just logic block, no need to create a label
   if (cond_else->stmt_2) cond_else->stmt_2->accept(this);
   auto stmt_2_llvm_value = llvm_temp_value_;
+  (void)stmt_2_llvm_value; // make compiler happy
   func.releaseBlock(); // release the logic block
   removeBlockVarMap(); // release the logic block
 
@@ -501,11 +507,12 @@ void JLCLLVMGenerator::visitWhile(While *while_)
   LLVM_builder_->CreateCondBr(expr_llvm_value, loop_block, end_block);
   LLVM_builder_->SetInsertPoint(loop_block);
   // create a new block for the loop
-  auto func = globalContext.currentFrame();
+  auto func = globalContext.currentFunc();
   func.newBlock(); // just logic block, no need to create a label
   addBlockVarMap();// just logic block, no need to create a label
   if (while_->stmt_) while_->stmt_->accept(this);
   auto stmt_llvm_value = llvm_temp_value_;
+  (void)stmt_llvm_value; // make compiler happy
   LLVM_builder_->CreateBr(cond_block);
   func.releaseBlock(); // release the logic block
   removeBlockVarMap(); // release the logic block
@@ -526,7 +533,7 @@ void JLCLLVMGenerator::visitNoInit(NoInit *no_init)
   /* Code For NoInit Goes Here */
   visitIdent(no_init->ident_);
   auto temp_decl_type = temp_type; // !this type is passed from top level
-  auto & frame = globalContext.currentFrame();
+  auto & frame = globalContext.currentFunc();
   frame.addVar(no_init->ident_, temp_decl_type);
 
   
@@ -572,7 +579,7 @@ void JLCLLVMGenerator::visitInit(Init *init)
   /* Code For Init Goes Here */
   visitIdent(init->ident_);
   auto temp_decl_type = temp_type; // !this type is passed from top level
-  auto & frame = globalContext.currentFrame();
+  auto & frame = globalContext.currentFunc();
   
 
   if (init->expr_) init->expr_->accept(this);
@@ -626,7 +633,7 @@ void JLCLLVMGenerator::visitFun(Fun *fun)
 void JLCLLVMGenerator::visitEVar(EVar *e_var)
 {
   /* Code For EVar Goes Here */
-  auto & frame = globalContext.currentFrame();
+  auto & frame = globalContext.currentFunc();
   temp_type = frame.getVarType(e_var->ident_);
   // visitIdent(e_var->ident_);
   
@@ -704,7 +711,7 @@ void JLCLLVMGenerator::visitEApp(EApp *e_app)
   }
   DEBUG_PRINT("EApp create call")
   setLLVMTempValue( LLVM_builder_->CreateCall(llvm_func, args, tag));
-  temp_type = globalContext.getFrame(e_app->ident_).returnType;
+  temp_type = globalContext.getFunc(e_app->ident_).returnType;
   DEBUG_PRINT("Call function: " + e_app->ident_);
 }
 
@@ -1029,6 +1036,7 @@ void JLCLLVMGenerator::visitEOr(EOr *e_or)
   phi->addIncoming(expr_1_llvm_value, current_block);
 
   auto block_of_expr_2 = getBlockOfValue(expr_2_llvm_value);
+  (void)block_of_expr_2; // make compiler happy
   phi->addIncoming(expr_2_llvm_value,or_false_block);
   setLLVMTempValue( phi);
 
@@ -1107,7 +1115,7 @@ llvm::Type* JLCLLVMGenerator::DefineAndGetArrayType(JLCType type){
   // if dimension is 1, then it is a normal array
   // there only int array, double array, bool array, and ptr array (for multi-dimension array)
   std::string type_name;
-  if (type.brackets_count == 1){
+  if (type.dimension == 1){
     // basic type
     type_name = to_string(type.base_type) + "_array_type";
    
@@ -1141,6 +1149,7 @@ void JLCLLVMGenerator::visitDim(Dim *dim)
 
   if (dim->expr_) dim->expr_->accept(this);
   auto expr_llvm_value = llvm_temp_value_;
+  (void)expr_llvm_value; // make compiler happy
 }
 
 void JLCLLVMGenerator::visitArrayType(ArrayType *array_type){
@@ -1274,7 +1283,7 @@ void JLCLLVMGenerator::visitEAcc(EAcc *e_acc)
       "ptr");
     // get the element address 
     llvm::Type* element_type = llvm::Type::getInt32PtrTy(*LLVM_Context_);
-    if (i == local_type.brackets_count - 1){
+    if ((int)i == local_type.dimension - 1){
       // which means this is the last dimension, access the basic type
       element_type = convertType(JLCType(local_type.base_type));
     }
@@ -1300,12 +1309,12 @@ void JLCLLVMGenerator::visitEAcc(EAcc *e_acc)
   // pass the type to upper level
   int dim = e_acc->listdimexpr_->size();
   // accessing the base type
-  if(dim == local_type.brackets_count){
+  if(dim == local_type.dimension){
     temp_type = JLCType(local_type.base_type);
   }
   // still an array
-  else if(dim < local_type.brackets_count){
-    temp_type = JLCType(ARRAY, local_type.base_type, local_type.brackets_count - dim);
+  else if(dim < local_type.dimension){
+    temp_type = JLCType(ARRAY, local_type.base_type, local_type.dimension - dim);
   }else{
     // should not reach here
     ERRPR_HANDLE("visitEAcc: should not reach here")
@@ -1340,7 +1349,7 @@ void JLCLLVMGenerator::visitAssArr(AssArr *ass_arr)
 void JLCLLVMGenerator::visitForLoop(ForLoop *for_loop)
 {
   /* Code For ForLoop Goes Here */
-  auto & func = globalContext.currentFrame();
+  auto & func = globalContext.currentFunc();
 
   if (for_loop->type_) for_loop->type_->accept(this);
   auto element_type = temp_type;

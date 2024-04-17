@@ -42,16 +42,16 @@ void JLCTypeChecker::visitProgram(Program *program)
     // check function name
     visitIdent(fn_def->ident_);
     // check if the function is already declared
-    if(globalContext.isExistFunction(fn_def->ident_)){
+    if(globalContext.isExistFunc(fn_def->ident_)){
       std::cerr << "ERROR: Function " << fn_def->ident_ << " is already declared" << std::endl;
       exit(1);
     }
     // add the function to the global context
-    globalContext.addFrame(fn_def->ident_);
-    globalContext.currentFrameName = fn_def->ident_;
+    globalContext.addFunc(fn_def->ident_);
+    globalContext.currentFuncName = fn_def->ident_;
 
     // update the function return type
-    Frame& func = globalContext.getFrame(fn_def->ident_);
+    auto& func = globalContext.getFunc(fn_def->ident_);
     func.returnType = temp_type;
   
     // if fuction is main, check if it has int type
@@ -77,7 +77,7 @@ void JLCTypeChecker::visitFnDef(FnDef *fn_def)
   // visitIdent(fn_def->ident_);
 
   // update the current frame name, which mean we are in this function
-  globalContext.currentFrameName = fn_def->ident_;
+  globalContext.currentFuncName = fn_def->ident_;
   
   // we move argument visiting to "visitProgram" function
   // if (fn_def->listarg_) fn_def->listarg_->accept(this);
@@ -94,16 +94,16 @@ void JLCTypeChecker::visitArgument(Argument *argument)
   // check if the type is ok: case 072, void type
   if(temp_type == VOID){
     std::cerr << "ERROR: Argument " << argument->ident_ 
-        << " in function:"<< globalContext.currentFrameName
+        << " in function:"<< globalContext.currentFuncName
         << " has void type" << std::endl;
     exit(1);
   }
 
-  Frame& func = globalContext.getFrame(globalContext.currentFrameName);
+  auto& func = globalContext.getFunc(globalContext.currentFuncName);
   // check if the argument is already declared
   if(func.isExistArg(argument->ident_)){
     std::cerr << "ERROR: Argument " << argument->ident_ 
-        << " in function:"<< globalContext.currentFrameName
+        << " in function:"<< globalContext.currentFuncName
         << " is already declared" << std::endl;
     exit(1);
   }
@@ -117,7 +117,7 @@ void JLCTypeChecker::visitBlock(Block *block)
   /* Code For Block Goes Here */
   DEBUG_PRINT( "[" + checkerName +"]" + " visiting Block");
   // create a new block 
-  auto & frame = globalContext.currentFrame();
+  auto & frame = globalContext.currentFunc();
   frame.newBlock();
   if (block->liststmt_) block->liststmt_->accept(this);
   // check if the function block has a return statement
@@ -145,7 +145,7 @@ void JLCTypeChecker::visitDecl(Decl *decl)
   //@TODO: maybe need to refactor type_enum to a class
   auto temp_decl_type = temp_type;
 
-  auto & frame = globalContext.currentFrame();
+  auto & frame = globalContext.currentFunc();
   for (auto & item : *(decl->listitem_)){
     temp_type = temp_decl_type; // !! this is important, as the type will pase to the next level
 
@@ -175,7 +175,7 @@ void JLCTypeChecker::visitAss(Ass *ass)
 
   visitIdent(ass->ident_);
   // check if the variable is already declared in this context
-  auto &frame = globalContext.currentFrame();
+  auto &frame = globalContext.currentFunc();
   if (!frame.isExistVar(ass->ident_)) {
     std::cerr << "ERROR: Variable " << ass->ident_ << " is not declared.\n";
     exit(1);
@@ -200,7 +200,7 @@ void JLCTypeChecker::visitIncr(Incr *incr)
 {
   /* Code For Incr Goes Here */
   // check if the variable is already declared.
-  auto& frame = globalContext.currentFrame();
+  auto& frame = globalContext.currentFunc();
   if (!frame.isExistVar(incr->ident_)) {
     std::cerr << "ERROR: Variable " << incr->ident_ << " is not declared.\n";
     exit(1);
@@ -217,7 +217,7 @@ void JLCTypeChecker::visitIncr(Incr *incr)
 void JLCTypeChecker::visitDecr(Decr *decr)
 {
   /* Code For Decr Goes Here */
-  auto& frame = globalContext.currentFrame();
+  auto& frame = globalContext.currentFunc();
   if (!frame.isExistVar(decr->ident_)) {
     std::cerr << "ERROR: Variable " << decr->ident_ << " in \"" 
     <<  std::string(p.print(decr))
@@ -240,7 +240,7 @@ void JLCTypeChecker::visitRet(Ret *ret)
 
   if (ret->expr_) ret->expr_->accept(this);
   // check if the function return type is the same as the expression type
-  auto & frame = globalContext.currentFrame();
+  auto & frame = globalContext.currentFunc();
   if(frame.returnType != temp_type){
     std::cerr << "ERROR: function " << frame.name << " should return a value with type:" 
     << to_string(frame.returnType) << ", but " << to_string(temp_type) << " is provided\n";
@@ -253,7 +253,7 @@ void JLCTypeChecker::visitVRet(VRet *v_ret)
 {
   /* Code For VRet Goes Here */
   // check if the function return type is void
-  auto & frame = globalContext.currentFrame();
+  auto & frame = globalContext.currentFunc();
   if(frame.returnType != VOID){
     std::cerr << "ERROR: function " << frame.name << " should return a value\n";
     exit(1);
@@ -407,22 +407,22 @@ void JLCTypeChecker::visitEAcc(EAcc *e_acc)
 
   if (e_acc->listdimexpr_) e_acc->listdimexpr_->accept(this);
   int bracket_num = e_acc->listdimexpr_->size();
-  if (bracket_num > temp_type_1.brackets_count){
-    std::cerr << "ERROR: left side variable " << " has " << temp_type_1.brackets_count 
+  if (bracket_num > temp_type_1.dimension){
+    std::cerr << "ERROR: left side variable " << " has " << temp_type_1.dimension 
     << " dimensions, but " << bracket_num << " dimensions are provided\n";
     exit(1);
   }
   // accessing the base type
-  if(bracket_num == temp_type_1.brackets_count){
+  if(bracket_num == temp_type_1.dimension){
     temp_type = JLCType(temp_type_1.base_type);
   }
-  else if (bracket_num < temp_type_1.brackets_count){
-    temp_type = JLCType(ARRAY, temp_type_1.base_type, temp_type_1.brackets_count - bracket_num);
+  else if (bracket_num < temp_type_1.dimension){
+    temp_type = JLCType(ARRAY, temp_type_1.base_type, temp_type_1.dimension - bracket_num);
   }else{
     // should not reach here
     DEBUG_PRINT("bracket_num:" + std::to_string(bracket_num) + 
-      " temp_type_1.brackets_count:" + 
-      std::to_string(temp_type_1.brackets_count));
+      " temp_type_1.dimension:" + 
+      std::to_string(temp_type_1.dimension));
     std::cerr << "ERROR: visitEAcc: should not reach here\n";
     exit(1);
   }
@@ -454,7 +454,7 @@ void JLCTypeChecker::visitAssArr(AssArr *ass_arr)
 void JLCTypeChecker::visitForLoop(ForLoop *for_loop)
 {
   /* Code For ForLoop Goes Here */
-  auto & func = globalContext.currentFrame();
+  auto & func = globalContext.currentFunc();
 
   if (for_loop->type_) for_loop->type_->accept(this);
   auto element_type = temp_type;
@@ -471,8 +471,8 @@ void JLCTypeChecker::visitForLoop(ForLoop *for_loop)
   
   // Check if the element type matches the n-1 dimension type
   JLCType n_m1_type;
-  if(arr_type.brackets_count > 1){
-    n_m1_type = JLCType(ARRAY, arr_type.base_type, arr_type.brackets_count - 1);
+  if(arr_type.dimension > 1){
+    n_m1_type = JLCType(ARRAY, arr_type.base_type, arr_type.dimension - 1);
   }else{
     n_m1_type = JLCType(arr_type.base_type);
   }
@@ -548,7 +548,7 @@ void JLCTypeChecker::visitEVar(EVar *e_var)
 {
   /* Code For EVar Goes Here */
   // check if the variable is declared
-  auto & frame = globalContext.currentFrame();
+  auto & frame = globalContext.currentFunc();
   if(!frame.isExistVar(e_var->ident_)){
     std::cerr << "ERROR: variable " << e_var->ident_ << " is not declared\n";
     exit(1);
@@ -588,7 +588,7 @@ void JLCTypeChecker::visitEVar(EVar *e_var)
 //     std::cerr << "ERROR: Array Variable  is not declared.\n";
 //     exit(1);
 //   }
-//   auto &frame = globalContext.currentFrame();
+//   auto &frame = globalContext.currentFunc();
 //   frame.newBlock();
 //   if(!frame.isExistVar("length")){
 //     frame.addVar("length",UNDEFINED);
@@ -661,12 +661,12 @@ void JLCTypeChecker::visitEApp(EApp *e_app)
   /* Code For EApp Goes Here */
   DEBUG_PRINT( "[" + checkerName +"]" + " \tvisiting function call " + e_app->ident_);
   // check if the function is declared
-  if(!globalContext.isExistFunction(e_app->ident_)){
+  if(!globalContext.isExistFunc(e_app->ident_)){
     std::cerr << "ERROR: function " << e_app->ident_ << " is not declared\n";
     exit(1);
   }
   
-  auto & frame = globalContext.getFrame(e_app->ident_);
+  auto & frame = globalContext.getFunc(e_app->ident_);
   // check if the number of arguments is correct
   if(frame.args.size() != e_app->listexpr_->size()){
     std::cerr << "ERROR: function " << e_app->ident_ << " has " << frame.args.size() 

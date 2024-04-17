@@ -12,7 +12,7 @@
 class JLCTypeChecker : public Skeleton
 {
 public:
-  Context globalContext;
+  JLCContext globalContext;
   JLCType temp_type;
 
   std::string temp_ident;
