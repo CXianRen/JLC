@@ -1,0 +1,730 @@
+- Running make in /chalmers/users/chenhon/lab-group-22 ... Ok.
+- Checking for executable(s) ...Ok.
+- Checking for runtime(s) ... Ok.
+About to run tests with these settings:
+  Prefix:     jlc
+  Backends:   None (type checking only)
+  Extensions: ['arrays1', 'arrays2', 'pointers']
+
+[  1/152] testsuite/good/core030    ... OK
+[  2/152] testsuite/good/intarith3  ... OK
+[  3/152] testsuite/good/core027    ... OK
+[  4/152] testsuite/good/stack2     ... OK
+[  5/152] testsuite/good/core008    ... OK
+[  6/152] testsuite/good/shadowedfunction ... OK
+[  7/152] testsuite/good/core009    ... OK
+[  8/152] testsuite/good/core031    ... OK
+[  9/152] testsuite/good/registers1 ... OK
+[ 10/152] testsuite/good/intarith2  ... OK
+[ 11/152] testsuite/good/stack1     ... OK
+[ 12/152] testsuite/good/core024    ... OK
+[ 13/152] testsuite/good/order_fun  ... OK
+[ 14/152] testsuite/good/registers2 ... OK
+[ 15/152] testsuite/good/core032    ... OK
+[ 16/152] testsuite/good/intarith5  ... OK
+[ 17/152] testsuite/good/core019    ... OK
+[ 18/152] testsuite/good/intarith   ... OK
+[ 19/152] testsuite/good/core018    ... OK
+[ 20/152] testsuite/good/intarith4  ... OK
+[ 21/152] testsuite/good/core020    ... OK
+[ 22/152] testsuite/good/core022    ... OK
+[ 23/152] testsuite/good/order_binop ... OK
+[ 24/152] testsuite/good/core023    ... OK
+[ 25/152] testsuite/good/order_binop2 ... OK
+[ 26/152] testsuite/good/core012    ... OK
+[ 27/152] testsuite/good/core005    ... OK
+[ 28/152] testsuite/good/core004    ... OK
+[ 29/152] testsuite/good/core013    ... OK
+[ 30/152] testsuite/good/core011    ... OK
+[ 31/152] testsuite/good/core029    ... OK
+[ 32/152] testsuite/good/core006    ... OK
+[ 33/152] testsuite/good/core007    ... OK
+[ 34/152] testsuite/good/core028    ... OK
+[ 35/152] testsuite/good/core010    ... OK
+[ 36/152] testsuite/good/assignedargument ... OK
+[ 37/152] testsuite/good/core014    ... OK
+[ 38/152] testsuite/good/core015    ... OK
+[ 39/152] testsuite/good/core002    ... OK
+[ 40/152] testsuite/good/core017    ... OK
+[ 41/152] testsuite/good/core016    ... OK
+[ 42/152] testsuite/good/core001    ... OK
+[ 43/152] testsuite/bad/bad073      ... FAILED
+[ 44/152] testsuite/bad/bad003      ... FAILED
+[ 45/152] testsuite/bad/bad064      ... FAILED
+[ 46/152] testsuite/bad/bad065      ... FAILED
+[ 47/152] testsuite/bad/bad015      ... FAILED
+[ 48/152] testsuite/bad/bad002      ... OK
+[ 49/152] testsuite/bad/bad072      ... FAILED
+[ 50/152] testsuite/bad/bad070      ... FAILED
+[ 51/152] testsuite/bad/struct03    ... OK
+[ 52/152] testsuite/bad/bad038      ... OK
+[ 53/152] testsuite/bad/bad067      ... FAILED
+[ 54/152] testsuite/bad/bad048      ... OK
+[ 55/152] testsuite/bad/bad017      ... FAILED
+[ 56/152] testsuite/bad/bad016      ... FAILED
+[ 57/152] testsuite/bad/bad049      ... OK
+[ 58/152] testsuite/bad/struct02    ... FAILED
+[ 59/152] testsuite/bad/bad066      ... OK
+[ 60/152] testsuite/bad/bad039      ... OK
+[ 61/152] testsuite/bad/bad071      ... FAILED
+[ 62/152] testsuite/bad/bad001      ... OK
+[ 63/152] testsuite/bad/bad062      ... OK
+[ 64/152] testsuite/bad/bad012      ... FAILED
+[ 65/152] testsuite/bad/bad005      ... OK
+[ 66/152] testsuite/bad/bad074      ... FAILED
+[ 67/152] testsuite/bad/bad004      ... OK
+[ 68/152] testsuite/bad/bad013      ... FAILED
+[ 69/152] testsuite/bad/bad063      ... FAILED
+[ 70/152] testsuite/bad/bad011      ... FAILED
+[ 71/152] testsuite/bad/struct05    ... OK
+[ 72/152] testsuite/bad/bad061      ... OK
+[ 73/152] testsuite/bad/bad029      ... FAILED
+[ 74/152] testsuite/bad/bad006      ... FAILED
+[ 75/152] testsuite/bad/bad059      ... FAILED
+[ 76/152] testsuite/bad/bad058      ... FAILED
+[ 77/152] testsuite/bad/bad007      ... FAILED
+[ 78/152] testsuite/bad/bad028      ... FAILED
+[ 79/152] testsuite/bad/struct04    ... OK
+[ 80/152] testsuite/bad/bad060      ... FAILED
+[ 81/152] testsuite/bad/bad010      ... FAILED
+[ 82/152] testsuite/bad/bad051      ... FAILED
+[ 83/152] testsuite/bad/bad021      ... FAILED
+[ 84/152] testsuite/bad/bad036      ... OK
+[ 85/152] testsuite/bad/bad069      ... FAILED
+[ 86/152] testsuite/bad/array07     ... FAILED
+[ 87/152] testsuite/bad/bad046      ... OK
+[ 88/152] testsuite/bad/bad019      ... FAILED
+[ 89/152] testsuite/bad/bad018      ... FAILED
+[ 90/152] testsuite/bad/bad047      ... OK
+[ 91/152] testsuite/bad/array06     ... FAILED
+[ 92/152] testsuite/bad/bad068      ... FAILED
+[ 93/152] testsuite/bad/bad037      ... OK
+[ 94/152] testsuite/bad/bad020      ... FAILED
+[ 95/152] testsuite/bad/bad050      ... OK
+[ 96/152] testsuite/bad/bad022      ... FAILED
+[ 97/152] testsuite/bad/bad052      ... FAILED
+[ 98/152] testsuite/bad/bad045      ... OK
+[ 99/152] testsuite/bad/bad035      ... FAILED
+[100/152] testsuite/bad/array04     ... FAILED
+[101/152] testsuite/bad/array05     ... FAILED
+[102/152] testsuite/bad/bad034      ... FAILED
+[103/152] testsuite/bad/bad044      ... OK
+[104/152] testsuite/bad/bad053      ... FAILED
+[105/152] testsuite/bad/bad023      ... FAILED
+[106/152] testsuite/bad/bad040      ... OK
+[107/152] testsuite/bad/array01     ... OK
+[108/152] testsuite/bad/bad027      ... FAILED
+[109/152] testsuite/bad/bad008      ... FAILED
+[110/152] testsuite/bad/bad056      ... FAILED
+[111/152] testsuite/bad/bad009      ... FAILED
+[112/152] testsuite/bad/bad026      ... FAILED
+[113/152] testsuite/bad/bad031      ... FAILED
+[114/152] testsuite/bad/bad041      ... OK
+[115/152] testsuite/bad/bad033      ... FAILED
+[116/152] testsuite/bad/bad043      ... OK
+[117/152] testsuite/bad/assignedfunction ... FAILED
+[118/152] testsuite/bad/bad054      ... FAILED
+[119/152] testsuite/bad/bad025      ... FAILED
+[120/152] testsuite/bad/bad055      ... FAILED
+[121/152] testsuite/bad/bad042      ... OK
+[122/152] testsuite/bad/array03     ... FAILED
+[123/152] testsuite/bad/bad032      ... FAILED
+[124/152] testsuite/extensions/arrays1_pointers/mixed001 ... OK
+[125/152] testsuite/extensions/arrays1_pointers/mixed002 ... OK
+[126/152] testsuite/extensions/arrays1_pointers/mixed003 ... OK
+[127/152] testsuite/extensions/arrays1/array_default ... OK
+[128/152] testsuite/extensions/arrays1/array009 ... OK
+[129/152] testsuite/extensions/arrays1/array008 ... OK
+[130/152] testsuite/extensions/arrays1/array002 ... OK
+[131/152] testsuite/extensions/arrays1/array003 ... OK
+[132/152] testsuite/extensions/arrays1/array001 ... OK
+[133/152] testsuite/extensions/arrays1/array004 ... OK
+[134/152] testsuite/extensions/arrays1/array005 ... OK
+[135/152] testsuite/extensions/arrays1/array006 ... OK
+[136/152] testsuite/extensions/arrays1/bad/bad001 ... FAILED
+[137/152] testsuite/extensions/arrays1/bad/bad002 ... FAILED
+[138/152] testsuite/extensions/arrays1/bad/parentheses ... OK
+[139/152] testsuite/extensions/arrays2/array001 ... OK
+[140/152] testsuite/extensions/arrays2/array002 ... OK
+[141/152] testsuite/extensions/arrays2/bad/array_nested_default ... FAILED
+[142/152] testsuite/extensions/arrays2/bad/bad002 ... FAILED
+[143/152] testsuite/extensions/arrays2/bad/bad001 ... FAILED
+[144/152] testsuite/extensions/pointers/list ... OK
+[145/152] testsuite/extensions/pointers/tree ... OK
+[146/152] testsuite/extensions/pointers/big ... OK
+[147/152] testsuite/extensions/pointers/syntax ... OK
+[148/152] testsuite/extensions/pointers/bad/bad002 ... FAILED
+[149/152] testsuite/extensions/pointers/bad/bad003 ... FAILED
+[150/152] testsuite/extensions/pointers/bad/bad001 ... FAILED
+[151/152] testsuite/extensions/pointers/bad/parentheses ... OK
+[152/152] testsuite/extensions/arrays2_pointers/mixed001 ... OK
+
+Some tests failed:
+---------- !!! testsuite/bad/bad073.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad003.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad064.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad065.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad015.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad072.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad070.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad067.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad017.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad016.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/struct02.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad071.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad012.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad074.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad013.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad063.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad011.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad029.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad006.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad059.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad058.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad007.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad028.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad060.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad010.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad051.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad021.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad069.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/array07.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad019.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad018.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/array06.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad068.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad020.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad022.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad052.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad035.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/array04.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/array05.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad034.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad053.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad023.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad027.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad008.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad056.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad009.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad026.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad031.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad033.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/assignedfunction.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad054.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad025.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad055.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/array03.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/bad/bad032.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/extensions/arrays1/bad/bad001.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/extensions/arrays1/bad/bad002.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/extensions/arrays2/bad/array_nested_default.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/extensions/arrays2/bad/bad002.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/extensions/arrays2/bad/bad001.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/extensions/pointers/bad/bad002.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/extensions/pointers/bad/bad003.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+---------- !!! testsuite/extensions/pointers/bad/bad001.jl failed !!! ----------
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+/chalmers/users/chenhon/lab-group-22

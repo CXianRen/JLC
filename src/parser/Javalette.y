@@ -62,6 +62,8 @@ extern yyscan_t javalette__initialize_lexer(FILE * inp);
   Stmt* stmt_;
   Item* item_;
   ListItem* listitem_;
+  SStmt* sstmt_;
+  ListSStmt* listsstmt_;
   Type* type_;
   ListType* listtype_;
   BracketsOpt* bracketsopt_;
@@ -73,6 +75,7 @@ extern yyscan_t javalette__initialize_lexer(FILE * inp);
   AddOp* addop_;
   MulOp* mulop_;
   RelOp* relop_;
+  MAccOp* maccop_;
 }
 
 %{
@@ -100,6 +103,7 @@ extern int yylex(YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner);
 %token          _COMMA       /* , */
 %token          _MINUS       /* - */
 %token          _DMINUS      /* -- */
+%token          _RARROW      /* -> */
 %token          _DOT         /* . */
 %token          _SLASH       /* / */
 %token          _COLON       /* : */
@@ -121,8 +125,11 @@ extern int yylex(YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner);
 %token          _KW_if       /* if */
 %token          _KW_int      /* int */
 %token          _KW_new      /* new */
+%token          _KW_null     /* null */
 %token          _KW_return   /* return */
+%token          _KW_struct   /* struct */
 %token          _KW_true     /* true */
+%token          _KW_typedef  /* typedef */
 %token          _KW_void     /* void */
 %token          _KW_while    /* while */
 %token          _LBRACE      /* { */
@@ -143,6 +150,8 @@ extern int yylex(YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner);
 %type <stmt_> Stmt
 %type <item_> Item
 %type <listitem_> ListItem
+%type <sstmt_> SStmt
+%type <listsstmt_> ListSStmt
 %type <type_> Type
 %type <listtype_> ListType
 %type <bracketsopt_> BracketsOpt
@@ -161,6 +170,7 @@ extern int yylex(YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner);
 %type <addop_> AddOp
 %type <mulop_> MulOp
 %type <relop_> RelOp
+%type <maccop_> MAccOp
 
 %start Prog
 
@@ -168,12 +178,16 @@ extern int yylex(YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner);
 
 Prog : ListTopDef { std::reverse($1->begin(),$1->end()) ;$$ = new Program($1); result->prog_ = $$; }
 ;
-TopDef : Type _IDENT_ _LPAREN ListArg _RPAREN Blk { std::reverse($4->begin(),$4->end()) ;$$ = new FnDef($1, $2, $4, $6); }
+TopDef : _KW_typedef _KW_struct _IDENT_ _STAR _IDENT_ _SEMI { $$ = new TypeDef($3, $5); }
+  | _KW_struct _IDENT_ _LBRACE ListSStmt _RBRACE _SEMI { $$ = new StructDef($2, $4); }
+  | Type _IDENT_ _LPAREN ListArg _RPAREN Blk { std::reverse($4->begin(),$4->end()) ;$$ = new FnDef($1, $2, $4, $6); }
+  | _IDENT_ _IDENT_ _LPAREN ListArg _RPAREN Blk { std::reverse($4->begin(),$4->end()) ;$$ = new FnDefS($1, $2, $4, $6); }
 ;
 ListTopDef : TopDef { $$ = new ListTopDef(); $$->push_back($1); }
   | TopDef ListTopDef { $2->push_back($1); $$ = $2; }
 ;
 Arg : Type _IDENT_ { $$ = new Argument($1, $2); }
+  | _IDENT_ _IDENT_ { $$ = new Ptrgument($1, $2); }
 ;
 ListArg : /* empty */ { $$ = new ListArg(); }
   | Arg { $$ = new ListArg(); $$->push_back($1); }
@@ -187,6 +201,7 @@ ListStmt : /* empty */ { $$ = new ListStmt(); }
 Stmt : _SEMI { $$ = new Empty(); }
   | Blk { $$ = new BStmt($1); }
   | Type ListItem _SEMI { std::reverse($2->begin(),$2->end()) ;$$ = new Decl($1, $2); }
+  | _IDENT_ ListItem { std::reverse($2->begin(),$2->end()) ;$$ = new DeclStruct($1, $2); }
   | _IDENT_ _EQ Expr _SEMI { $$ = new Ass($1, $3); }
   | Expr _EQ Expr _SEMI { $$ = new AssArr($1, $3); }
   | _IDENT_ _DPLUS _SEMI { $$ = new Incr($1); }
@@ -197,6 +212,7 @@ Stmt : _SEMI { $$ = new Empty(); }
   | _KW_if _LPAREN Expr _RPAREN Stmt _KW_else Stmt { $$ = new CondElse($3, $5, $7); }
   | _KW_while _LPAREN Expr _RPAREN Stmt { $$ = new While($3, $5); }
   | _KW_for _LPAREN Type _IDENT_ _COLON Expr _RPAREN Stmt { $$ = new ForLoop($3, $4, $6, $8); }
+  | _KW_for _LPAREN _IDENT_ _IDENT_ _COLON Expr _RPAREN Stmt { $$ = new ForStruct($3, $4, $6, $8); }
   | Expr _SEMI { $$ = new SExp($1); }
 ;
 Item : _IDENT_ { $$ = new NoInit($1); }
@@ -205,11 +221,19 @@ Item : _IDENT_ { $$ = new NoInit($1); }
 ListItem : Item { $$ = new ListItem(); $$->push_back($1); }
   | Item _COMMA ListItem { $3->push_back($1); $$ = $3; }
 ;
+SStmt : Type _IDENT_ _SEMI { $$ = new MInner($1, $2); }
+  | Type ListBracketsOpt _IDENT_ _SEMI { std::reverse($2->begin(),$2->end()) ;$$ = new MArray($1, $2, $3); }
+  | _IDENT_ _IDENT_ _SEMI { $$ = new Mpoint($1, $2); }
+;
+ListSStmt : /* empty */ { $$ = new ListSStmt(); }
+  | ListSStmt SStmt { $1->push_back($2); $$ = $1; }
+;
 Type : _KW_int { $$ = new Int(); }
   | _KW_double { $$ = new Doub(); }
   | _KW_boolean { $$ = new Bool(); }
   | _KW_void { $$ = new Void(); }
   | Type ListBracketsOpt { std::reverse($2->begin(),$2->end()) ;$$ = new ArrayType($1, $2); }
+  | _IDENT_ ListBracketsOpt { std::reverse($2->begin(),$2->end()) ;$$ = new SArrayType($1, $2); }
 ;
 ListType : /* empty */ { $$ = new ListType(); }
   | Type { $$ = new ListType(); $$->push_back($1); }
@@ -221,7 +245,10 @@ ListBracketsOpt : BracketsOpt { $$ = new ListBracketsOpt(); $$->push_back($1); }
   | BracketsOpt ListBracketsOpt { $2->push_back($1); $$ = $2; }
 ;
 Expr6 : _KW_new Type ListDimExpr { std::reverse($3->begin(),$3->end()) ;$$ = new ENewArray($2, $3); }
+  | _KW_new _IDENT_ ListDimExpr { std::reverse($3->begin(),$3->end()) ;$$ = new ENewSArray($2, $3); }
   | Expr6 _DOT _IDENT_ { $$ = new EDot($1, $3); }
+  | _KW_new _IDENT_ { $$ = new ENewStruct($2); }
+  | _LPAREN _IDENT_ _RPAREN _KW_null { $$ = new TypeCast($2); }
   | Expr7 { $$ = $1; }
 ;
 DimExpr : _LBRACK Expr _RBRACK { $$ = new Dim($2); }
@@ -230,6 +257,7 @@ ListDimExpr : DimExpr { $$ = new ListDimExpr(); $$->push_back($1); }
   | DimExpr ListDimExpr { $2->push_back($1); $$ = $2; }
 ;
 Expr7 : Expr7 ListDimExpr { std::reverse($2->begin(),$2->end()) ;$$ = new EAcc($1, $2); }
+  | Expr6 MAccOp _IDENT_ { $$ = new EMember($1, $2, $3); }
   | _INTEGER_ { $$ = new ELitInt($1); }
   | _DOUBLE_ { $$ = new ELitDoub($1); }
   | _KW_true { $$ = new ELitTrue(); }
@@ -275,6 +303,8 @@ RelOp : _LT { $$ = new LTH(); }
   | _GTEQ { $$ = new GE(); }
   | _DEQ { $$ = new EQU(); }
   | _BANGEQ { $$ = new NE(); }
+;
+MAccOp : _RARROW { $$ = new MAcc(); }
 ;
 
 %%

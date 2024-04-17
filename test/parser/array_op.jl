@@ -12,6 +12,13 @@ int[] array(int a)
 int[][] array2(int a)
 {
   int[][] arr = new int[a][a];
+  for( int[] a : arr)
+  {
+    for (int b : a)
+    {
+      b = 1;
+    }
+  }
   return arr;
 }
 

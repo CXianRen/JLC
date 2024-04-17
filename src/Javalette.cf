@@ -4,11 +4,17 @@ entrypoints Prog ;
 
 Program.   Prog ::= [TopDef] ;
 
+TypeDef.   TopDef ::= "typedef" "struct" Ident "*" Ident ";" ;
+
+StructDef. TopDef ::= "struct" Ident "{" [SStmt] "}" ";" ;
+
 FnDef.	   TopDef ::= Type Ident "(" [Arg] ")" Blk ;
+FnDefS.    TopDef ::= Ident Ident "(" [Arg] ")" Blk ;
 
 separator nonempty TopDef "" ;
 
 Argument.  Arg ::= Type Ident;
+Ptrgument. Arg ::= Ident Ident;
 
 separator  Arg "," ;
 
@@ -23,6 +29,8 @@ Empty.     Stmt ::= ";" ;
 BStmt.     Stmt ::= Blk ;
 
 Decl.      Stmt ::= Type [Item] ";" ;
+
+DeclStruct. Stmt ::= Ident [Item] ;
 
 NoInit.    Item ::= Ident ;
 
@@ -50,8 +58,14 @@ CondElse.  Stmt ::= "if" "(" Expr ")" Stmt "else" Stmt  ;
 While.     Stmt ::= "while" "(" Expr ")" Stmt ;
 
 ForLoop.   Stmt ::= "for" "(" Type Ident ":" Expr ")" Stmt ;
+ForStruct. Stmt ::= "for" "(" Ident Ident ":" Expr ")" Stmt ;
 
 SExp.      Stmt ::= Expr  ";" ;
+
+MInner.    SStmt ::= Type Ident  ";" ;
+MArray.    SStmt ::= Type [BracketsOpt] Ident ";" ;
+Mpoint.    SStmt ::= Ident Ident ";" ;
+separator  SStmt "" ;
 
 -- Types ---------------------------------------------------
 
@@ -68,6 +82,7 @@ internal   Fun. Type ::= Type "(" [Type] ")" ;
 separator  Type "," ;
 
 ArrayType. Type ::= Type [BracketsOpt] ;
+SArrayType. Type ::= Ident [BracketsOpt] ;
 
 BracketsEmpty.   BracketsOpt ::= "[]" ;
 
@@ -75,6 +90,7 @@ separator nonempty BracketsOpt "";
 
 -- Expressions ---------------------------------------------
 ENewArray. Expr6 ::= "new" Type [DimExpr] ;
+ENewSArray. Expr6 ::= "new" Ident [DimExpr];
 
 Dim.       DimExpr ::= "[" Expr "]" ;
 
@@ -83,6 +99,12 @@ terminator nonempty DimExpr "" ;
 EDot.      Expr6 ::= Expr6 "." Ident ;
 
 EAcc.      Expr7 ::= Expr7 [DimExpr];
+
+
+-- struct
+ENewStruct. Expr6 ::= "new" Ident;
+EMember.   Expr7 ::= Expr6 MAccOp Ident; 
+TypeCast.  Expr6 ::= "(" Ident ")" "null";
 
 ELitInt.   Expr7 ::= Integer ;
 
@@ -139,6 +161,8 @@ GE.        RelOp ::= ">=" ;
 EQU.       RelOp ::= "==" ;
 
 NE.        RelOp ::= "!=" ;
+
+MAcc.      MAccOp ::= "->" ;
 
 -- comments ------------------------------------------------
 

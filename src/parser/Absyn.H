@@ -27,6 +27,7 @@ class Arg;
 class Blk;
 class Stmt;
 class Item;
+class SStmt;
 class Type;
 class BracketsOpt;
 class Expr;
@@ -34,13 +35,19 @@ class DimExpr;
 class AddOp;
 class MulOp;
 class RelOp;
+class MAccOp;
 class Program;
+class TypeDef;
+class StructDef;
 class FnDef;
+class FnDefS;
 class Argument;
+class Ptrgument;
 class Block;
 class Empty;
 class BStmt;
 class Decl;
+class DeclStruct;
 class NoInit;
 class Init;
 class Ass;
@@ -53,18 +60,27 @@ class Cond;
 class CondElse;
 class While;
 class ForLoop;
+class ForStruct;
 class SExp;
+class MInner;
+class MArray;
+class Mpoint;
 class Int;
 class Doub;
 class Bool;
 class Void;
 class Fun;
 class ArrayType;
+class SArrayType;
 class BracketsEmpty;
 class ENewArray;
+class ENewSArray;
 class Dim;
 class EDot;
 class EAcc;
+class ENewStruct;
+class EMember;
+class TypeCast;
 class ELitInt;
 class ELitDoub;
 class ELitTrue;
@@ -90,10 +106,12 @@ class GTH;
 class GE;
 class EQU;
 class NE;
+class MAcc;
 class ListTopDef;
 class ListArg;
 class ListStmt;
 class ListItem;
+class ListSStmt;
 class ListType;
 class ListBracketsOpt;
 class ListDimExpr;
@@ -111,6 +129,7 @@ public:
   virtual void visitBlk(Blk *p) = 0;
   virtual void visitStmt(Stmt *p) = 0;
   virtual void visitItem(Item *p) = 0;
+  virtual void visitSStmt(SStmt *p) = 0;
   virtual void visitType(Type *p) = 0;
   virtual void visitBracketsOpt(BracketsOpt *p) = 0;
   virtual void visitExpr(Expr *p) = 0;
@@ -118,13 +137,19 @@ public:
   virtual void visitAddOp(AddOp *p) = 0;
   virtual void visitMulOp(MulOp *p) = 0;
   virtual void visitRelOp(RelOp *p) = 0;
+  virtual void visitMAccOp(MAccOp *p) = 0;
   virtual void visitProgram(Program *p) = 0;
+  virtual void visitTypeDef(TypeDef *p) = 0;
+  virtual void visitStructDef(StructDef *p) = 0;
   virtual void visitFnDef(FnDef *p) = 0;
+  virtual void visitFnDefS(FnDefS *p) = 0;
   virtual void visitArgument(Argument *p) = 0;
+  virtual void visitPtrgument(Ptrgument *p) = 0;
   virtual void visitBlock(Block *p) = 0;
   virtual void visitEmpty(Empty *p) = 0;
   virtual void visitBStmt(BStmt *p) = 0;
   virtual void visitDecl(Decl *p) = 0;
+  virtual void visitDeclStruct(DeclStruct *p) = 0;
   virtual void visitNoInit(NoInit *p) = 0;
   virtual void visitInit(Init *p) = 0;
   virtual void visitAss(Ass *p) = 0;
@@ -137,18 +162,27 @@ public:
   virtual void visitCondElse(CondElse *p) = 0;
   virtual void visitWhile(While *p) = 0;
   virtual void visitForLoop(ForLoop *p) = 0;
+  virtual void visitForStruct(ForStruct *p) = 0;
   virtual void visitSExp(SExp *p) = 0;
+  virtual void visitMInner(MInner *p) = 0;
+  virtual void visitMArray(MArray *p) = 0;
+  virtual void visitMpoint(Mpoint *p) = 0;
   virtual void visitInt(Int *p) = 0;
   virtual void visitDoub(Doub *p) = 0;
   virtual void visitBool(Bool *p) = 0;
   virtual void visitVoid(Void *p) = 0;
   virtual void visitFun(Fun *p) = 0;
   virtual void visitArrayType(ArrayType *p) = 0;
+  virtual void visitSArrayType(SArrayType *p) = 0;
   virtual void visitBracketsEmpty(BracketsEmpty *p) = 0;
   virtual void visitENewArray(ENewArray *p) = 0;
+  virtual void visitENewSArray(ENewSArray *p) = 0;
   virtual void visitDim(Dim *p) = 0;
   virtual void visitEDot(EDot *p) = 0;
   virtual void visitEAcc(EAcc *p) = 0;
+  virtual void visitENewStruct(ENewStruct *p) = 0;
+  virtual void visitEMember(EMember *p) = 0;
+  virtual void visitTypeCast(TypeCast *p) = 0;
   virtual void visitELitInt(ELitInt *p) = 0;
   virtual void visitELitDoub(ELitDoub *p) = 0;
   virtual void visitELitTrue(ELitTrue *p) = 0;
@@ -174,10 +208,12 @@ public:
   virtual void visitGE(GE *p) = 0;
   virtual void visitEQU(EQU *p) = 0;
   virtual void visitNE(NE *p) = 0;
+  virtual void visitMAcc(MAcc *p) = 0;
   virtual void visitListTopDef(ListTopDef *p) = 0;
   virtual void visitListArg(ListArg *p) = 0;
   virtual void visitListStmt(ListStmt *p) = 0;
   virtual void visitListItem(ListItem *p) = 0;
+  virtual void visitListSStmt(ListSStmt *p) = 0;
   virtual void visitListType(ListType *p) = 0;
   virtual void visitListBracketsOpt(ListBracketsOpt *p) = 0;
   virtual void visitListDimExpr(ListDimExpr *p) = 0;
@@ -245,6 +281,13 @@ public:
 
 };
 
+class SStmt : public Visitable
+{
+public:
+  virtual SStmt *clone() const = 0;
+
+};
+
 class Type : public Visitable
 {
 public:
@@ -294,6 +337,13 @@ public:
 
 };
 
+class MAccOp : public Visitable
+{
+public:
+  virtual MAccOp *clone() const = 0;
+
+};
+
 
 
 class Program : public Prog
@@ -308,6 +358,36 @@ public:
   virtual void accept(Visitor *v);
   virtual Program *clone() const;
   void swap(Program &);
+};
+
+class TypeDef : public TopDef
+{
+public:
+  Ident ident_1;
+  Ident ident_2;
+
+  TypeDef(const TypeDef &);
+  TypeDef &operator=(const TypeDef &);
+  TypeDef(Ident p1, Ident p2);
+  ~TypeDef();
+  virtual void accept(Visitor *v);
+  virtual TypeDef *clone() const;
+  void swap(TypeDef &);
+};
+
+class StructDef : public TopDef
+{
+public:
+  Ident ident_;
+  ListSStmt *listsstmt_;
+
+  StructDef(const StructDef &);
+  StructDef &operator=(const StructDef &);
+  StructDef(Ident p1, ListSStmt *p2);
+  ~StructDef();
+  virtual void accept(Visitor *v);
+  virtual StructDef *clone() const;
+  void swap(StructDef &);
 };
 
 class FnDef : public TopDef
@@ -327,6 +407,23 @@ public:
   void swap(FnDef &);
 };
 
+class FnDefS : public TopDef
+{
+public:
+  Ident ident_1;
+  Ident ident_2;
+  ListArg *listarg_;
+  Blk *blk_;
+
+  FnDefS(const FnDefS &);
+  FnDefS &operator=(const FnDefS &);
+  FnDefS(Ident p1, Ident p2, ListArg *p3, Blk *p4);
+  ~FnDefS();
+  virtual void accept(Visitor *v);
+  virtual FnDefS *clone() const;
+  void swap(FnDefS &);
+};
+
 class Argument : public Arg
 {
 public:
@@ -340,6 +437,21 @@ public:
   virtual void accept(Visitor *v);
   virtual Argument *clone() const;
   void swap(Argument &);
+};
+
+class Ptrgument : public Arg
+{
+public:
+  Ident ident_1;
+  Ident ident_2;
+
+  Ptrgument(const Ptrgument &);
+  Ptrgument &operator=(const Ptrgument &);
+  Ptrgument(Ident p1, Ident p2);
+  ~Ptrgument();
+  virtual void accept(Visitor *v);
+  virtual Ptrgument *clone() const;
+  void swap(Ptrgument &);
 };
 
 class Block : public Blk
@@ -396,6 +508,21 @@ public:
   virtual void accept(Visitor *v);
   virtual Decl *clone() const;
   void swap(Decl &);
+};
+
+class DeclStruct : public Stmt
+{
+public:
+  Ident ident_;
+  ListItem *listitem_;
+
+  DeclStruct(const DeclStruct &);
+  DeclStruct &operator=(const DeclStruct &);
+  DeclStruct(Ident p1, ListItem *p2);
+  ~DeclStruct();
+  virtual void accept(Visitor *v);
+  virtual DeclStruct *clone() const;
+  void swap(DeclStruct &);
 };
 
 class Ass : public Stmt
@@ -546,6 +673,23 @@ public:
   void swap(ForLoop &);
 };
 
+class ForStruct : public Stmt
+{
+public:
+  Ident ident_1;
+  Ident ident_2;
+  Expr *expr_;
+  Stmt *stmt_;
+
+  ForStruct(const ForStruct &);
+  ForStruct &operator=(const ForStruct &);
+  ForStruct(Ident p1, Ident p2, Expr *p3, Stmt *p4);
+  ~ForStruct();
+  virtual void accept(Visitor *v);
+  virtual ForStruct *clone() const;
+  void swap(ForStruct &);
+};
+
 class SExp : public Stmt
 {
 public:
@@ -587,6 +731,52 @@ public:
   virtual void accept(Visitor *v);
   virtual Init *clone() const;
   void swap(Init &);
+};
+
+class MInner : public SStmt
+{
+public:
+  Type *type_;
+  Ident ident_;
+
+  MInner(const MInner &);
+  MInner &operator=(const MInner &);
+  MInner(Type *p1, Ident p2);
+  ~MInner();
+  virtual void accept(Visitor *v);
+  virtual MInner *clone() const;
+  void swap(MInner &);
+};
+
+class MArray : public SStmt
+{
+public:
+  Type *type_;
+  ListBracketsOpt *listbracketsopt_;
+  Ident ident_;
+
+  MArray(const MArray &);
+  MArray &operator=(const MArray &);
+  MArray(Type *p1, ListBracketsOpt *p2, Ident p3);
+  ~MArray();
+  virtual void accept(Visitor *v);
+  virtual MArray *clone() const;
+  void swap(MArray &);
+};
+
+class Mpoint : public SStmt
+{
+public:
+  Ident ident_1;
+  Ident ident_2;
+
+  Mpoint(const Mpoint &);
+  Mpoint &operator=(const Mpoint &);
+  Mpoint(Ident p1, Ident p2);
+  ~Mpoint();
+  virtual void accept(Visitor *v);
+  virtual Mpoint *clone() const;
+  void swap(Mpoint &);
 };
 
 class Int : public Type
@@ -671,6 +861,21 @@ public:
   void swap(ArrayType &);
 };
 
+class SArrayType : public Type
+{
+public:
+  Ident ident_;
+  ListBracketsOpt *listbracketsopt_;
+
+  SArrayType(const SArrayType &);
+  SArrayType &operator=(const SArrayType &);
+  SArrayType(Ident p1, ListBracketsOpt *p2);
+  ~SArrayType();
+  virtual void accept(Visitor *v);
+  virtual SArrayType *clone() const;
+  void swap(SArrayType &);
+};
+
 class BracketsEmpty : public BracketsOpt
 {
 public:
@@ -697,6 +902,21 @@ public:
   virtual void accept(Visitor *v);
   virtual ENewArray *clone() const;
   void swap(ENewArray &);
+};
+
+class ENewSArray : public Expr
+{
+public:
+  Ident ident_;
+  ListDimExpr *listdimexpr_;
+
+  ENewSArray(const ENewSArray &);
+  ENewSArray &operator=(const ENewSArray &);
+  ENewSArray(Ident p1, ListDimExpr *p2);
+  ~ENewSArray();
+  virtual void accept(Visitor *v);
+  virtual ENewSArray *clone() const;
+  void swap(ENewSArray &);
 };
 
 class EDot : public Expr
@@ -727,6 +947,50 @@ public:
   virtual void accept(Visitor *v);
   virtual EAcc *clone() const;
   void swap(EAcc &);
+};
+
+class ENewStruct : public Expr
+{
+public:
+  Ident ident_;
+
+  ENewStruct(const ENewStruct &);
+  ENewStruct &operator=(const ENewStruct &);
+  ENewStruct(Ident p1);
+  ~ENewStruct();
+  virtual void accept(Visitor *v);
+  virtual ENewStruct *clone() const;
+  void swap(ENewStruct &);
+};
+
+class EMember : public Expr
+{
+public:
+  Expr *expr_;
+  MAccOp *maccop_;
+  Ident ident_;
+
+  EMember(const EMember &);
+  EMember &operator=(const EMember &);
+  EMember(Expr *p1, MAccOp *p2, Ident p3);
+  ~EMember();
+  virtual void accept(Visitor *v);
+  virtual EMember *clone() const;
+  void swap(EMember &);
+};
+
+class TypeCast : public Expr
+{
+public:
+  Ident ident_;
+
+  TypeCast(const TypeCast &);
+  TypeCast &operator=(const TypeCast &);
+  TypeCast(Ident p1);
+  ~TypeCast();
+  virtual void accept(Visitor *v);
+  virtual TypeCast *clone() const;
+  void swap(TypeCast &);
 };
 
 class ELitInt : public Expr
@@ -1089,6 +1353,19 @@ public:
   void swap(NE &);
 };
 
+class MAcc : public MAccOp
+{
+public:
+
+  MAcc(const MAcc &);
+  MAcc &operator=(const MAcc &);
+  MAcc();
+  ~MAcc();
+  virtual void accept(Visitor *v);
+  virtual MAcc *clone() const;
+  void swap(MAcc &);
+};
+
 
 
 class ListTopDef : public Visitable, public std::vector<TopDef*>
@@ -1126,6 +1403,15 @@ public:
 };
 
 ListItem* consListItem(Item* x, ListItem* xs);
+
+class ListSStmt : public Visitable, public std::vector<SStmt*>
+{
+public:
+  virtual void accept(Visitor *v);
+  virtual ListSStmt *clone() const;
+};
+
+ListSStmt* consListSStmt(SStmt* x, ListSStmt* xs);
 
 class ListType : public Visitable, public std::vector<Type*>
 {

@@ -68,12 +68,13 @@ IDENT [a-zA-Z0-9'_]
 
 %%  /* Rules. */
 
+<INITIAL>"*"      	 return _STAR;
+<INITIAL>";"      	 return _SEMI;
+<INITIAL>"{"      	 return _LBRACE;
+<INITIAL>"}"      	 return _RBRACE;
 <INITIAL>"("      	 return _LPAREN;
 <INITIAL>")"      	 return _RPAREN;
 <INITIAL>","      	 return _COMMA;
-<INITIAL>"{"      	 return _LBRACE;
-<INITIAL>"}"      	 return _RBRACE;
-<INITIAL>";"      	 return _SEMI;
 <INITIAL>"="      	 return _EQ;
 <INITIAL>"++"      	 return _DPLUS;
 <INITIAL>"--"      	 return _DMINUS;
@@ -87,7 +88,6 @@ IDENT [a-zA-Z0-9'_]
 <INITIAL>"&&"      	 return _DAMP;
 <INITIAL>"||"      	 return _DBAR;
 <INITIAL>"+"      	 return _PLUS;
-<INITIAL>"*"      	 return _STAR;
 <INITIAL>"/"      	 return _SLASH;
 <INITIAL>"%"      	 return _PERCENT;
 <INITIAL>"<"      	 return _LT;
@@ -96,6 +96,7 @@ IDENT [a-zA-Z0-9'_]
 <INITIAL>">="      	 return _GTEQ;
 <INITIAL>"=="      	 return _DEQ;
 <INITIAL>"!="      	 return _BANGEQ;
+<INITIAL>"->"      	 return _RARROW;
 <INITIAL>"boolean"      	 return _KW_boolean;
 <INITIAL>"double"      	 return _KW_double;
 <INITIAL>"else"      	 return _KW_else;
@@ -104,8 +105,11 @@ IDENT [a-zA-Z0-9'_]
 <INITIAL>"if"      	 return _KW_if;
 <INITIAL>"int"      	 return _KW_int;
 <INITIAL>"new"      	 return _KW_new;
+<INITIAL>"null"      	 return _KW_null;
 <INITIAL>"return"      	 return _KW_return;
+<INITIAL>"struct"      	 return _KW_struct;
 <INITIAL>"true"      	 return _KW_true;
+<INITIAL>"typedef"      	 return _KW_typedef;
 <INITIAL>"void"      	 return _KW_void;
 <INITIAL>"while"      	 return _KW_while;
 

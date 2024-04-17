@@ -38,11 +38,15 @@ class PrintAbsyn : public Visitor
   void visitProg(Prog *p); /* abstract class */
   void visitProgram(Program *p);
   void visitTopDef(TopDef *p); /* abstract class */
+  void visitTypeDef(TypeDef *p);
+  void visitStructDef(StructDef *p);
   void visitFnDef(FnDef *p);
+  void visitFnDefS(FnDefS *p);
   void visitListTopDef(ListTopDef *p);
   void iterListTopDef(ListTopDef::const_iterator i, ListTopDef::const_iterator j);
   void visitArg(Arg *p); /* abstract class */
   void visitArgument(Argument *p);
+  void visitPtrgument(Ptrgument *p);
   void visitListArg(ListArg *p);
   void iterListArg(ListArg::const_iterator i, ListArg::const_iterator j);
   void visitBlk(Blk *p); /* abstract class */
@@ -53,6 +57,7 @@ class PrintAbsyn : public Visitor
   void visitEmpty(Empty *p);
   void visitBStmt(BStmt *p);
   void visitDecl(Decl *p);
+  void visitDeclStruct(DeclStruct *p);
   void visitAss(Ass *p);
   void visitAssArr(AssArr *p);
   void visitIncr(Incr *p);
@@ -63,12 +68,19 @@ class PrintAbsyn : public Visitor
   void visitCondElse(CondElse *p);
   void visitWhile(While *p);
   void visitForLoop(ForLoop *p);
+  void visitForStruct(ForStruct *p);
   void visitSExp(SExp *p);
   void visitItem(Item *p); /* abstract class */
   void visitNoInit(NoInit *p);
   void visitInit(Init *p);
   void visitListItem(ListItem *p);
   void iterListItem(ListItem::const_iterator i, ListItem::const_iterator j);
+  void visitSStmt(SStmt *p); /* abstract class */
+  void visitMInner(MInner *p);
+  void visitMArray(MArray *p);
+  void visitMpoint(Mpoint *p);
+  void visitListSStmt(ListSStmt *p);
+  void iterListSStmt(ListSStmt::const_iterator i, ListSStmt::const_iterator j);
   void visitType(Type *p); /* abstract class */
   void visitInt(Int *p);
   void visitDoub(Doub *p);
@@ -76,6 +88,7 @@ class PrintAbsyn : public Visitor
   void visitVoid(Void *p);
   void visitFun(Fun *p);
   void visitArrayType(ArrayType *p);
+  void visitSArrayType(SArrayType *p);
   void visitListType(ListType *p);
   void iterListType(ListType::const_iterator i, ListType::const_iterator j);
   void visitBracketsOpt(BracketsOpt *p); /* abstract class */
@@ -84,8 +97,12 @@ class PrintAbsyn : public Visitor
   void iterListBracketsOpt(ListBracketsOpt::const_iterator i, ListBracketsOpt::const_iterator j);
   void visitExpr(Expr *p); /* abstract class */
   void visitENewArray(ENewArray *p);
+  void visitENewSArray(ENewSArray *p);
   void visitEDot(EDot *p);
+  void visitENewStruct(ENewStruct *p);
+  void visitTypeCast(TypeCast *p);
   void visitEAcc(EAcc *p);
+  void visitEMember(EMember *p);
   void visitELitInt(ELitInt *p);
   void visitELitDoub(ELitDoub *p);
   void visitELitTrue(ELitTrue *p);
@@ -120,6 +137,8 @@ class PrintAbsyn : public Visitor
   void visitGE(GE *p);
   void visitEQU(EQU *p);
   void visitNE(NE *p);
+  void visitMAccOp(MAccOp *p); /* abstract class */
+  void visitMAcc(MAcc *p);
 
   void visitInteger(Integer i);
   void visitDouble(Double d);
@@ -191,11 +210,15 @@ class ShowAbsyn : public Visitor
   void visitProg(Prog *p); /* abstract class */
   void visitProgram(Program *p);
   void visitTopDef(TopDef *p); /* abstract class */
+  void visitTypeDef(TypeDef *p);
+  void visitStructDef(StructDef *p);
   void visitFnDef(FnDef *p);
+  void visitFnDefS(FnDefS *p);
   void visitListTopDef(ListTopDef *p);
   void iterListTopDef(ListTopDef::const_iterator i, ListTopDef::const_iterator j);
   void visitArg(Arg *p); /* abstract class */
   void visitArgument(Argument *p);
+  void visitPtrgument(Ptrgument *p);
   void visitListArg(ListArg *p);
   void iterListArg(ListArg::const_iterator i, ListArg::const_iterator j);
   void visitBlk(Blk *p); /* abstract class */
@@ -206,6 +229,7 @@ class ShowAbsyn : public Visitor
   void visitEmpty(Empty *p);
   void visitBStmt(BStmt *p);
   void visitDecl(Decl *p);
+  void visitDeclStruct(DeclStruct *p);
   void visitAss(Ass *p);
   void visitAssArr(AssArr *p);
   void visitIncr(Incr *p);
@@ -216,12 +240,19 @@ class ShowAbsyn : public Visitor
   void visitCondElse(CondElse *p);
   void visitWhile(While *p);
   void visitForLoop(ForLoop *p);
+  void visitForStruct(ForStruct *p);
   void visitSExp(SExp *p);
   void visitItem(Item *p); /* abstract class */
   void visitNoInit(NoInit *p);
   void visitInit(Init *p);
   void visitListItem(ListItem *p);
   void iterListItem(ListItem::const_iterator i, ListItem::const_iterator j);
+  void visitSStmt(SStmt *p); /* abstract class */
+  void visitMInner(MInner *p);
+  void visitMArray(MArray *p);
+  void visitMpoint(Mpoint *p);
+  void visitListSStmt(ListSStmt *p);
+  void iterListSStmt(ListSStmt::const_iterator i, ListSStmt::const_iterator j);
   void visitType(Type *p); /* abstract class */
   void visitInt(Int *p);
   void visitDoub(Doub *p);
@@ -229,6 +260,7 @@ class ShowAbsyn : public Visitor
   void visitVoid(Void *p);
   void visitFun(Fun *p);
   void visitArrayType(ArrayType *p);
+  void visitSArrayType(SArrayType *p);
   void visitListType(ListType *p);
   void iterListType(ListType::const_iterator i, ListType::const_iterator j);
   void visitBracketsOpt(BracketsOpt *p); /* abstract class */
@@ -237,8 +269,12 @@ class ShowAbsyn : public Visitor
   void iterListBracketsOpt(ListBracketsOpt::const_iterator i, ListBracketsOpt::const_iterator j);
   void visitExpr(Expr *p); /* abstract class */
   void visitENewArray(ENewArray *p);
+  void visitENewSArray(ENewSArray *p);
   void visitEDot(EDot *p);
+  void visitENewStruct(ENewStruct *p);
+  void visitTypeCast(TypeCast *p);
   void visitEAcc(EAcc *p);
+  void visitEMember(EMember *p);
   void visitELitInt(ELitInt *p);
   void visitELitDoub(ELitDoub *p);
   void visitELitTrue(ELitTrue *p);
@@ -273,6 +309,8 @@ class ShowAbsyn : public Visitor
   void visitGE(GE *p);
   void visitEQU(EQU *p);
   void visitNE(NE *p);
+  void visitMAccOp(MAccOp *p); /* abstract class */
+  void visitMAcc(MAcc *p);
 
   void visitInteger(Integer i);
   void visitDouble(Double d);

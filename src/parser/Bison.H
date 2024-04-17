@@ -67,38 +67,42 @@ extern int javalette_debug;
     _COMMA = 268,                  /* _COMMA  */
     _MINUS = 269,                  /* _MINUS  */
     _DMINUS = 270,                 /* _DMINUS  */
-    _DOT = 271,                    /* _DOT  */
-    _SLASH = 272,                  /* _SLASH  */
-    _COLON = 273,                  /* _COLON  */
-    _SEMI = 274,                   /* _SEMI  */
-    _LT = 275,                     /* _LT  */
-    _LDARROW = 276,                /* _LDARROW  */
-    _EQ = 277,                     /* _EQ  */
-    _DEQ = 278,                    /* _DEQ  */
-    _GT = 279,                     /* _GT  */
-    _GTEQ = 280,                   /* _GTEQ  */
-    _LBRACK = 281,                 /* _LBRACK  */
-    _EMPTYBRACK = 282,             /* _EMPTYBRACK  */
-    _RBRACK = 283,                 /* _RBRACK  */
-    _KW_boolean = 284,             /* _KW_boolean  */
-    _KW_double = 285,              /* _KW_double  */
-    _KW_else = 286,                /* _KW_else  */
-    _KW_false = 287,               /* _KW_false  */
-    _KW_for = 288,                 /* _KW_for  */
-    _KW_if = 289,                  /* _KW_if  */
-    _KW_int = 290,                 /* _KW_int  */
-    _KW_new = 291,                 /* _KW_new  */
-    _KW_return = 292,              /* _KW_return  */
-    _KW_true = 293,                /* _KW_true  */
-    _KW_void = 294,                /* _KW_void  */
-    _KW_while = 295,               /* _KW_while  */
-    _LBRACE = 296,                 /* _LBRACE  */
-    _DBAR = 297,                   /* _DBAR  */
-    _RBRACE = 298,                 /* _RBRACE  */
-    _STRING_ = 299,                /* _STRING_  */
-    _INTEGER_ = 300,               /* _INTEGER_  */
-    _DOUBLE_ = 301,                /* _DOUBLE_  */
-    _IDENT_ = 302                  /* _IDENT_  */
+    _RARROW = 271,                 /* _RARROW  */
+    _DOT = 272,                    /* _DOT  */
+    _SLASH = 273,                  /* _SLASH  */
+    _COLON = 274,                  /* _COLON  */
+    _SEMI = 275,                   /* _SEMI  */
+    _LT = 276,                     /* _LT  */
+    _LDARROW = 277,                /* _LDARROW  */
+    _EQ = 278,                     /* _EQ  */
+    _DEQ = 279,                    /* _DEQ  */
+    _GT = 280,                     /* _GT  */
+    _GTEQ = 281,                   /* _GTEQ  */
+    _LBRACK = 282,                 /* _LBRACK  */
+    _EMPTYBRACK = 283,             /* _EMPTYBRACK  */
+    _RBRACK = 284,                 /* _RBRACK  */
+    _KW_boolean = 285,             /* _KW_boolean  */
+    _KW_double = 286,              /* _KW_double  */
+    _KW_else = 287,                /* _KW_else  */
+    _KW_false = 288,               /* _KW_false  */
+    _KW_for = 289,                 /* _KW_for  */
+    _KW_if = 290,                  /* _KW_if  */
+    _KW_int = 291,                 /* _KW_int  */
+    _KW_new = 292,                 /* _KW_new  */
+    _KW_null = 293,                /* _KW_null  */
+    _KW_return = 294,              /* _KW_return  */
+    _KW_struct = 295,              /* _KW_struct  */
+    _KW_true = 296,                /* _KW_true  */
+    _KW_typedef = 297,             /* _KW_typedef  */
+    _KW_void = 298,                /* _KW_void  */
+    _KW_while = 299,               /* _KW_while  */
+    _LBRACE = 300,                 /* _LBRACE  */
+    _DBAR = 301,                   /* _DBAR  */
+    _RBRACE = 302,                 /* _RBRACE  */
+    _STRING_ = 303,                /* _STRING_  */
+    _INTEGER_ = 304,               /* _INTEGER_  */
+    _DOUBLE_ = 305,                /* _DOUBLE_  */
+    _IDENT_ = 306                  /* _IDENT_  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -123,6 +127,8 @@ union YYSTYPE
   Stmt* stmt_;
   Item* item_;
   ListItem* listitem_;
+  SStmt* sstmt_;
+  ListSStmt* listsstmt_;
   Type* type_;
   ListType* listtype_;
   BracketsOpt* bracketsopt_;
@@ -134,8 +140,9 @@ union YYSTYPE
   AddOp* addop_;
   MulOp* mulop_;
   RelOp* relop_;
+  MAccOp* maccop_;
 
-#line 139 "Bison.H"
+#line 146 "Bison.H"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -181,7 +181,7 @@ printInt((new int[3])[2]);
 15: ,
 
 
-# JLC
+# JLC original
 
 6: Elit  interger, double, true, false
 6: EVar ()
@@ -199,4 +199,15 @@ printInt((new int[3])[2]);
 
 0: Eor
 
+# JLC with array
+7: [], ELitx, Evar, EApp
+6: new, EDOT, 
+5: **same as above**
 
+# JLC with struct 
++ typedef 
++ struct
++ -> op, new, ()
+
+7: [], ->
+6: new
