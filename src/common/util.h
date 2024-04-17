@@ -9,12 +9,18 @@
 
 #define ENABLE_TYPE_CHECK_DEBUG 0
 
-
 #if DEBUG
-    #define DEBUG_PRINT(ss) \
-        std::cerr << "[DEBUG]:" << ss << std::endl;
+#define DEBUG_PRINT(ss) \
+    std::cerr << "[DEBUG]:" << ss << std::endl;
 #else
-    #define DEBUG_PRINT(ss) 
+#define DEBUG_PRINT(ss)
 #endif
 
-#endif /* __MMUTIL_H__ */ 
+#define ERROR_HANDLE(msg)                           \
+    while (1)                                       \
+    {                                               \
+        std::cerr << "ERROR: " << msg << std::endl; \
+        exit(1);                                    \
+    }
+
+#endif /* __MMUTIL_H__ */

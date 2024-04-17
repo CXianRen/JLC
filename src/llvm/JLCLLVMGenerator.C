@@ -22,1468 +22,1490 @@ static PrintAbsyn p = PrintAbsyn();
 static const std::string GeneratorName = "JLCLLVMGenerator";
 
 
-#define ERRPR_HANDLE(msg) \
-  while(1){ \
-  std::cerr << "Error: " << msg << std::endl; \
-  LLVM_module_->print(llvm::outs(), nullptr); \
-  exit(1);\
-  }
 
 /*
   this function is used to convert the type_enum to string
   @return: llvm::Type*
   @param: type_enum t
 */
-llvm::Type* JLCLLVMGenerator::convertType(JLCType t){
-  switch (t.type)
-  {
-  case INT:
-    return llvm::Type::getInt32Ty(*LLVM_Context_);
-  case DOUB:
-    return llvm::Type::getDoubleTy(*LLVM_Context_);
-  case BOOL:
-    return llvm::Type::getInt1Ty(*LLVM_Context_);
-  case VOID:
-    return llvm::Type::getVoidTy(*LLVM_Context_);
-  case CHAR:
-    return llvm::Type::getInt8Ty(*LLVM_Context_);
-  case STRING: // the atcually out is ptr not i8*, is it ok? @todo
-    return llvm::Type::getInt8PtrTy(*LLVM_Context_);
-  case ARRAY: // actual is ptr type, @todo: better design?
-    return llvm::Type::getInt32PtrTy(*LLVM_Context_);
-  default:
-    std::cerr << "Error, Unknown type:" << to_string(t) << std::endl;
-    exit(1);
-  }
+llvm::Type *JLCLLVMGenerator::convertType(JLCType t)
+{
+	switch (t.type)
+	{
+	case INT:
+		return llvm::Type::getInt32Ty(*LLVM_Context_);
+	case DOUB:
+		return llvm::Type::getDoubleTy(*LLVM_Context_);
+	case BOOL:
+		return llvm::Type::getInt1Ty(*LLVM_Context_);
+	case VOID:
+		return llvm::Type::getVoidTy(*LLVM_Context_);
+	case CHAR:
+		return llvm::Type::getInt8Ty(*LLVM_Context_);
+	case STRING: // the atcually out is ptr not i8*, is it ok? @todo
+		return llvm::Type::getInt8PtrTy(*LLVM_Context_);
+	case ARRAY: // actual is ptr type, @todo: better design?
+		return llvm::Type::getInt32PtrTy(*LLVM_Context_);
+	default:
+		std::cerr << "Error, Unknown type:" << to_string(t) << std::endl;
+		exit(1);
+	}
 }
 
-void JLCLLVMGenerator::addExternalFunc(){
-  for (auto & func : globalContext.funcs)
-  {
-    addFuncDeclearation(func.second);
-  }  
-  // adding calloc function declearation
+void JLCLLVMGenerator::addExternalFunc()
+{
+	for (auto &func : globalContext.funcs)
+	{
+		addFuncDeclearation(func.second);
+	}
+	// adding calloc function declearation
 
-  // @todo: when pointer type is support we can use "addFuncDeclearation"
-  std::vector<llvm::Type*> createNDimArray_args;
-  createNDimArray_args.push_back(llvm::Type::getInt32PtrTy(*LLVM_Context_)); // dim_array
-  createNDimArray_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_)); // dim_array_size
-  createNDimArray_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_)); // element size
+	// @todo: when pointer type is support we can use "addFuncDeclearation"
+	std::vector<llvm::Type *> createNDimArray_args;
+	createNDimArray_args.push_back(llvm::Type::getInt32PtrTy(*LLVM_Context_)); // dim_array
+	createNDimArray_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_));	   // dim_array_size
+	createNDimArray_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_));	   // element size
 
-  auto createNDimArray_type = llvm::FunctionType::get(
-      llvm::Type::getInt8PtrTy(*LLVM_Context_), createNDimArray_args, false);
-  auto createNDimArray_func = llvm::Function::Create(
-      createNDimArray_type, 
-      llvm::Function::ExternalLinkage, 
-      "createNDimArray", 
-      LLVM_module_.get());
+	auto createNDimArray_type = llvm::FunctionType::get(
+		llvm::Type::getInt8PtrTy(*LLVM_Context_), createNDimArray_args, false);
+	auto createNDimArray_func = llvm::Function::Create(
+		createNDimArray_type,
+		llvm::Function::ExternalLinkage,
+		"createNDimArray",
+		LLVM_module_.get());
 
-  (void)createNDimArray_func; // make compiler happy
+	(void)createNDimArray_func; // make compiler happy
 
-  // add ptr @getElement_N_ptr(ptr %array, i32 * %idx_arr, i32 %idx_count ,i32 %max_dim , i32 %elem_size)
-  // std::vector<llvm::Type*> getElementNPtr_args;
-  // getElementNPtr_args.push_back(llvm::Type::getInt8PtrTy(*LLVM_Context_)); // array
-  // getElementNPtr_args.push_back(llvm::Type::getInt32PtrTy(*LLVM_Context_)); // idx_arr
-  // getElementNPtr_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_)); // idx_count
-  // getElementNPtr_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_)); // max_dim
-  // getElementNPtr_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_)); // elem_size
+	// add ptr @getElement_N_ptr(ptr %array, i32 * %idx_arr, i32 %idx_count ,i32 %max_dim , i32 %elem_size)
+	// std::vector<llvm::Type*> getElementNPtr_args;
+	// getElementNPtr_args.push_back(llvm::Type::getInt8PtrTy(*LLVM_Context_)); // array
+	// getElementNPtr_args.push_back(llvm::Type::getInt32PtrTy(*LLVM_Context_)); // idx_arr
+	// getElementNPtr_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_)); // idx_count
+	// getElementNPtr_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_)); // max_dim
+	// getElementNPtr_args.push_back(llvm::Type::getInt32Ty(*LLVM_Context_)); // elem_size
 
-  // auto getElementNPtr_type = llvm::FunctionType::get(
-  //     llvm::Type::getInt8PtrTy(*LLVM_Context_), getElementNPtr_args, false);
-  // auto getElementNPtr_func = llvm::Function::Create(
-  //     getElementNPtr_type, 
-  //     llvm::Function::ExternalLinkage, 
-  //     "getElement_N_ptr", 
-  //     LLVM_module_.get());
+	// auto getElementNPtr_type = llvm::FunctionType::get(
+	//     llvm::Type::getInt8PtrTy(*LLVM_Context_), getElementNPtr_args, false);
+	// auto getElementNPtr_func = llvm::Function::Create(
+	//     getElementNPtr_type,
+	//     llvm::Function::ExternalLinkage,
+	//     "getElement_N_ptr",
+	//     LLVM_module_.get());
 }
 
-void JLCLLVMGenerator::addFuncDeclearation(JLCFunc &frame){
-  // see the tutorial about llvm: 
-  std::string func_name = frame.name;
-  auto llvm_return_type = convertType(frame.returnType);
-  std::vector<llvm::Type*> llvm_args;
-  for (auto & arg : frame.args)
-  {
-    llvm_args.push_back(convertType(arg.second));
-  }
-  llvm::FunctionType* func_type = 
-    llvm::FunctionType::get(llvm_return_type, llvm_args, false);
-  auto func_dec = llvm::Function::Create(
-      func_type, 
-      llvm::Function::ExternalLinkage, 
-      func_name, 
-      LLVM_module_.get());
-  
-  std::string ss;
-  llvm::raw_string_ostream ss2(ss);
-  func_dec->print(ss2);
-  DEBUG_PRINT("Add function declearation: " + ss);
-}
+void JLCLLVMGenerator::addFuncDeclearation(JLCFunc &frame)
+{
+	// see the tutorial about llvm:
+	std::string func_name = frame.name;
+	auto llvm_return_type = convertType(frame.returnType);
+	std::vector<llvm::Type *> llvm_args;
+	for (auto &arg : frame.args)
+	{
+		llvm_args.push_back(convertType(arg.second));
+	}
+	llvm::FunctionType *func_type =
+		llvm::FunctionType::get(llvm_return_type, llvm_args, false);
+	auto func_dec = llvm::Function::Create(
+		func_type,
+		llvm::Function::ExternalLinkage,
+		func_name,
+		LLVM_module_.get());
 
+	std::string ss;
+	llvm::raw_string_ostream ss2(ss);
+	func_dec->print(ss2);
+	DEBUG_PRINT("Add function declearation: " + ss);
+}
 
 void JLCLLVMGenerator::visitProgram(Program *program)
 {
-  /* Code For Program Goes Here */
-  /* iterate through the top definitions */
-  // this part is same as the type checker, will add all the functions to the context
-  for (ListTopDef::iterator top_def = program->listtopdef_->begin() ; top_def != program->listtopdef_->end() ; ++top_def)
-  {
-    FnDef* fn_def = reinterpret_cast<FnDef*>(*top_def);
-    visitIdent(fn_def->ident_);
-    // add the function to the global context
-    globalContext.addFunc(fn_def->ident_);
-    globalContext.currentFuncName = fn_def->ident_;
+	/* Code For Program Goes Here */
+	/* iterate through the top definitions */
+	// this part is same as the type checker, will add all the functions to the context
+	for (ListTopDef::iterator top_def = program->listtopdef_->begin(); top_def != program->listtopdef_->end(); ++top_def)
+	{
+		FnDef *fn_def = reinterpret_cast<FnDef *>(*top_def);
+		visitIdent(fn_def->ident_);
+		// add the function to the global context
+		globalContext.addFunc(fn_def->ident_);
+		globalContext.currentFuncName = fn_def->ident_;
 
-    // update the function return type
-    auto& func = globalContext.getFunc(fn_def->ident_);
-    fn_def->type_->accept(this);
-    func.returnType = temp_type;
+		// update the function return type
+		auto &func = globalContext.getFunc(fn_def->ident_);
+		fn_def->type_->accept(this);
+		func.returnType = temp_type;
 
-    // check function arguments
-    if (fn_def->listarg_) fn_def->listarg_->accept(this);
+		// check function arguments
+		if (fn_def->listarg_)
+			fn_def->listarg_->accept(this);
 
-    // add to llvm module - start
-    // @todo maybe we can drop the self-defined CONTEXT, 
-    // and use the llvm::Module directly
+		// add to llvm module - start
+		// @todo maybe we can drop the self-defined CONTEXT,
+		// and use the llvm::Module directly
 
-    auto llvm_return_type = convertType(func.returnType);
-    std::vector<llvm::Type*> llvm_args;
-    for (auto & arg : func.args)
-    {
-      llvm_args.push_back(convertType(arg.second));
-    }
-    llvm::FunctionType* func_type = 
-      llvm::FunctionType::get(llvm_return_type, llvm_args, false);
-    auto local_llvm_func = llvm::Function::Create(
-        func_type, 
-        llvm::Function::ExternalLinkage, 
-        func.name, 
-        LLVM_module_.get());
-    
-    // set arguments name
-    auto arg_iter = local_llvm_func->arg_begin();
-    for (size_t i = 0; i < func.args.size(); i++)
-    {
-      arg_iter->setName(func.args[i].first);
-      arg_iter++;
-    }
-    // add to llvm module - end 
-    // debug print
-    std::string ss;
-    llvm::raw_string_ostream ss2(ss);
-    local_llvm_func->print(ss2);
-    DEBUG_PRINT("Add function define: " + ss);
-  }
-  
-  if (program->listtopdef_) program->listtopdef_->accept(this);
+		auto llvm_return_type = convertType(func.returnType);
+		std::vector<llvm::Type *> llvm_args;
+		for (auto &arg : func.args)
+		{
+			llvm_args.push_back(convertType(arg.second));
+		}
+		llvm::FunctionType *func_type =
+			llvm::FunctionType::get(llvm_return_type, llvm_args, false);
+		auto local_llvm_func = llvm::Function::Create(
+			func_type,
+			llvm::Function::ExternalLinkage,
+			func.name,
+			LLVM_module_.get());
 
+		// set arguments name
+		auto arg_iter = local_llvm_func->arg_begin();
+		for (size_t i = 0; i < func.args.size(); i++)
+		{
+			arg_iter->setName(func.args[i].first);
+			arg_iter++;
+		}
+		// add to llvm module - end
+		// debug print
+		std::string ss;
+		llvm::raw_string_ostream ss2(ss);
+		local_llvm_func->print(ss2);
+		DEBUG_PRINT("Add function define: " + ss);
+	}
+
+	if (program->listtopdef_)
+		program->listtopdef_->accept(this);
 }
 
 void JLCLLVMGenerator::visitFnDef(FnDef *fn_def)
 {
-  /* Code For FnDef Goes Here */
-  globalContext.currentFuncName = fn_def->ident_; // set context to the current function
+	/* Code For FnDef Goes Here */
+	globalContext.currentFuncName = fn_def->ident_; // set context to the current function
 
-  // reset inner variables before visiting the function body
-  block_var_map_list.clear();
+	// reset inner variables before visiting the function body
+	block_var_map_list.clear();
 
-  // create a new block 
-  DEBUG_PRINT("Create the entry block")
-  auto & func = globalContext.currentFunc();
-  func.newBlock();
-  addBlockVarMap();
-  // add a new block to the function
-  auto llvm_func = LLVM_module_->getFunction(func.name);
-  llvm::BasicBlock* entry = 
-    llvm::BasicBlock::Create(*LLVM_Context_, "entry", llvm_func);
-  LLVM_builder_->SetInsertPoint(entry);
-  
-  DEBUG_PRINT("init args");
-  // if the block is the function body, we need to add the arguments to the block
-  if (func.blk->parent == nullptr)
-  {
-    for (auto & arg : func.args)
-    {
-      auto arg_iter = llvm_func->arg_begin();
-      for (size_t i = 0; i < func.args.size(); i++)
-      {
-        if (arg.first == std::string(arg_iter->getName()))
-        {   
-          auto alloca = LLVM_builder_->CreateAlloca(convertType(arg.second), nullptr, arg.first);
-          LLVM_builder_->CreateStore(arg_iter, alloca);
-          addVarToBlockMap(arg.first, alloca);
-          break;
-        }
-        arg_iter++;
-      }
-    }
-  }
+	// create a new block
+	DEBUG_PRINT("Create the entry block")
+	auto &func = globalContext.currentFunc();
+	func.newBlock();
+	addBlockVarMap();
+	// add a new block to the function
+	auto llvm_func = LLVM_module_->getFunction(func.name);
+	llvm::BasicBlock *entry =
+		llvm::BasicBlock::Create(*LLVM_Context_, "entry", llvm_func);
+	LLVM_builder_->SetInsertPoint(entry);
 
-  // cotinue to iterate the function body
-  if (fn_def->blk_) fn_def->blk_->accept(this);
+	DEBUG_PRINT("init args");
+	// if the block is the function body, we need to add the arguments to the block
+	if (func.blk->parent == nullptr)
+	{
+		for (auto &arg : func.args)
+		{
+			auto arg_iter = llvm_func->arg_begin();
+			for (size_t i = 0; i < func.args.size(); i++)
+			{
+				if (arg.first == std::string(arg_iter->getName()))
+				{
+					auto alloca = LLVM_builder_->CreateAlloca(convertType(arg.second), nullptr, arg.first);
+					LLVM_builder_->CreateStore(arg_iter, alloca);
+					addVarToBlockMap(arg.first, alloca);
+					break;
+				}
+				arg_iter++;
+			}
+		}
+	}
 
-  // check if the predecessor block is terminated
-  if (LLVM_builder_->GetInsertBlock()->getTerminator() == nullptr)
-  {
-    // if the block is not terminated, we need to add a return statement
-    if (func.returnType == VOID)
-    {
-      LLVM_builder_->CreateRetVoid();
-    }
-    else
-    {
-     ERRPR_HANDLE("function block does not have a return statement");
-    }
-  }
+	// cotinue to iterate the function body
+	if (fn_def->blk_)
+		fn_def->blk_->accept(this);
 
-  // release the block
-  DEBUG_PRINT("release the entry block");
-  func.releaseBlock();
-  removeBlockVarMap();
+	// check if the predecessor block is terminated
+	if (LLVM_builder_->GetInsertBlock()->getTerminator() == nullptr)
+	{
+		// if the block is not terminated, we need to add a return statement
+		if (func.returnType == VOID)
+		{
+			LLVM_builder_->CreateRetVoid();
+		}
+		else
+		{
+			LLVM_ERROR_HANDLE("function block does not have a return statement");
+		}
+	}
+
+	// release the block
+	DEBUG_PRINT("release the entry block");
+	func.releaseBlock();
+	removeBlockVarMap();
 }
 
 void JLCLLVMGenerator::visitArgument(Argument *argument)
 {
-  /* Code For Argument Goes Here */
-  // this part is same as the type checker,
-  // will add all the arguments to the function
-  // but does not check the types of the arguments in generator
-    if (argument->type_) argument->type_->accept(this);
-    DEBUG_PRINT("\tArgument name: " + argument->ident_ + 
-      "\tArgument type: " + to_string(temp_type));
-    auto& func = globalContext.getFunc(globalContext.currentFuncName);
-    // add the argument to the function
-    func.addArg(argument->ident_, temp_type);
+	/* Code For Argument Goes Here */
+	// this part is same as the type checker,
+	// will add all the arguments to the function
+	// but does not check the types of the arguments in generator
+	if (argument->type_)
+		argument->type_->accept(this);
+	DEBUG_PRINT("\tArgument name: " + argument->ident_ +
+				"\tArgument type: " + to_string(temp_type));
+	auto &func = globalContext.getFunc(globalContext.currentFuncName);
+	// add the argument to the function
+	func.addArg(argument->ident_, temp_type);
 }
 
 void JLCLLVMGenerator::visitBlock(Block *block)
 {
-  /* Code For Block Goes Here */
-  DEBUG_PRINT( "[" + GeneratorName  +"]" + " visiting Block");
-  DEBUG_PRINT("go through the block")
-  if (block->liststmt_) block->liststmt_->accept(this);
+	/* Code For Block Goes Here */
+	DEBUG_PRINT("[" + GeneratorName + "]" + " visiting Block");
+	DEBUG_PRINT("go through the block")
+	if (block->liststmt_)
+		block->liststmt_->accept(this);
 }
 
 void JLCLLVMGenerator::visitEmpty(Empty *empty)
 {
-  /* Code For Empty Goes Here */
-
-
+	/* Code For Empty Goes Here */
 }
 
 void JLCLLVMGenerator::visitBStmt(BStmt *b_stmt)
 {
-  /* Code For BStmt Goes Here */
-  DEBUG_PRINT( "[" + GeneratorName  +"]" + " visiting BStmt");
-  auto & func = globalContext.currentFunc();
-  func.newBlock();
-  addBlockVarMap(); // this 
+	/* Code For BStmt Goes Here */
+	DEBUG_PRINT("[" + GeneratorName + "]" + " visiting BStmt");
+	auto &func = globalContext.currentFunc();
+	func.newBlock();
+	addBlockVarMap(); // this
 
-  if (b_stmt->blk_) b_stmt->blk_->accept(this);
-  // release the block
-  DEBUG_PRINT("release block");
-  func.releaseBlock();
-  removeBlockVarMap();
+	if (b_stmt->blk_)
+		b_stmt->blk_->accept(this);
+	// release the block
+	DEBUG_PRINT("release block");
+	func.releaseBlock();
+	removeBlockVarMap();
 }
 
 void JLCLLVMGenerator::visitDecl(Decl *decl)
 {
-  /* Code For Decl Goes Here */
-  if (decl->type_) decl->type_->accept(this);
-  auto temp_decl_type = temp_type;
+	/* Code For Decl Goes Here */
+	if (decl->type_)
+		decl->type_->accept(this);
+	auto temp_decl_type = temp_type;
 
+	// declare the type of specific data type, like array
+	switch (temp_decl_type.type)
+	{
+	case ARRAY:
+		// @TODO: there should be a better way to store the array type,
+		//  like using getTypeByName of llvm api.
+		DefineAndGetArrayType(
+			JLCType(ARRAY, temp_decl_type.type, temp_decl_type.dimension));
+		// x_array_type should be int_arr_type, double_arr_type, bool_arr_type, ptr_arr_type
+		break;
+	default:
+		break;
+	}
 
-  // declare the type of specific data type, like array
-  switch (temp_decl_type.type)
-  {
-    case ARRAY:
-      // @TODO: there should be a better way to store the array type, 
-      //  like using getTypeByName of llvm api.
-      DefineAndGetArrayType(
-          JLCType(ARRAY, temp_decl_type.type, temp_decl_type.dimension));
-      // x_array_type should be int_arr_type, double_arr_type, bool_arr_type, ptr_arr_type
-      break;
-    default:
-      break;
-  }
-
-  for (auto & item : *(decl->listitem_)){
-    temp_type = temp_decl_type; // !! this is important, as the type will pase to the next level
-    item->accept(this);
-  }
+	for (auto &item : *(decl->listitem_))
+	{
+		temp_type = temp_decl_type; // !! this is important, as the type will pase to the next level
+		item->accept(this);
+	}
 }
 
 void JLCLLVMGenerator::visitAss(Ass *ass)
 {
-  /* Code For Ass Goes Here */
+	/* Code For Ass Goes Here */
 
-  visitIdent(ass->ident_);
-  if (ass->expr_) ass->expr_->accept(this);
-  // llvm_temp_value_ is set by next level (accept)
-  auto var = getVarFromBlockMap(ass->ident_);
-  LLVM_builder_->CreateStore(llvm_temp_value_, var);
+	visitIdent(ass->ident_);
+	if (ass->expr_)
+		ass->expr_->accept(this);
+	// llvm_temp_value_ is set by next level (accept)
+	auto var = getVarFromBlockMap(ass->ident_);
+	LLVM_builder_->CreateStore(llvm_temp_value_, var);
 }
 
 void JLCLLVMGenerator::visitIncr(Incr *incr)
 {
-  /* Code For Incr Goes Here */
+	/* Code For Incr Goes Here */
 
-  // visitIdent(incr->ident_);
-  // x++ -> x=x+1
-  auto var = getVarFromBlockMap(incr->ident_);
-  // load x must but int type, it will be check by the typer checker
-  auto load = LLVM_builder_->CreateLoad(
-      convertType(INT), var, incr->ident_);
-  // add with 1 
-  auto op = LLVM_builder_->CreateAdd(
-        load, 
-        llvm::ConstantInt::get(*LLVM_Context_, 
-            llvm::APInt(32, 1)),
-        "add");
-  // store
-  LLVM_builder_->CreateStore(op, var);
+	// visitIdent(incr->ident_);
+	// x++ -> x=x+1
+	auto var = getVarFromBlockMap(incr->ident_);
+	// load x must but int type, it will be check by the typer checker
+	auto load = LLVM_builder_->CreateLoad(
+		convertType(INT), var, incr->ident_);
+	// add with 1
+	auto op = LLVM_builder_->CreateAdd(
+		load,
+		llvm::ConstantInt::get(*LLVM_Context_,
+							   llvm::APInt(32, 1)),
+		"add");
+	// store
+	LLVM_builder_->CreateStore(op, var);
 }
 
 void JLCLLVMGenerator::visitDecr(Decr *decr)
 {
-  /* Code For Decr Goes Here */
+	/* Code For Decr Goes Here */
 
-  // visitIdent(decr->ident_);
-  // x-- -> x=x-1
-  auto var = getVarFromBlockMap(decr->ident_);
-  // load x must but int type, it will be check by the typer checker
-  auto load = LLVM_builder_->CreateLoad(
-      convertType(INT), var, decr->ident_);
-  // sub 1 
-  auto op = LLVM_builder_->CreateSub(
-        load, 
-        llvm::ConstantInt::get(*LLVM_Context_, 
-            llvm::APInt(32, 1)),
-        "sub");
-  // store
-  LLVM_builder_->CreateStore(op, var);
-  // store does not return a value, 
-  // so we do not need to set llvm_temp_value_
+	// visitIdent(decr->ident_);
+	// x-- -> x=x-1
+	auto var = getVarFromBlockMap(decr->ident_);
+	// load x must but int type, it will be check by the typer checker
+	auto load = LLVM_builder_->CreateLoad(
+		convertType(INT), var, decr->ident_);
+	// sub 1
+	auto op = LLVM_builder_->CreateSub(
+		load,
+		llvm::ConstantInt::get(*LLVM_Context_,
+							   llvm::APInt(32, 1)),
+		"sub");
+	// store
+	LLVM_builder_->CreateStore(op, var);
+	// store does not return a value,
+	// so we do not need to set llvm_temp_value_
 }
 
 void JLCLLVMGenerator::visitRet(Ret *ret)
 {
-  /* Code For Ret Goes Here */
+	/* Code For Ret Goes Here */
 
-  if (ret->expr_) ret->expr_->accept(this);
-  // add llvm return 
-  LLVM_builder_->CreateRet(llvm_temp_value_);
+	if (ret->expr_)
+		ret->expr_->accept(this);
+	// add llvm return
+	LLVM_builder_->CreateRet(llvm_temp_value_);
 }
 
 void JLCLLVMGenerator::visitVRet(VRet *v_ret)
 {
-  /* Code For VRet Goes Here */
-  LLVM_builder_->CreateRetVoid();
-  DEBUG_PRINT("visitVRet");
+	/* Code For VRet Goes Here */
+	LLVM_builder_->CreateRetVoid();
+	DEBUG_PRINT("visitVRet");
 }
 
 void JLCLLVMGenerator::visitCond(Cond *cond)
 {
-  /* Code For Cond Goes Here */
-  auto current_block = LLVM_builder_->GetInsertBlock();
-  auto parent = current_block->getParent();
-  auto cond_true_block = llvm::BasicBlock::Create(
-      *LLVM_Context_, "cond.true", parent);
-  auto cond_end_block = llvm::BasicBlock::Create(
-      *LLVM_Context_, "cond.end", parent);
+	/* Code For Cond Goes Here */
+	auto current_block = LLVM_builder_->GetInsertBlock();
+	auto parent = current_block->getParent();
+	auto cond_true_block = llvm::BasicBlock::Create(
+		*LLVM_Context_, "cond.true", parent);
+	auto cond_end_block = llvm::BasicBlock::Create(
+		*LLVM_Context_, "cond.end", parent);
 
-  if (cond->expr_) cond->expr_->accept(this);
-  auto expr_llvm_value = llvm_temp_value_;
+	if (cond->expr_)
+		cond->expr_->accept(this);
+	auto expr_llvm_value = llvm_temp_value_;
 
-  LLVM_builder_->CreateCondBr(expr_llvm_value, cond_true_block, cond_end_block);
-  LLVM_builder_->SetInsertPoint(cond_true_block);
+	LLVM_builder_->CreateCondBr(expr_llvm_value, cond_true_block, cond_end_block);
+	LLVM_builder_->SetInsertPoint(cond_true_block);
 
-  auto func = globalContext.currentFunc();
-  func.newBlock(); // just logic block, no need to create a label
-  addBlockVarMap();// just logic block, no need to create a label
+	auto func = globalContext.currentFunc();
+	func.newBlock();  // just logic block, no need to create a label
+	addBlockVarMap(); // just logic block, no need to create a label
 
-  if (cond->stmt_) cond->stmt_->accept(this);
-  auto stmt_llvm_value = llvm_temp_value_;
-  (void) stmt_llvm_value; // make compiler happy
+	if (cond->stmt_)
+		cond->stmt_->accept(this);
+	auto stmt_llvm_value = llvm_temp_value_;
+	(void)stmt_llvm_value; // make compiler happy
 
-  func.releaseBlock(); // release the logic block
-  removeBlockVarMap(); // release the logic block
+	func.releaseBlock(); // release the logic block
+	removeBlockVarMap(); // release the logic block
 
-  // if the block is not terminated, we need to jump to the end block
-  if (LLVM_builder_->GetInsertBlock()->getTerminator() == nullptr)
-  {
-    LLVM_builder_->CreateBr(cond_end_block); 
-    DEBUG_PRINT("Branch:" + std::string(LLVM_builder_->GetInsertBlock()->getName()) 
-      +" is not terminated by return" );
-  }
-  LLVM_builder_->SetInsertPoint(cond_end_block); 
+	// if the block is not terminated, we need to jump to the end block
+	if (LLVM_builder_->GetInsertBlock()->getTerminator() == nullptr)
+	{
+		LLVM_builder_->CreateBr(cond_end_block);
+		DEBUG_PRINT("Branch:" + std::string(LLVM_builder_->GetInsertBlock()->getName()) + " is not terminated by return");
+	}
+	LLVM_builder_->SetInsertPoint(cond_end_block);
 }
 
 void JLCLLVMGenerator::visitCondElse(CondElse *cond_else)
 {
-  /* Code For CondElse Goes Here */
-  auto current_block = LLVM_builder_->GetInsertBlock();
-  auto parent = current_block->getParent();
-  auto cond_true_block = llvm::BasicBlock::Create(
-      *LLVM_Context_, "cond.true", parent);
-  auto cond_else_block = llvm::BasicBlock::Create(
-      *LLVM_Context_, "cond.else", parent);
-  auto cond_end_block = llvm::BasicBlock::Create(
-      *LLVM_Context_, "cond.end", parent);
-  
+	/* Code For CondElse Goes Here */
+	auto current_block = LLVM_builder_->GetInsertBlock();
+	auto parent = current_block->getParent();
+	auto cond_true_block = llvm::BasicBlock::Create(
+		*LLVM_Context_, "cond.true", parent);
+	auto cond_else_block = llvm::BasicBlock::Create(
+		*LLVM_Context_, "cond.else", parent);
+	auto cond_end_block = llvm::BasicBlock::Create(
+		*LLVM_Context_, "cond.end", parent);
 
-  if (cond_else->expr_) cond_else->expr_->accept(this);
-  auto expr_llvm_value = llvm_temp_value_;
+	if (cond_else->expr_)
+		cond_else->expr_->accept(this);
+	auto expr_llvm_value = llvm_temp_value_;
 
-  LLVM_builder_->CreateCondBr(expr_llvm_value, cond_true_block, cond_else_block);
-  LLVM_builder_->SetInsertPoint(cond_true_block);
+	LLVM_builder_->CreateCondBr(expr_llvm_value, cond_true_block, cond_else_block);
+	LLVM_builder_->SetInsertPoint(cond_true_block);
 
-  auto func = globalContext.currentFunc();
-  func.newBlock(); // just logic block, no need to create a label
-  addBlockVarMap();// just logic block, no need to create a label
-  if (cond_else->stmt_1) cond_else->stmt_1->accept(this);
-  auto stmt_1_llvm_value = llvm_temp_value_;
-  (void)stmt_1_llvm_value; // make compiler happy
+	auto func = globalContext.currentFunc();
+	func.newBlock();  // just logic block, no need to create a label
+	addBlockVarMap(); // just logic block, no need to create a label
+	if (cond_else->stmt_1)
+		cond_else->stmt_1->accept(this);
+	auto stmt_1_llvm_value = llvm_temp_value_;
+	(void)stmt_1_llvm_value; // make compiler happy
 
-  func.releaseBlock(); // release the logic block
-  removeBlockVarMap(); // release the logic block
+	func.releaseBlock(); // release the logic block
+	removeBlockVarMap(); // release the logic block
 
-  bool need_end_block = false;
-  // if the block is not terminated, we need to jump to the end block
-  if (cond_true_block->getTerminator() == nullptr)
-  {
-    LLVM_builder_->CreateBr(cond_end_block);
-    need_end_block = true;
-    DEBUG_PRINT("Branch IF:" + std::string(cond_true_block->getName()) 
-      +" is not terminated by return" );
-  }
+	bool need_end_block = false;
+	// if the block is not terminated, we need to jump to the end block
+	if (cond_true_block->getTerminator() == nullptr)
+	{
+		LLVM_builder_->CreateBr(cond_end_block);
+		need_end_block = true;
+		DEBUG_PRINT("Branch IF:" + std::string(cond_true_block->getName()) + " is not terminated by return");
+	}
 
-  LLVM_builder_->SetInsertPoint(cond_else_block);
+	LLVM_builder_->SetInsertPoint(cond_else_block);
 
-  func.newBlock(); // just logic block, no need to create a label
-  addBlockVarMap();// just logic block, no need to create a label
-  if (cond_else->stmt_2) cond_else->stmt_2->accept(this);
-  auto stmt_2_llvm_value = llvm_temp_value_;
-  (void)stmt_2_llvm_value; // make compiler happy
-  func.releaseBlock(); // release the logic block
-  removeBlockVarMap(); // release the logic block
+	func.newBlock();  // just logic block, no need to create a label
+	addBlockVarMap(); // just logic block, no need to create a label
+	if (cond_else->stmt_2)
+		cond_else->stmt_2->accept(this);
+	auto stmt_2_llvm_value = llvm_temp_value_;
+	(void)stmt_2_llvm_value; // make compiler happy
+	func.releaseBlock();	 // release the logic block
+	removeBlockVarMap();	 // release the logic block
 
-  // if the block is not terminated, we need to jump to the end block
-  if (cond_else_block->getTerminator() == nullptr)
-  {
-    LLVM_builder_->CreateBr(cond_end_block);
-    need_end_block = true;
-    DEBUG_PRINT("Branch ELSE:" + std::string(cond_else_block->getName()) 
-      +" is not terminated by return" );
-  } 
-  if (need_end_block){ 
-    // if one of the block is not terminated, we need to jump to the end block
-    LLVM_builder_->SetInsertPoint(cond_end_block);
-  } else{
-    // remove the end block
-    cond_end_block->eraseFromParent();
-  }
-  
+	// if the block is not terminated, we need to jump to the end block
+	if (cond_else_block->getTerminator() == nullptr)
+	{
+		LLVM_builder_->CreateBr(cond_end_block);
+		need_end_block = true;
+		DEBUG_PRINT("Branch ELSE:" + std::string(cond_else_block->getName()) + " is not terminated by return");
+	}
+	if (need_end_block)
+	{
+		// if one of the block is not terminated, we need to jump to the end block
+		LLVM_builder_->SetInsertPoint(cond_end_block);
+	}
+	else
+	{
+		// remove the end block
+		cond_end_block->eraseFromParent();
+	}
 }
 
 void JLCLLVMGenerator::visitWhile(While *while_)
 {
-  /* Code For While Goes Here */
-  auto current_block = LLVM_builder_->GetInsertBlock();
-  auto parent = current_block->getParent();
-  auto cond_block = llvm::BasicBlock::Create(
-      *LLVM_Context_, "while.cond", parent);
-  auto loop_block = llvm::BasicBlock::Create(
-      *LLVM_Context_, "while.loop", parent);
-  auto end_block = llvm::BasicBlock::Create(
-      *LLVM_Context_, "while.end", parent);
+	/* Code For While Goes Here */
+	auto current_block = LLVM_builder_->GetInsertBlock();
+	auto parent = current_block->getParent();
+	auto cond_block = llvm::BasicBlock::Create(
+		*LLVM_Context_, "while.cond", parent);
+	auto loop_block = llvm::BasicBlock::Create(
+		*LLVM_Context_, "while.loop", parent);
+	auto end_block = llvm::BasicBlock::Create(
+		*LLVM_Context_, "while.end", parent);
 
-  // jump to the cond block
-  LLVM_builder_->CreateBr(cond_block);
-  LLVM_builder_->SetInsertPoint(cond_block);
-  if (while_->expr_) while_->expr_->accept(this);
-  auto expr_llvm_value = llvm_temp_value_;
-  // jump to the loop block or end block
-  LLVM_builder_->CreateCondBr(expr_llvm_value, loop_block, end_block);
-  LLVM_builder_->SetInsertPoint(loop_block);
-  // create a new block for the loop
-  auto func = globalContext.currentFunc();
-  func.newBlock(); // just logic block, no need to create a label
-  addBlockVarMap();// just logic block, no need to create a label
-  if (while_->stmt_) while_->stmt_->accept(this);
-  auto stmt_llvm_value = llvm_temp_value_;
-  (void)stmt_llvm_value; // make compiler happy
-  LLVM_builder_->CreateBr(cond_block);
-  func.releaseBlock(); // release the logic block
-  removeBlockVarMap(); // release the logic block
-  // end block
-  LLVM_builder_->SetInsertPoint(end_block);
+	// jump to the cond block
+	LLVM_builder_->CreateBr(cond_block);
+	LLVM_builder_->SetInsertPoint(cond_block);
+	if (while_->expr_)
+		while_->expr_->accept(this);
+	auto expr_llvm_value = llvm_temp_value_;
+	// jump to the loop block or end block
+	LLVM_builder_->CreateCondBr(expr_llvm_value, loop_block, end_block);
+	LLVM_builder_->SetInsertPoint(loop_block);
+	// create a new block for the loop
+	auto func = globalContext.currentFunc();
+	func.newBlock();  // just logic block, no need to create a label
+	addBlockVarMap(); // just logic block, no need to create a label
+	if (while_->stmt_)
+		while_->stmt_->accept(this);
+	auto stmt_llvm_value = llvm_temp_value_;
+	(void)stmt_llvm_value; // make compiler happy
+	LLVM_builder_->CreateBr(cond_block);
+	func.releaseBlock(); // release the logic block
+	removeBlockVarMap(); // release the logic block
+	// end block
+	LLVM_builder_->SetInsertPoint(end_block);
 }
 
 void JLCLLVMGenerator::visitSExp(SExp *s_exp)
 {
-  /* Code For SExp Goes Here */
+	/* Code For SExp Goes Here */
 
-  if (s_exp->expr_) s_exp->expr_->accept(this);
-
+	if (s_exp->expr_)
+		s_exp->expr_->accept(this);
 }
 
 void JLCLLVMGenerator::visitNoInit(NoInit *no_init)
 {
-  /* Code For NoInit Goes Here */
-  visitIdent(no_init->ident_);
-  auto temp_decl_type = temp_type; // !this type is passed from top level
-  auto & frame = globalContext.currentFunc();
-  frame.addVar(no_init->ident_, temp_decl_type);
+	/* Code For NoInit Goes Here */
+	visitIdent(no_init->ident_);
+	auto temp_decl_type = temp_type; // !this type is passed from top level
+	auto &frame = globalContext.currentFunc();
+	frame.addVar(no_init->ident_, temp_decl_type);
 
-  
-  llvm::Value* init_val = nullptr;
-  switch (temp_decl_type.type)
-  {
-  case BOOL:
-    init_val = llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(1, 0));
-    break;
-  case INT:
-    init_val = llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 0));
-    break;
-  case DOUB:
-    init_val = llvm::ConstantFP::get(*LLVM_Context_, llvm::APFloat(0.0));
-    break;
-  case ARRAY:
-      // declare a local 0 size array, only with length 0
-      init_val = LLVM_builder_->CreateAlloca(llvm::Type::getInt32Ty(*LLVM_Context_), nullptr, "null_arr");
-      // store the null value to the array (set length to 0)
-      LLVM_builder_->CreateStore(llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 0)), init_val);
-    break;
-  default:
-    break;
-  }
-  /*todo: this should be an optional part, 
-    which initialize the variable when allocates the memory
-    now we just first allocate the memory, and then use sort to initialize the memory
-    auto alloca = LLVM_builder_->CreateAlloca(convertType(temp_decl_type), init_val, no_init->ident_);
-  */ 
+	llvm::Value *init_val = nullptr;
+	switch (temp_decl_type.type)
+	{
+	case BOOL:
+		init_val = llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(1, 0));
+		break;
+	case INT:
+		init_val = llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 0));
+		break;
+	case DOUB:
+		init_val = llvm::ConstantFP::get(*LLVM_Context_, llvm::APFloat(0.0));
+		break;
+	case ARRAY:
+		// declare a local 0 size array, only with length 0
+		init_val = LLVM_builder_->CreateAlloca(llvm::Type::getInt32Ty(*LLVM_Context_), nullptr, "null_arr");
+		// store the null value to the array (set length to 0)
+		LLVM_builder_->CreateStore(llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 0)), init_val);
+		break;
+	default:
+		break;
+	}
+	/*todo: this should be an optional part,
+	  which initialize the variable when allocates the memory
+	  now we just first allocate the memory, and then use sort to initialize the memory
+	  auto alloca = LLVM_builder_->CreateAlloca(convertType(temp_decl_type), init_val, no_init->ident_);
+	*/
 
-  auto alloca = LLVM_builder_->CreateAlloca(convertType(temp_decl_type), nullptr, no_init->ident_);
+	auto alloca = LLVM_builder_->CreateAlloca(convertType(temp_decl_type), nullptr, no_init->ident_);
 
-
-  addVarToBlockMap(no_init->ident_, alloca);
-  if (init_val != nullptr)
-  {
-    LLVM_builder_->CreateStore(init_val, alloca);
-  }
+	addVarToBlockMap(no_init->ident_, alloca);
+	if (init_val != nullptr)
+	{
+		LLVM_builder_->CreateStore(init_val, alloca);
+	}
 }
 
 void JLCLLVMGenerator::visitInit(Init *init)
 {
-  /* Code For Init Goes Here */
-  visitIdent(init->ident_);
-  auto temp_decl_type = temp_type; // !this type is passed from top level
-  auto & frame = globalContext.currentFunc();
-  
+	/* Code For Init Goes Here */
+	visitIdent(init->ident_);
+	auto temp_decl_type = temp_type; // !this type is passed from top level
+	auto &frame = globalContext.currentFunc();
 
-  if (init->expr_) init->expr_->accept(this);
-  
-  // why we add the var after xx->accept(this)?
-  // consider the case:  int x=1; {int x = x;}
-  frame.addVar(init->ident_, temp_decl_type);
-  
-  auto alloca = LLVM_builder_->CreateAlloca(convertType(temp_decl_type), nullptr, init->ident_);
-  // add the variable to the block map
-  addVarToBlockMap(init->ident_, alloca);
+	if (init->expr_)
+		init->expr_->accept(this);
 
-  // store a constant value to the memory
-  LLVM_builder_->CreateStore(llvm_temp_value_, alloca);
+	// why we add the var after xx->accept(this)?
+	// consider the case:  int x=1; {int x = x;}
+	frame.addVar(init->ident_, temp_decl_type);
+
+	auto alloca = LLVM_builder_->CreateAlloca(convertType(temp_decl_type), nullptr, init->ident_);
+	// add the variable to the block map
+	addVarToBlockMap(init->ident_, alloca);
+
+	// store a constant value to the memory
+	LLVM_builder_->CreateStore(llvm_temp_value_, alloca);
 }
 
 void JLCLLVMGenerator::visitInt(Int *int_)
 {
-  /* Code For Int Goes Here */
-  temp_type = JLCType(INT);
-
+	/* Code For Int Goes Here */
+	temp_type = JLCType(INT);
 }
 
 void JLCLLVMGenerator::visitDoub(Doub *doub)
 {
-  /* Code For Doub Goes Here */
-  temp_type = JLCType(DOUB);
+	/* Code For Doub Goes Here */
+	temp_type = JLCType(DOUB);
 }
 
 void JLCLLVMGenerator::visitBool(Bool *bool_)
 {
-  /* Code For Bool Goes Here */
-  temp_type = JLCType(BOOL);
+	/* Code For Bool Goes Here */
+	temp_type = JLCType(BOOL);
 }
 
 void JLCLLVMGenerator::visitVoid(Void *void_)
 {
-  /* Code For Void Goes Here */
-  temp_type = JLCType(VOID);
+	/* Code For Void Goes Here */
+	temp_type = JLCType(VOID);
 }
 
 void JLCLLVMGenerator::visitFun(Fun *fun)
 {
-  /* Code For Fun Goes Here */
+	/* Code For Fun Goes Here */
 
-  if (fun->type_) fun->type_->accept(this);
-  if (fun->listtype_) fun->listtype_->accept(this);
-
+	if (fun->type_)
+		fun->type_->accept(this);
+	if (fun->listtype_)
+		fun->listtype_->accept(this);
 }
 
 void JLCLLVMGenerator::visitEVar(EVar *e_var)
 {
-  /* Code For EVar Goes Here */
-  auto & frame = globalContext.currentFunc();
-  temp_type = frame.getVarType(e_var->ident_);
-  // visitIdent(e_var->ident_);
-  
-  DEBUG_PRINT("Visit EVar: " + e_var->ident_ +  " type: " + to_string(temp_type));
+	/* Code For EVar Goes Here */
+	auto &frame = globalContext.currentFunc();
+	temp_type = frame.getVarType(e_var->ident_);
+	// visitIdent(e_var->ident_);
 
-  // when we access a variable, we need to load the value from the memory
-  // llvm load 
-  llvm::Value* var = getVarFromBlockMap(e_var->ident_);
-  setLLVMTempValue( LLVM_builder_->CreateLoad(convertType(temp_type), var, e_var->ident_));
-  DEBUG_PRINT("Load variable: " + e_var->ident_);
-  // @todo: maybe still need maintain the type of the variable
+	DEBUG_PRINT("Visit EVar: " + e_var->ident_ + " type: " + to_string(temp_type));
+
+	// when we access a variable, we need to load the value from the memory
+	// llvm load
+	llvm::Value *var = getVarFromBlockMap(e_var->ident_);
+	setLLVMTempValue(LLVM_builder_->CreateLoad(convertType(temp_type), var, e_var->ident_));
+	DEBUG_PRINT("Load variable: " + e_var->ident_);
+	// @todo: maybe still need maintain the type of the variable
 }
 
 void JLCLLVMGenerator::visitELitInt(ELitInt *e_lit_int)
 {
-  /* Code For ELitInt Goes Here */
+	/* Code For ELitInt Goes Here */
 
-  visitInteger(e_lit_int->integer_);
-  temp_type = JLCType(INT);
-  
-  // llvm constant
-  setLLVMTempValue(llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, e_lit_int->integer_)));
+	visitInteger(e_lit_int->integer_);
+	temp_type = JLCType(INT);
 
+	// llvm constant
+	setLLVMTempValue(llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, e_lit_int->integer_)));
 }
 
 void JLCLLVMGenerator::visitELitDoub(ELitDoub *e_lit_doub)
 {
-  /* Code For ELitDoub Goes Here */
+	/* Code For ELitDoub Goes Here */
 
-  visitDouble(e_lit_doub->double_);
-  temp_type = JLCType(DOUB);
-  // llvm constant
-  setLLVMTempValue(llvm::ConstantFP::get(*LLVM_Context_, llvm::APFloat(e_lit_doub->double_)));
+	visitDouble(e_lit_doub->double_);
+	temp_type = JLCType(DOUB);
+	// llvm constant
+	setLLVMTempValue(llvm::ConstantFP::get(*LLVM_Context_, llvm::APFloat(e_lit_doub->double_)));
 }
 
 void JLCLLVMGenerator::visitELitTrue(ELitTrue *e_lit_true)
 {
-  /* Code For ELitTrue Goes Here */
+	/* Code For ELitTrue Goes Here */
 
-  temp_type = JLCType(BOOL);
-  // llvm constant 
-  setLLVMTempValue( llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(1, 1)));
-
+	temp_type = JLCType(BOOL);
+	// llvm constant
+	setLLVMTempValue(llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(1, 1)));
 }
 
 void JLCLLVMGenerator::visitELitFalse(ELitFalse *e_lit_false)
 {
-  /* Code For ELitFalse Goes Here */
-  temp_type = JLCType(BOOL);
-  // llvm constant
-  setLLVMTempValue( llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(1, 0)));
+	/* Code For ELitFalse Goes Here */
+	temp_type = JLCType(BOOL);
+	// llvm constant
+	setLLVMTempValue(llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(1, 0)));
 }
 
 void JLCLLVMGenerator::visitEApp(EApp *e_app)
 {
-  DEBUG_PRINT("Visit EApp: " + e_app->ident_);
-  /* Code For EApp Goes Here */
-  std::vector<llvm::Value*> args;
-  // iterate through the arguments, and collect the llvm values
-  for (auto & expr : *(e_app->listexpr_))
-  {
-    expr->accept(this);
-    args.push_back(llvm_temp_value_);
-  }
-  // add llvm function call
-  auto llvm_func = LLVM_module_->getFunction(e_app->ident_);
-  // check if the return type is void
-  std::string tag = "";
-  DEBUG_PRINT("EApp check return type")
-  if (!llvm_func->getReturnType()->isVoidTy())
-  {
-    DEBUG_PRINT("EApp return type is not void")
-    // if return type is void, then we have to pass empty string as tag
-    tag = e_app->ident_;
-  }
-  DEBUG_PRINT("EApp create call")
-  setLLVMTempValue( LLVM_builder_->CreateCall(llvm_func, args, tag));
-  temp_type = globalContext.getFunc(e_app->ident_).returnType;
-  DEBUG_PRINT("Call function: " + e_app->ident_);
+	DEBUG_PRINT("Visit EApp: " + e_app->ident_);
+	/* Code For EApp Goes Here */
+	std::vector<llvm::Value *> args;
+	// iterate through the arguments, and collect the llvm values
+	for (auto &expr : *(e_app->listexpr_))
+	{
+		expr->accept(this);
+		args.push_back(llvm_temp_value_);
+	}
+	// add llvm function call
+	auto llvm_func = LLVM_module_->getFunction(e_app->ident_);
+	// check if the return type is void
+	std::string tag = "";
+	DEBUG_PRINT("EApp check return type")
+	if (!llvm_func->getReturnType()->isVoidTy())
+	{
+		DEBUG_PRINT("EApp return type is not void")
+		// if return type is void, then we have to pass empty string as tag
+		tag = e_app->ident_;
+	}
+	DEBUG_PRINT("EApp create call")
+	setLLVMTempValue(LLVM_builder_->CreateCall(llvm_func, args, tag));
+	temp_type = globalContext.getFunc(e_app->ident_).returnType;
+	DEBUG_PRINT("Call function: " + e_app->ident_);
 }
 
 void JLCLLVMGenerator::visitEString(EString *e_string)
 {
-  /* Code For EString Goes Here */
-  temp_type = JLCType(STRING);
-  
-  // check if the string is already in the global context
-  // @TODO: this is not a good way to store the string, 
-  //        using llvm api to check if a string is already in the global context
-  // why we convert string to id? Considering the case a very long string.
-  static int global_string_id = 0;
-  static std::map<std::string, int> string_id_map;
-  static std::map<int, llvm::GlobalVariable*> global_sid_var_map;
-  
-  int id = -1;
-  if (string_id_map.find(e_string->string_) == string_id_map.end())
-  {
-    string_id_map[e_string->string_] = global_string_id;
-    global_string_id++;
-  }
-  id = string_id_map[e_string->string_];
-  if (global_sid_var_map.find(id) == global_sid_var_map.end())
-  {
-    DEBUG_PRINT("Add string to global context: " 
-      + e_string->string_ + " id: " + std::to_string(id));
+	/* Code For EString Goes Here */
+	temp_type = JLCType(STRING);
 
-    auto global_var = new llvm::GlobalVariable(
-      *LLVM_module_, 
-      llvm::ArrayType::get(llvm::Type::getInt8Ty(*LLVM_Context_), e_string->string_.size() + 1),
-      true,
-      llvm::GlobalValue::PrivateLinkage,
-      llvm::ConstantDataArray::getString(*LLVM_Context_, e_string->string_),
-      "str" + std::to_string(id)
-    );
-    global_sid_var_map[id] = global_var;
-  }
+	// check if the string is already in the global context
+	// @TODO: this is not a good way to store the string,
+	//        using llvm api to check if a string is already in the global context
+	// why we convert string to id? Considering the case a very long string.
+	static int global_string_id = 0;
+	static std::map<std::string, int> string_id_map;
+	static std::map<int, llvm::GlobalVariable *> global_sid_var_map;
 
-  setLLVMTempValue( global_sid_var_map[id]);
+	int id = -1;
+	if (string_id_map.find(e_string->string_) == string_id_map.end())
+	{
+		string_id_map[e_string->string_] = global_string_id;
+		global_string_id++;
+	}
+	id = string_id_map[e_string->string_];
+	if (global_sid_var_map.find(id) == global_sid_var_map.end())
+	{
+		DEBUG_PRINT("Add string to global context: " + e_string->string_ + " id: " + std::to_string(id));
+
+		auto global_var = new llvm::GlobalVariable(
+			*LLVM_module_,
+			llvm::ArrayType::get(llvm::Type::getInt8Ty(*LLVM_Context_), e_string->string_.size() + 1),
+			true,
+			llvm::GlobalValue::PrivateLinkage,
+			llvm::ConstantDataArray::getString(*LLVM_Context_, e_string->string_),
+			"str" + std::to_string(id));
+		global_sid_var_map[id] = global_var;
+	}
+
+	setLLVMTempValue(global_sid_var_map[id]);
 }
 
 void JLCLLVMGenerator::visitNeg(Neg *neg)
 {
-  /* Code For Neg Goes Here */
+	/* Code For Neg Goes Here */
 
-  if (neg->expr_) neg->expr_->accept(this);
-  // llvm neg
-  // if value is int, then we use CreateNeg
-  if(llvm_temp_value_->getType()->isIntegerTy())
-  {
-    setLLVMTempValue( LLVM_builder_->CreateNeg(llvm_temp_value_));
-  }
-  else
-  {
-    setLLVMTempValue( LLVM_builder_->CreateFNeg(llvm_temp_value_));
-  }
+	if (neg->expr_)
+		neg->expr_->accept(this);
+	// llvm neg
+	// if value is int, then we use CreateNeg
+	if (llvm_temp_value_->getType()->isIntegerTy())
+	{
+		setLLVMTempValue(LLVM_builder_->CreateNeg(llvm_temp_value_));
+	}
+	else
+	{
+		setLLVMTempValue(LLVM_builder_->CreateFNeg(llvm_temp_value_));
+	}
 }
 
 void JLCLLVMGenerator::visitNot(Not *not_)
 {
-  /* Code For Not Goes Here */
+	/* Code For Not Goes Here */
 
-  if (not_->expr_) not_->expr_->accept(this);
-  // llvm not
-  setLLVMTempValue(LLVM_builder_->CreateNot(llvm_temp_value_));
-
+	if (not_->expr_)
+		not_->expr_->accept(this);
+	// llvm not
+	setLLVMTempValue(LLVM_builder_->CreateNot(llvm_temp_value_));
 }
 
 void JLCLLVMGenerator::visitEMul(EMul *e_mul)
 {
-  /* Code For EMul Goes Here */
+	/* Code For EMul Goes Here */
 
-  if (e_mul->expr_1) e_mul->expr_1->accept(this);
-  auto expr_1_llvm_value = llvm_temp_value_;
-  if (e_mul->mulop_) e_mul->mulop_->accept(this);
-  auto local_op = temp_op;
-  if (e_mul->expr_2) e_mul->expr_2->accept(this);
-  auto expr_2_llvm_value = llvm_temp_value_;
+	if (e_mul->expr_1)
+		e_mul->expr_1->accept(this);
+	auto expr_1_llvm_value = llvm_temp_value_;
+	if (e_mul->mulop_)
+		e_mul->mulop_->accept(this);
+	auto local_op = temp_op;
+	if (e_mul->expr_2)
+		e_mul->expr_2->accept(this);
+	auto expr_2_llvm_value = llvm_temp_value_;
 
-  switch (local_op)
-  {
-  case eMUL:
-    // if value is int, then we use CreateMul
-    if(expr_1_llvm_value->getType()->isIntegerTy())
-    {
-      setLLVMTempValue( LLVM_builder_->CreateMul(
-          expr_1_llvm_value, expr_2_llvm_value, "mul"));
-    }
-    else
-    {
-      setLLVMTempValue( LLVM_builder_->CreateFMul(
-          expr_1_llvm_value, expr_2_llvm_value, "mul"));
-    }
-    break;
-  case eDIV:
-    // if value is int, then we use CreateSDiv
-    if(expr_1_llvm_value->getType()->isIntegerTy())
-    {
-      setLLVMTempValue( LLVM_builder_->CreateSDiv(
-          expr_1_llvm_value, expr_2_llvm_value, "div"));
-    }
-    else
-    {
-      setLLVMTempValue( LLVM_builder_->CreateFDiv(
-          expr_1_llvm_value, expr_2_llvm_value, "div"));
-    }
-    break;
-  case eMOD:
-    // only for int
-    setLLVMTempValue( LLVM_builder_->CreateSRem(
-        expr_1_llvm_value, expr_2_llvm_value, "mod"));
-    break;
-  default:
-    ERRPR_HANDLE("unknown EMUL operation")
-    break;
-  }
+	switch (local_op)
+	{
+	case eMUL:
+		// if value is int, then we use CreateMul
+		if (expr_1_llvm_value->getType()->isIntegerTy())
+		{
+			setLLVMTempValue(LLVM_builder_->CreateMul(
+				expr_1_llvm_value, expr_2_llvm_value, "mul"));
+		}
+		else
+		{
+			setLLVMTempValue(LLVM_builder_->CreateFMul(
+				expr_1_llvm_value, expr_2_llvm_value, "mul"));
+		}
+		break;
+	case eDIV:
+		// if value is int, then we use CreateSDiv
+		if (expr_1_llvm_value->getType()->isIntegerTy())
+		{
+			setLLVMTempValue(LLVM_builder_->CreateSDiv(
+				expr_1_llvm_value, expr_2_llvm_value, "div"));
+		}
+		else
+		{
+			setLLVMTempValue(LLVM_builder_->CreateFDiv(
+				expr_1_llvm_value, expr_2_llvm_value, "div"));
+		}
+		break;
+	case eMOD:
+		// only for int
+		setLLVMTempValue(LLVM_builder_->CreateSRem(
+			expr_1_llvm_value, expr_2_llvm_value, "mod"));
+		break;
+	default:
+		LLVM_ERROR_HANDLE("unknown EMUL operation")
+		break;
+	}
 }
 
 void JLCLLVMGenerator::visitEAdd(EAdd *e_add)
 {
-  /* Code For EAdd Goes Here */
+	/* Code For EAdd Goes Here */
 
-  if (e_add->expr_1) e_add->expr_1->accept(this);
-  auto expr_1_llvm_value = llvm_temp_value_;
-  if (e_add->addop_) e_add->addop_->accept(this);
-  auto local_op = temp_op;
-  if (e_add->expr_2) e_add->expr_2->accept(this);
-  auto expr_2_llvm_value = llvm_temp_value_;
+	if (e_add->expr_1)
+		e_add->expr_1->accept(this);
+	auto expr_1_llvm_value = llvm_temp_value_;
+	if (e_add->addop_)
+		e_add->addop_->accept(this);
+	auto local_op = temp_op;
+	if (e_add->expr_2)
+		e_add->expr_2->accept(this);
+	auto expr_2_llvm_value = llvm_temp_value_;
 
-  switch (local_op)
-  {
-  case eADD:
-    // if value is int, then we use CreateAdd
-    if(expr_1_llvm_value->getType()->isIntegerTy())
-    {
-      setLLVMTempValue( LLVM_builder_->CreateAdd(
-          expr_1_llvm_value, expr_2_llvm_value, "add"));
-    }
-    else
-    {
-      setLLVMTempValue( LLVM_builder_->CreateFAdd(
-          expr_1_llvm_value, expr_2_llvm_value, "add"));
-    }
-    break;
-  case eSUB:
-    // if value is int, then we use CreateSub
-    if(expr_1_llvm_value->getType()->isIntegerTy())
-    {
-      setLLVMTempValue( LLVM_builder_->CreateSub(
-          expr_1_llvm_value, expr_2_llvm_value, "sub"));
-    }
-    else
-    {
-      setLLVMTempValue( LLVM_builder_->CreateFSub(
-          expr_1_llvm_value, expr_2_llvm_value, "sub"));
-    }
-    break;
-  default:
-    ERRPR_HANDLE("unknown EADD operation")
-    break;
-  }
-
+	switch (local_op)
+	{
+	case eADD:
+		// if value is int, then we use CreateAdd
+		if (expr_1_llvm_value->getType()->isIntegerTy())
+		{
+			setLLVMTempValue(LLVM_builder_->CreateAdd(
+				expr_1_llvm_value, expr_2_llvm_value, "add"));
+		}
+		else
+		{
+			setLLVMTempValue(LLVM_builder_->CreateFAdd(
+				expr_1_llvm_value, expr_2_llvm_value, "add"));
+		}
+		break;
+	case eSUB:
+		// if value is int, then we use CreateSub
+		if (expr_1_llvm_value->getType()->isIntegerTy())
+		{
+			setLLVMTempValue(LLVM_builder_->CreateSub(
+				expr_1_llvm_value, expr_2_llvm_value, "sub"));
+		}
+		else
+		{
+			setLLVMTempValue(LLVM_builder_->CreateFSub(
+				expr_1_llvm_value, expr_2_llvm_value, "sub"));
+		}
+		break;
+	default:
+		LLVM_ERROR_HANDLE("unknown EADD operation")
+		break;
+	}
 }
 
 void JLCLLVMGenerator::visitERel(ERel *e_rel)
 {
-  /* Code For ERel Goes Here */
-  if (e_rel->expr_1) e_rel->expr_1->accept(this);
-  auto expr_1_llvm_value = llvm_temp_value_;
-  if (e_rel->relop_) e_rel->relop_->accept(this);
-  auto local_op = temp_op;
-  if (e_rel->expr_2) e_rel->expr_2->accept(this);
-  auto expr_2_llvm_value = llvm_temp_value_;
+	/* Code For ERel Goes Here */
+	if (e_rel->expr_1)
+		e_rel->expr_1->accept(this);
+	auto expr_1_llvm_value = llvm_temp_value_;
+	if (e_rel->relop_)
+		e_rel->relop_->accept(this);
+	auto local_op = temp_op;
+	if (e_rel->expr_2)
+		e_rel->expr_2->accept(this);
+	auto expr_2_llvm_value = llvm_temp_value_;
 
-  switch (local_op)
-  {
-  case eLT:
-    // if value is int, then we use CreateICmpSLT
-    if(expr_1_llvm_value->getType()->isIntegerTy())
-    {
-      setLLVMTempValue( LLVM_builder_->CreateICmpSLT(
-          expr_1_llvm_value, expr_2_llvm_value, "lt"));
-    }
-    else
-    {
-      setLLVMTempValue( LLVM_builder_->CreateFCmpOLT(
-          expr_1_llvm_value, expr_2_llvm_value, "lt"));
-    }
-    break;
-  case eLE:
-    // if value is int, then we use CreateICmpSLE
-    if(expr_1_llvm_value->getType()->isIntegerTy())
-    {
-      setLLVMTempValue( LLVM_builder_->CreateICmpSLE(
-          expr_1_llvm_value, expr_2_llvm_value, "le"));
-    }
-    else
-    {
-      setLLVMTempValue( LLVM_builder_->CreateFCmpOLE(
-          expr_1_llvm_value, expr_2_llvm_value, "le"));
-    }
-    break;
-  case eGT:
-    // if value is int, then we use CreateICmpSGT
-    if(expr_1_llvm_value->getType()->isIntegerTy())
-    {
-      setLLVMTempValue( LLVM_builder_->CreateICmpSGT(
-          expr_1_llvm_value, expr_2_llvm_value, "gt"));
-    }
-    else
-    {
-      setLLVMTempValue( LLVM_builder_->CreateFCmpOGT(
-          expr_1_llvm_value, expr_2_llvm_value, "gt"));
-    }
-    break;
-  case eGE:
-    // if value is int, then we use CreateICmpSGE
-    if(expr_1_llvm_value->getType()->isIntegerTy())
-    {
-      setLLVMTempValue( LLVM_builder_->CreateICmpSGE(
-          expr_1_llvm_value, expr_2_llvm_value, "ge"));
-    }
-    else
-    {
-      setLLVMTempValue( LLVM_builder_->CreateFCmpOGE(
-          expr_1_llvm_value, expr_2_llvm_value, "ge"));
-    }
-    break;
-  case eEQ:
-    // if value is int, then we use CreateICmpEQ
-    if(expr_1_llvm_value->getType()->isIntegerTy())
-    {
-      setLLVMTempValue( LLVM_builder_->CreateICmpEQ(
-          expr_1_llvm_value, expr_2_llvm_value, "eq"));
-    }
-    else
-    {
-      setLLVMTempValue( LLVM_builder_->CreateFCmpOEQ(
-          expr_1_llvm_value, expr_2_llvm_value, "eq"));
-    }
-    break;
-  case eNE:
-    // if value is int, then we use CreateICmpNE
-    if(expr_1_llvm_value->getType()->isIntegerTy())
-    {
-      setLLVMTempValue( LLVM_builder_->CreateICmpNE(
-          expr_1_llvm_value, expr_2_llvm_value, "ne"));
-    }
-    else
-    {
-      setLLVMTempValue( LLVM_builder_->CreateFCmpONE(
-          expr_1_llvm_value, expr_2_llvm_value, "ne"));
-    }
-    break;
-  default:
-    ERRPR_HANDLE("unknown EREL operation")
-    break;
-  }
+	switch (local_op)
+	{
+	case eLT:
+		// if value is int, then we use CreateICmpSLT
+		if (expr_1_llvm_value->getType()->isIntegerTy())
+		{
+			setLLVMTempValue(LLVM_builder_->CreateICmpSLT(
+				expr_1_llvm_value, expr_2_llvm_value, "lt"));
+		}
+		else
+		{
+			setLLVMTempValue(LLVM_builder_->CreateFCmpOLT(
+				expr_1_llvm_value, expr_2_llvm_value, "lt"));
+		}
+		break;
+	case eLE:
+		// if value is int, then we use CreateICmpSLE
+		if (expr_1_llvm_value->getType()->isIntegerTy())
+		{
+			setLLVMTempValue(LLVM_builder_->CreateICmpSLE(
+				expr_1_llvm_value, expr_2_llvm_value, "le"));
+		}
+		else
+		{
+			setLLVMTempValue(LLVM_builder_->CreateFCmpOLE(
+				expr_1_llvm_value, expr_2_llvm_value, "le"));
+		}
+		break;
+	case eGT:
+		// if value is int, then we use CreateICmpSGT
+		if (expr_1_llvm_value->getType()->isIntegerTy())
+		{
+			setLLVMTempValue(LLVM_builder_->CreateICmpSGT(
+				expr_1_llvm_value, expr_2_llvm_value, "gt"));
+		}
+		else
+		{
+			setLLVMTempValue(LLVM_builder_->CreateFCmpOGT(
+				expr_1_llvm_value, expr_2_llvm_value, "gt"));
+		}
+		break;
+	case eGE:
+		// if value is int, then we use CreateICmpSGE
+		if (expr_1_llvm_value->getType()->isIntegerTy())
+		{
+			setLLVMTempValue(LLVM_builder_->CreateICmpSGE(
+				expr_1_llvm_value, expr_2_llvm_value, "ge"));
+		}
+		else
+		{
+			setLLVMTempValue(LLVM_builder_->CreateFCmpOGE(
+				expr_1_llvm_value, expr_2_llvm_value, "ge"));
+		}
+		break;
+	case eEQ:
+		// if value is int, then we use CreateICmpEQ
+		if (expr_1_llvm_value->getType()->isIntegerTy())
+		{
+			setLLVMTempValue(LLVM_builder_->CreateICmpEQ(
+				expr_1_llvm_value, expr_2_llvm_value, "eq"));
+		}
+		else
+		{
+			setLLVMTempValue(LLVM_builder_->CreateFCmpOEQ(
+				expr_1_llvm_value, expr_2_llvm_value, "eq"));
+		}
+		break;
+	case eNE:
+		// if value is int, then we use CreateICmpNE
+		if (expr_1_llvm_value->getType()->isIntegerTy())
+		{
+			setLLVMTempValue(LLVM_builder_->CreateICmpNE(
+				expr_1_llvm_value, expr_2_llvm_value, "ne"));
+		}
+		else
+		{
+			setLLVMTempValue(LLVM_builder_->CreateFCmpONE(
+				expr_1_llvm_value, expr_2_llvm_value, "ne"));
+		}
+		break;
+	default:
+		LLVM_ERROR_HANDLE("unknown EREL operation")
+		break;
+	}
 }
 
 void JLCLLVMGenerator::visitEAnd(EAnd *e_and)
 {
-  /* Code For EAnd Goes Here */
-  auto current_block = LLVM_builder_->GetInsertBlock();
-  auto parent = current_block->getParent();
-  auto and_true_block = llvm::BasicBlock::Create(*LLVM_Context_, "and.true", parent);
-  auto and_end_block = llvm::BasicBlock::Create(*LLVM_Context_, "and.end", parent);
+	/* Code For EAnd Goes Here */
+	auto current_block = LLVM_builder_->GetInsertBlock();
+	auto parent = current_block->getParent();
+	auto and_true_block = llvm::BasicBlock::Create(*LLVM_Context_, "and.true", parent);
+	auto and_end_block = llvm::BasicBlock::Create(*LLVM_Context_, "and.end", parent);
 
-  if (e_and->expr_1) e_and->expr_1->accept(this);
-  auto expr_1_llvm_value = llvm_temp_value_;
-  // short-circui evaluation
-  // if the first expression is false, 
-  // then we do not need to evaluate the second expression
-  // @todo: how to do this in llvm ?
+	if (e_and->expr_1)
+		e_and->expr_1->accept(this);
+	auto expr_1_llvm_value = llvm_temp_value_;
+	// short-circui evaluation
+	// if the first expression is false,
+	// then we do not need to evaluate the second expression
+	// @todo: how to do this in llvm ?
 
-  LLVM_builder_->CreateCondBr(expr_1_llvm_value, and_true_block, and_end_block);
-  LLVM_builder_->SetInsertPoint(and_true_block);
-  if (e_and->expr_2) e_and->expr_2->accept(this);
-  auto expr_2_llvm_value = llvm_temp_value_;
+	LLVM_builder_->CreateCondBr(expr_1_llvm_value, and_true_block, and_end_block);
+	LLVM_builder_->SetInsertPoint(and_true_block);
+	if (e_and->expr_2)
+		e_and->expr_2->accept(this);
+	auto expr_2_llvm_value = llvm_temp_value_;
 
-  LLVM_builder_->CreateBr(and_end_block);
-  LLVM_builder_->SetInsertPoint(and_end_block);
-  llvm::PHINode* phi = LLVM_builder_->CreatePHI(
-      llvm::Type::getInt1Ty(*LLVM_Context_), 2, "and");
-  phi->addIncoming(expr_1_llvm_value, current_block);
+	LLVM_builder_->CreateBr(and_end_block);
+	LLVM_builder_->SetInsertPoint(and_end_block);
+	llvm::PHINode *phi = LLVM_builder_->CreatePHI(
+		llvm::Type::getInt1Ty(*LLVM_Context_), 2, "and");
+	phi->addIncoming(expr_1_llvm_value, current_block);
 
-  // why we dont use and_true_block as the predecessor block?
-  // consider the case: 1 == a && 1 <= a && 1 >= a
-  auto block_of_expr_2 = getBlockOfValue(expr_2_llvm_value);
+	// why we dont use and_true_block as the predecessor block?
+	// consider the case: 1 == a && 1 <= a && 1 >= a
+	auto block_of_expr_2 = getBlockOfValue(expr_2_llvm_value);
 
-  phi->addIncoming(expr_2_llvm_value, block_of_expr_2);
-  setLLVMTempValue( phi);
+	phi->addIncoming(expr_2_llvm_value, block_of_expr_2);
+	setLLVMTempValue(phi);
 
-  // reset the block
-  // LLVM_builder_->SetInsertPoint(current_block);  @todo: do we really need this?
+	// reset the block
+	// LLVM_builder_->SetInsertPoint(current_block);  @todo: do we really need this?
 }
 
 void JLCLLVMGenerator::visitEOr(EOr *e_or)
 {
-  /* Code For EOr Goes Here */
-  auto current_block = LLVM_builder_->GetInsertBlock();
-  auto parent = current_block->getParent();
-  auto or_false_block = llvm::BasicBlock::Create(*LLVM_Context_, "or.false", parent);
-  auto or_end_block = llvm::BasicBlock::Create(*LLVM_Context_, "or.end", parent);
+	/* Code For EOr Goes Here */
+	auto current_block = LLVM_builder_->GetInsertBlock();
+	auto parent = current_block->getParent();
+	auto or_false_block = llvm::BasicBlock::Create(*LLVM_Context_, "or.false", parent);
+	auto or_end_block = llvm::BasicBlock::Create(*LLVM_Context_, "or.end", parent);
 
-  if (e_or->expr_1) e_or->expr_1->accept(this);
-  auto expr_1_llvm_value = llvm_temp_value_;
-  // if the first expression is true, then we do not need to evaluate the second expression
+	if (e_or->expr_1)
+		e_or->expr_1->accept(this);
+	auto expr_1_llvm_value = llvm_temp_value_;
+	// if the first expression is true, then we do not need to evaluate the second expression
 
-  LLVM_builder_->CreateCondBr(expr_1_llvm_value, or_end_block, or_false_block);
-  LLVM_builder_->SetInsertPoint(or_false_block);
+	LLVM_builder_->CreateCondBr(expr_1_llvm_value, or_end_block, or_false_block);
+	LLVM_builder_->SetInsertPoint(or_false_block);
 
-  if (e_or->expr_2) e_or->expr_2->accept(this);
-  auto expr_2_llvm_value = llvm_temp_value_;
+	if (e_or->expr_2)
+		e_or->expr_2->accept(this);
+	auto expr_2_llvm_value = llvm_temp_value_;
 
-  LLVM_builder_->CreateBr(or_end_block);
-  LLVM_builder_->SetInsertPoint(or_end_block);
-  llvm::PHINode* phi = LLVM_builder_->CreatePHI(
-      llvm::Type::getInt1Ty(*LLVM_Context_), 2, "or");
-  
-  phi->addIncoming(expr_1_llvm_value, current_block);
+	LLVM_builder_->CreateBr(or_end_block);
+	LLVM_builder_->SetInsertPoint(or_end_block);
+	llvm::PHINode *phi = LLVM_builder_->CreatePHI(
+		llvm::Type::getInt1Ty(*LLVM_Context_), 2, "or");
 
-  auto block_of_expr_2 = getBlockOfValue(expr_2_llvm_value);
-  (void)block_of_expr_2; // make compiler happy
-  phi->addIncoming(expr_2_llvm_value,or_false_block);
-  setLLVMTempValue( phi);
+	phi->addIncoming(expr_1_llvm_value, current_block);
 
-  // reset the block
-  // LLVM_builder_->SetInsertPoint(current_block);  @todo: do we really need this?
+	auto block_of_expr_2 = getBlockOfValue(expr_2_llvm_value);
+	(void)block_of_expr_2; // make compiler happy
+	phi->addIncoming(expr_2_llvm_value, or_false_block);
+	setLLVMTempValue(phi);
+
+	// reset the block
+	// LLVM_builder_->SetInsertPoint(current_block);  @todo: do we really need this?
 }
 
 void JLCLLVMGenerator::visitPlus(Plus *plus)
 {
-  /* Code For Plus Goes Here */
-  temp_op = eADD;
+	/* Code For Plus Goes Here */
+	temp_op = eADD;
 }
 
 void JLCLLVMGenerator::visitMinus(Minus *minus)
 {
-  /* Code For Minus Goes Here */
-  temp_op = eSUB;
+	/* Code For Minus Goes Here */
+	temp_op = eSUB;
 }
 
 void JLCLLVMGenerator::visitTimes(Times *times)
 {
-  /* Code For Times Goes Here */
-  temp_op = eMUL;
+	/* Code For Times Goes Here */
+	temp_op = eMUL;
 }
 
 void JLCLLVMGenerator::visitDiv(Div *div)
 {
-  /* Code For Div Goes Here */
-  temp_op = eDIV;
+	/* Code For Div Goes Here */
+	temp_op = eDIV;
 }
 
 void JLCLLVMGenerator::visitMod(Mod *mod)
 {
-  /* Code For Mod Goes Here */
-  temp_op = eMOD;
+	/* Code For Mod Goes Here */
+	temp_op = eMOD;
 }
 
 void JLCLLVMGenerator::visitLTH(LTH *lth)
 {
-  /* Code For LTH Goes Here */
-  temp_op = eLT;
+	/* Code For LTH Goes Here */
+	temp_op = eLT;
 }
 
 void JLCLLVMGenerator::visitLE(LE *le)
 {
-  /* Code For LE Goes Here */
-  temp_op = eLE;
+	/* Code For LE Goes Here */
+	temp_op = eLE;
 }
 
 void JLCLLVMGenerator::visitGTH(GTH *gth)
 {
-  /* Code For GTH Goes Here */
-  temp_op = eGT;
+	/* Code For GTH Goes Here */
+	temp_op = eGT;
 }
 
 void JLCLLVMGenerator::visitGE(GE *ge)
 {
-  /* Code For GE Goes Here */
-  temp_op = eGE;
+	/* Code For GE Goes Here */
+	temp_op = eGE;
 }
 
 void JLCLLVMGenerator::visitEQU(EQU *equ)
 {
-  /* Code For EQU Goes Here */
-  temp_op = eEQ;
+	/* Code For EQU Goes Here */
+	temp_op = eEQ;
 }
 
 void JLCLLVMGenerator::visitNE(NE *ne)
 {
-  /* Code For NE Goes Here */
-  temp_op = eNE;
+	/* Code For NE Goes Here */
+	temp_op = eNE;
 }
-/*---------------- for array ------------------*/ 
+/*---------------- for array ------------------*/
 
-llvm::Type* JLCLLVMGenerator::DefineAndGetArrayType(JLCType type){
-  // if dimension is 1, then it is a normal array
-  // there only int array, double array, bool array, and ptr array (for multi-dimension array)
-  std::string type_name;
-  if (type.dimension == 1){
-    // basic type
-    type_name = to_string(type.base_type) + "_array_type";
-   
-    if (array_type_map.find(type_name) == array_type_map.end()){
-      DEBUG_PRINT("Define new type: " + type_name);
-      llvm::Type* x_array_type = llvm::StructType::create(*LLVM_Context_, 
-      {llvm::Type::getInt32Ty(*LLVM_Context_), 
-      llvm::ArrayType::get(convertType(JLCType(type.base_type)), 0)}, 
-      type_name);
-      array_type_map[type_name] = x_array_type;
-    }
-  }else{
-    // array of array
-    type_name = "ptr_array_type";
-    if (array_type_map.find(type_name) == array_type_map.end()){
-      DEBUG_PRINT("Define new type: " + type_name + " triiger type:" + to_string(type));
-      llvm::Type* x_array_type = llvm::StructType::create(*LLVM_Context_,
-      {llvm::Type::getInt32Ty(*LLVM_Context_),
-      llvm::ArrayType::get(convertType(type), 0)},
-      type_name);
-      array_type_map[type_name] = x_array_type;
-      
-    }
-  }
-  return array_type_map[type_name];
+llvm::Type *JLCLLVMGenerator::DefineAndGetArrayType(JLCType type)
+{
+	// if dimension is 1, then it is a normal array
+	// there only int array, double array, bool array, and ptr array (for multi-dimension array)
+	std::string type_name;
+	if (type.dimension == 1)
+	{
+		// basic type
+		type_name = to_string(type.base_type) + "_array_type";
+
+		if (array_type_map.find(type_name) == array_type_map.end())
+		{
+			DEBUG_PRINT("Define new type: " + type_name);
+			llvm::Type *x_array_type = llvm::StructType::create(*LLVM_Context_,
+																{llvm::Type::getInt32Ty(*LLVM_Context_),
+																 llvm::ArrayType::get(convertType(JLCType(type.base_type)), 0)},
+																type_name);
+			array_type_map[type_name] = x_array_type;
+		}
+	}
+	else
+	{
+		// array of array
+		type_name = "ptr_array_type";
+		if (array_type_map.find(type_name) == array_type_map.end())
+		{
+			DEBUG_PRINT("Define new type: " + type_name + " triiger type:" + to_string(type));
+			llvm::Type *x_array_type = llvm::StructType::create(*LLVM_Context_,
+																{llvm::Type::getInt32Ty(*LLVM_Context_),
+																 llvm::ArrayType::get(convertType(type), 0)},
+																type_name);
+			array_type_map[type_name] = x_array_type;
+		}
+	}
+	return array_type_map[type_name];
 }
 
 void JLCLLVMGenerator::visitDim(Dim *dim)
 {
-  /* Code For Dim Goes Here */
+	/* Code For Dim Goes Here */
 
-  if (dim->expr_) dim->expr_->accept(this);
-  auto expr_llvm_value = llvm_temp_value_;
-  (void)expr_llvm_value; // make compiler happy
+	if (dim->expr_)
+		dim->expr_->accept(this);
+	auto expr_llvm_value = llvm_temp_value_;
+	(void)expr_llvm_value; // make compiler happy
 }
 
-void JLCLLVMGenerator::visitArrayType(ArrayType *array_type){
-  /* Code For ArrayType Goes Here */
-  
-  if (array_type->type_) array_type->type_->accept(this);
-  // element type
-  auto temp_array_type = temp_type;
-  // bracket number
-  auto num = array_type->listbracketsopt_->size();
-  temp_type = JLCType(ARRAY, temp_array_type.type, num);
-}
+void JLCLLVMGenerator::visitArrayType(ArrayType *array_type)
+{
+	/* Code For ArrayType Goes Here */
 
+	if (array_type->type_)
+		array_type->type_->accept(this);
+	// element type
+	auto temp_array_type = temp_type;
+	// bracket number
+	auto num = array_type->listbracketsopt_->size();
+	temp_type = JLCType(ARRAY, temp_array_type.type, num);
+}
 
 void JLCLLVMGenerator::visitENewArray(ENewArray *e_new_array)
 {
-  /* Code For ENewArray Goes Here */
-  DEBUG_PRINT("Visit ENewArray");
-  if (e_new_array->type_) e_new_array->type_->accept(this);
-  auto local_type = temp_type;
-  
-  DEBUG_PRINT("ENewArray type: " + to_string(local_type));
-  std::vector<llvm::Value*> dims;
-  // collect the dimensions
-  for (auto & dim : *(e_new_array->listdimexpr_)){
-    dim->accept(this);
-    dims.push_back(llvm_temp_value_);
-  }
+	/* Code For ENewArray Goes Here */
+	DEBUG_PRINT("Visit ENewArray");
+	if (e_new_array->type_)
+		e_new_array->type_->accept(this);
+	auto local_type = temp_type;
 
-  // create the array with alloc function to store the dimension
-  // dim array is a array of int
-  auto dim_array_type = llvm::ArrayType::get(llvm::Type::getInt32Ty(*LLVM_Context_), dims.size());
-  auto dim_array = LLVM_builder_->CreateAlloca(dim_array_type, nullptr, "dim_array");
-  // store the dimension to the array
-  for (size_t i = 0; i < dims.size(); i++){
-    auto dim_idx_ptr = LLVM_builder_->CreateGEP(
-      llvm::Type::getInt32Ty(*LLVM_Context_),
-      dim_array,
-      {llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, i))},
-      "dim_ptr");
-    LLVM_builder_->CreateStore(dims[i], dim_idx_ptr);
-  }
-  // get base type size
-  	// %p = getelementptr base type, ptr null, i32 1
-	  // %s = ptrtoint ptr %p to i32
-  auto p = LLVM_builder_->CreateGEP(
-      convertType(local_type),
-      llvm::ConstantPointerNull::get(llvm::Type::getInt32PtrTy(*LLVM_Context_)),
-      llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 1)),
-      "p");
+	DEBUG_PRINT("ENewArray type: " + to_string(local_type));
+	std::vector<llvm::Value *> dims;
+	// collect the dimensions
+	for (auto &dim : *(e_new_array->listdimexpr_))
+	{
+		dim->accept(this);
+		dims.push_back(llvm_temp_value_);
+	}
 
-  auto base_type_size = LLVM_builder_->CreatePtrToInt(
-      p,
-      llvm::Type::getInt32Ty(*LLVM_Context_), 
-      "s"
-    );
-  
-  // create the array with calloc function
-  auto llvm_func = LLVM_module_->getFunction("createNDimArray");
-  if (llvm_func == nullptr){
-    DEBUG_PRINT("createNDimArray function is not found");
-  }
-  
-  auto temp_array = LLVM_builder_->CreateCall(llvm_func, 
-      { 
-        dim_array,
-        llvm::ConstantInt::get(
-          *LLVM_Context_, llvm::APInt(32, dims.size())),
-        base_type_size
-      },
-      "temp_array"
-  );
-  setLLVMTempValue(temp_array);
-  temp_type = JLCType(ARRAY, local_type.type, dims.size());
+	// create the array with alloc function to store the dimension
+	// dim array is a array of int
+	auto dim_array_type = llvm::ArrayType::get(llvm::Type::getInt32Ty(*LLVM_Context_), dims.size());
+	auto dim_array = LLVM_builder_->CreateAlloca(dim_array_type, nullptr, "dim_array");
+	// store the dimension to the array
+	for (size_t i = 0; i < dims.size(); i++)
+	{
+		auto dim_idx_ptr = LLVM_builder_->CreateGEP(
+			llvm::Type::getInt32Ty(*LLVM_Context_),
+			dim_array,
+			{llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, i))},
+			"dim_ptr");
+		LLVM_builder_->CreateStore(dims[i], dim_idx_ptr);
+	}
+	// get base type size
+	// %p = getelementptr base type, ptr null, i32 1
+	// %s = ptrtoint ptr %p to i32
+	auto p = LLVM_builder_->CreateGEP(
+		convertType(local_type),
+		llvm::ConstantPointerNull::get(llvm::Type::getInt32PtrTy(*LLVM_Context_)),
+		llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 1)),
+		"p");
+
+	auto base_type_size = LLVM_builder_->CreatePtrToInt(
+		p,
+		llvm::Type::getInt32Ty(*LLVM_Context_),
+		"s");
+
+	// create the array with calloc function
+	auto llvm_func = LLVM_module_->getFunction("createNDimArray");
+	if (llvm_func == nullptr)
+	{
+		DEBUG_PRINT("createNDimArray function is not found");
+	}
+
+	auto temp_array = LLVM_builder_->CreateCall(llvm_func,
+												{dim_array,
+												 llvm::ConstantInt::get(
+													 *LLVM_Context_, llvm::APInt(32, dims.size())),
+												 base_type_size},
+												"temp_array");
+	setLLVMTempValue(temp_array);
+	temp_type = JLCType(ARRAY, local_type.type, dims.size());
 }
-
 
 void JLCLLVMGenerator::visitEDot(EDot *e_dot)
 {
-  /* Code For EDot Goes Here */
+	/* Code For EDot Goes Here */
 
-  if (e_dot->expr_) e_dot->expr_->accept(this);
-  auto left_value = llvm_temp_value_;
-  visitIdent(e_dot->ident_);
+	if (e_dot->expr_)
+		e_dot->expr_->accept(this);
+	auto left_value = llvm_temp_value_;
+	visitIdent(e_dot->ident_);
 
-  // llvm load 
-  auto len = LLVM_builder_->CreateLoad(convertType(INT), left_value, "len");
+	// llvm load
+	auto len = LLVM_builder_->CreateLoad(convertType(INT), left_value, "len");
 
-  setLLVMTempValue(len);
+	setLLVMTempValue(len);
 }
 
 void JLCLLVMGenerator::visitEAcc(EAcc *e_acc)
 {
-  /* Code For EAcc Goes Here */
-  // Returning the address or the value is determined by the left_value_flag
-  auto local_left_value_flag = left_value_flag; 
-  DEBUG_PRINT("visitEAcc: left_value_flag:"<< local_left_value_flag);
+	/* Code For EAcc Goes Here */
+	// Returning the address or the value is determined by the left_value_flag
+	auto local_left_value_flag = left_value_flag;
+	DEBUG_PRINT("visitEAcc: left_value_flag:" << local_left_value_flag);
 
-  if (e_acc->expr_) e_acc->expr_->accept(this); // will get an addres
-  auto left_value = llvm_temp_value_;
-  
-  // why we can not just look for the type in var map? 
-  // case: new int[10].lenght. is just a temp value, didnot register in the var map
-  auto local_type = temp_type;  
-  DEBUG_PRINT("visitEAcc: left side var type: " + to_string(local_type));
+	if (e_acc->expr_)
+		e_acc->expr_->accept(this); // will get an addres
+	auto left_value = llvm_temp_value_;
 
-  // collect the dimensions
-  std::vector<llvm::Value*> dims;
-  for (auto & dim : *(e_acc->listdimexpr_)){
-    dim->accept(this);
-    dims.push_back(llvm_temp_value_);
-  }
+	// why we can not just look for the type in var map?
+	// case: new int[10].lenght. is just a temp value, didnot register in the var map
+	auto local_type = temp_type;
+	DEBUG_PRINT("visitEAcc: left side var type: " + to_string(local_type));
 
-  // the dimension of the array must >=1, otherwise, it will not get into this function
-  // we don't check the bound of the array here
+	// collect the dimensions
+	std::vector<llvm::Value *> dims;
+	for (auto &dim : *(e_acc->listdimexpr_))
+	{
+		dim->accept(this);
+		dims.push_back(llvm_temp_value_);
+	}
 
-  // handle [] operation
-  auto start_ptr = left_value;
-  llvm::Value* val = nullptr;
+	// the dimension of the array must >=1, otherwise, it will not get into this function
+	// we don't check the bound of the array here
 
-  for (size_t i = 0; i < dims.size(); i++){
-    auto dim_val = dims[i];
-    if (i!=0){
-      start_ptr = val;
-    }
-    // skip the length field
-    start_ptr = LLVM_builder_->CreateGEP(
-      llvm::Type::getInt32Ty(*LLVM_Context_),
-      start_ptr,
-      {llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 1))},
-      "ptr");
-    // get the element address 
-    llvm::Type* element_type = llvm::Type::getInt32PtrTy(*LLVM_Context_);
-    if ((int)i == local_type.dimension - 1){
-      // which means this is the last dimension, access the basic type
-      element_type = convertType(JLCType(local_type.base_type));
-    }
-    start_ptr = LLVM_builder_->CreateGEP(
-        element_type,
-        start_ptr,
-        {dim_val},
-        "e_ptr"
-    );
-    // load the value of the element
-    val = LLVM_builder_->CreateLoad(element_type, start_ptr, "arr_e");
-  
-  }
-  if (local_left_value_flag){
-    // if we are querying a left-value, then we return the address
-    DEBUG_PRINT("visitEAcc: return address");
-    setLLVMTempValue(start_ptr);
-  }else{
-    DEBUG_PRINT("visitEAcc: return value");
-    setLLVMTempValue(val);
-  }
-  
-  // pass the type to upper level
-  int dim = e_acc->listdimexpr_->size();
-  // accessing the base type
-  if(dim == local_type.dimension){
-    temp_type = JLCType(local_type.base_type);
-  }
-  // still an array
-  else if(dim < local_type.dimension){
-    temp_type = JLCType(ARRAY, local_type.base_type, local_type.dimension - dim);
-  }else{
-    // should not reach here
-    ERRPR_HANDLE("visitEAcc: should not reach here")
-  }
-  
+	// handle [] operation
+	auto start_ptr = left_value;
+	llvm::Value *val = nullptr;
+
+	for (size_t i = 0; i < dims.size(); i++)
+	{
+		auto dim_val = dims[i];
+		if (i != 0)
+		{
+			start_ptr = val;
+		}
+		// skip the length field
+		start_ptr = LLVM_builder_->CreateGEP(
+			llvm::Type::getInt32Ty(*LLVM_Context_),
+			start_ptr,
+			{llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 1))},
+			"ptr");
+		// get the element address
+		llvm::Type *element_type = llvm::Type::getInt32PtrTy(*LLVM_Context_);
+		if ((int)i == local_type.dimension - 1)
+		{
+			// which means this is the last dimension, access the basic type
+			element_type = convertType(JLCType(local_type.base_type));
+		}
+		start_ptr = LLVM_builder_->CreateGEP(
+			element_type,
+			start_ptr,
+			{dim_val},
+			"e_ptr");
+		// load the value of the element
+		val = LLVM_builder_->CreateLoad(element_type, start_ptr, "arr_e");
+	}
+	if (local_left_value_flag)
+	{
+		// if we are querying a left-value, then we return the address
+		DEBUG_PRINT("visitEAcc: return address");
+		setLLVMTempValue(start_ptr);
+	}
+	else
+	{
+		DEBUG_PRINT("visitEAcc: return value");
+		setLLVMTempValue(val);
+	}
+
+	// pass the type to upper level
+	int dim = e_acc->listdimexpr_->size();
+	// accessing the base type
+	if (dim == local_type.dimension)
+	{
+		temp_type = JLCType(local_type.base_type);
+	}
+	// still an array
+	else if (dim < local_type.dimension)
+	{
+		temp_type = JLCType(ARRAY, local_type.base_type, local_type.dimension - dim);
+	}
+	else
+	{
+		// should not reach here
+		LLVM_ERROR_HANDLE("visitEAcc: should not reach here")
+	}
 }
 
 void JLCLLVMGenerator::visitAssArr(AssArr *ass_arr)
 {
-  /* Code For AssArr Goes Here */
-  DEBUG_PRINT(" visitAssArr");
-  // informing lower level we are quering a left-value (writable, address)
-  left_value_flag = true; 
-  if (ass_arr->expr_1) ass_arr->expr_1->accept(this);
-  left_value_flag = false;
-  auto l_value = llvm_temp_value_;
-  auto l_type = temp_type;
+	/* Code For AssArr Goes Here */
+	DEBUG_PRINT(" visitAssArr");
+	// informing lower level we are quering a left-value (writable, address)
+	left_value_flag = true;
+	if (ass_arr->expr_1)
+		ass_arr->expr_1->accept(this);
+	left_value_flag = false;
+	auto l_value = llvm_temp_value_;
+	auto l_type = temp_type;
 
-  if (ass_arr->expr_2) ass_arr->expr_2->accept(this);
-  auto r_value = llvm_temp_value_;
-  auto r_type = temp_type;
+	if (ass_arr->expr_2)
+		ass_arr->expr_2->accept(this);
+	auto r_value = llvm_temp_value_;
+	auto r_type = temp_type;
 
-  temp_type = l_type;
+	temp_type = l_type;
 
-  // generate a stor instruction
-  LLVM_builder_->CreateStore(r_value, l_value);
-
+	// generate a stor instruction
+	LLVM_builder_->CreateStore(r_value, l_value);
 }
-
-
 
 void JLCLLVMGenerator::visitForLoop(ForLoop *for_loop)
 {
-  /* Code For ForLoop Goes Here */
-  auto & func = globalContext.currentFunc();
+	/* Code For ForLoop Goes Here */
+	auto &func = globalContext.currentFunc();
 
-  if (for_loop->type_) for_loop->type_->accept(this);
-  auto element_type = temp_type;
-  auto local_e_name = for_loop->ident_;
+	if (for_loop->type_)
+		for_loop->type_->accept(this);
+	auto element_type = temp_type;
+	auto local_e_name = for_loop->ident_;
 
-  // new logical block 
-  func.newBlock();
-  addBlockVarMap();
-  // add the element to the block
-  func.addVar(local_e_name, element_type);
+	// new logical block
+	func.newBlock();
+	addBlockVarMap();
+	// add the element to the block
+	func.addVar(local_e_name, element_type);
 
-  left_value_flag = true;
-  if (for_loop->expr_) for_loop->expr_->accept(this);
-  left_value_flag = false;
-  auto arr_type = temp_type;
-  auto arr_ptr_value = llvm_temp_value_;
-  
-  /* generate code for this 
-  * for (int a : arr){
+	left_value_flag = true;
+	if (for_loop->expr_)
+		for_loop->expr_->accept(this);
+	left_value_flag = false;
+	auto arr_type = temp_type;
+	auto arr_ptr_value = llvm_temp_value_;
 
-  }
-  conver to 
-  { // logical block start  
-   i = 0          // inner 
-   l = arr.lenght // ineer
-   while(i<l){
-     i= i +1;
-     a = *(arr+i) // arr[i]
-     
-     // loop body
+	/* generate code for this
+	* for (int a : arr){
 
-   }
-  } // logical block end 
-  */
-  
-  // allocate the memory for the index
-  auto i_alloca = LLVM_builder_->CreateAlloca(
-    llvm::Type::getInt32Ty(*LLVM_Context_), nullptr, "i");
-  // store the value to the memory
-  LLVM_builder_->CreateStore(
-    llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 0)),
-    i_alloca
-  );
+	}
+	conver to
+	{ // logical block start
+	 i = 0          // inner
+	 l = arr.lenght // ineer
+	 while(i<l){
+	   i= i +1;
+	   a = *(arr+i) // arr[i]
 
-  // get the length of the array
-  auto len_ptr = LLVM_builder_->CreateGEP(
-    llvm::Type::getInt32Ty(*LLVM_Context_),
-    arr_ptr_value,
-    {llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 0))},
-    "len_ptr"
-  );
-  auto len = LLVM_builder_->CreateLoad(
-    llvm::Type::getInt32Ty(*LLVM_Context_),
-    len_ptr,
-    "len"
-  );
+	   // loop body
 
-  // skip the length field
-  auto data_ptr = LLVM_builder_->CreateGEP(
-    llvm::Type::getInt32Ty(*LLVM_Context_),
-    arr_ptr_value,
-    {llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 1))},
-    "data_ptr"
-  ); 
-  // create a new block for the loop
-  auto current_block = LLVM_builder_->GetInsertBlock();
-  auto parent = current_block->getParent();
-  auto cond_block = llvm::BasicBlock::Create(
-      *LLVM_Context_, "for.cond", parent);
-  auto loop_block = llvm::BasicBlock::Create(
-      *LLVM_Context_, "for.loop", parent);
-  auto end_block = llvm::BasicBlock::Create(
-      *LLVM_Context_, "for.end", parent);
+	 }
+	} // logical block end
+	*/
 
-  // jump to the cond block
-  LLVM_builder_->CreateBr(cond_block);
-  LLVM_builder_->SetInsertPoint(cond_block);
+	// allocate the memory for the index
+	auto i_alloca = LLVM_builder_->CreateAlloca(
+		llvm::Type::getInt32Ty(*LLVM_Context_), nullptr, "i");
+	// store the value to the memory
+	LLVM_builder_->CreateStore(
+		llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 0)),
+		i_alloca);
 
-  // load the value of i
-  auto i_value = LLVM_builder_->CreateLoad(
-    llvm::Type::getInt32Ty(*LLVM_Context_),
-    i_alloca,
-    "i"
-  );
-  // compare i and len
-  auto cond = LLVM_builder_->CreateICmpSLT(i_value, len, "cond");
-  
-  // jump to the loop block or end block
-  LLVM_builder_->CreateCondBr(cond, loop_block, end_block);
-  LLVM_builder_->SetInsertPoint(loop_block);
+	// get the length of the array
+	auto len_ptr = LLVM_builder_->CreateGEP(
+		llvm::Type::getInt32Ty(*LLVM_Context_),
+		arr_ptr_value,
+		{llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 0))},
+		"len_ptr");
+	auto len = LLVM_builder_->CreateLoad(
+		llvm::Type::getInt32Ty(*LLVM_Context_),
+		len_ptr,
+		"len");
 
-  // get the value of i
-  i_value = LLVM_builder_->CreateLoad(
-    llvm::Type::getInt32Ty(*LLVM_Context_),
-    i_alloca,
-    "i"
-  );
-  // get the address of the element
-  auto element_ptr = LLVM_builder_->CreateGEP(
-    convertType(element_type), //todo
-    data_ptr,
-    {i_value},
-    "e_ptr"
-  );
-  // load the value of the element when accessing the var by EVar,
-  // it will load the value from the memory
-  // auto element_value = LLVM_builder_->CreateLoad(
-  //   convertType(element_type), //todo
-  //   element_ptr,
-  //   "e"
-  // );
-  // add to the block map
-  addVarToBlockMap(local_e_name, element_ptr);
+	// skip the length field
+	auto data_ptr = LLVM_builder_->CreateGEP(
+		llvm::Type::getInt32Ty(*LLVM_Context_),
+		arr_ptr_value,
+		{llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 1))},
+		"data_ptr");
+	// create a new block for the loop
+	auto current_block = LLVM_builder_->GetInsertBlock();
+	auto parent = current_block->getParent();
+	auto cond_block = llvm::BasicBlock::Create(
+		*LLVM_Context_, "for.cond", parent);
+	auto loop_block = llvm::BasicBlock::Create(
+		*LLVM_Context_, "for.loop", parent);
+	auto end_block = llvm::BasicBlock::Create(
+		*LLVM_Context_, "for.end", parent);
 
-  // update the value of i
-  auto i_plus_1 = LLVM_builder_->CreateAdd(
-    i_value,
-    llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 1)),
-    "i_plus_1"
-  );
-  // @todo maybe ushe phi will be better
-  LLVM_builder_->CreateStore(i_plus_1, i_alloca);
+	// jump to the cond block
+	LLVM_builder_->CreateBr(cond_block);
+	LLVM_builder_->SetInsertPoint(cond_block);
 
-  // for body
-  if (for_loop->stmt_) for_loop->stmt_->accept(this);
-  
-  // jump to the cond block, for the next iteration
-  LLVM_builder_->CreateBr(cond_block);
-  
+	// load the value of i
+	auto i_value = LLVM_builder_->CreateLoad(
+		llvm::Type::getInt32Ty(*LLVM_Context_),
+		i_alloca,
+		"i");
+	// compare i and len
+	auto cond = LLVM_builder_->CreateICmpSLT(i_value, len, "cond");
 
-  // end block , it will be terminated by other statement
-  LLVM_builder_->SetInsertPoint(end_block);
+	// jump to the loop block or end block
+	LLVM_builder_->CreateCondBr(cond, loop_block, end_block);
+	LLVM_builder_->SetInsertPoint(loop_block);
 
-  removeBlockVarMap();
-  func.releaseBlock();
+	// get the value of i
+	i_value = LLVM_builder_->CreateLoad(
+		llvm::Type::getInt32Ty(*LLVM_Context_),
+		i_alloca,
+		"i");
+	// get the address of the element
+	auto element_ptr = LLVM_builder_->CreateGEP(
+		convertType(element_type), // todo
+		data_ptr,
+		{i_value},
+		"e_ptr");
+	// load the value of the element when accessing the var by EVar,
+	// it will load the value from the memory
+	// auto element_value = LLVM_builder_->CreateLoad(
+	//   convertType(element_type), //todo
+	//   element_ptr,
+	//   "e"
+	// );
+	// add to the block map
+	addVarToBlockMap(local_e_name, element_ptr);
 
+	// update the value of i
+	auto i_plus_1 = LLVM_builder_->CreateAdd(
+		i_value,
+		llvm::ConstantInt::get(*LLVM_Context_, llvm::APInt(32, 1)),
+		"i_plus_1");
+	// @todo maybe ushe phi will be better
+	LLVM_builder_->CreateStore(i_plus_1, i_alloca);
+
+	// for body
+	if (for_loop->stmt_)
+		for_loop->stmt_->accept(this);
+
+	// jump to the cond block, for the next iteration
+	LLVM_builder_->CreateBr(cond_block);
+
+	// end block , it will be terminated by other statement
+	LLVM_builder_->SetInsertPoint(end_block);
+
+	removeBlockVarMap();
+	func.releaseBlock();
 }

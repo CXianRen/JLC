@@ -8,7 +8,6 @@
 #include "context.H"
 #include "Skeleton.H"
 
-
 class JLCTypeChecker : public Skeleton
 {
 public:
@@ -20,7 +19,7 @@ public:
   bool isReturnStmt;
   op_enum temp_op;
 
-  JLCTypeChecker(): temp_exp_type("DEFAULT"), isReturnStmt(false){}
+  JLCTypeChecker() : temp_exp_type("DEFAULT"), isReturnStmt(false) {}
 
 public:
   // void visitProg(Prog *p);
@@ -34,7 +33,7 @@ public:
   // void visitAddOp(AddOp *p);
   // void visitMulOp(MulOp *p);
   // void visitRelOp(RelOp *p);
-  
+
   void visitProgram(Program *p);
   void visitFnDef(FnDef *p);
   void visitArgument(Argument *p);
@@ -103,7 +102,7 @@ public:
   // void visitString(String x);
   // void visitIdent(Ident x);
 
-// for array
+  // for array
   // void visitBracketsOpt(BracketsOpt *p);
   // void visitDimExpr(DimExpr *p);
   void visitAssArr(AssArr *p);
@@ -117,6 +116,5 @@ public:
   // void visitListDimExpr(ListDimExpr *p);
   void visitForLoop(ForLoop *p);
 };
-
 
 #endif
