@@ -127,23 +127,12 @@ private:
 	void addFuncDeclearation(JLCFunc &frame);
 
 public:
-	// void visitProg(Prog *p);
-	// void visitTopDef(TopDef *p);
-	// void visitArg(Arg *p);
-	// void visitBlk(Blk *p);
-	// void visitStmt(Stmt *p);
-	// void visitItem(Item *p);
-	// void visitType(Type *p);
-	// void visitExpr(Expr *p);
-	// void visitAddOp(AddOp *p);
-	// void visitMulOp(MulOp *p);
-	// void visitRelOp(RelOp *p);
 
 	void visitProgram(Program *p);
 	void visitFnDef(FnDef *p);
 	void visitArgument(Argument *p);
 	void visitBlock(Block *p);
-	void visitEmpty(Empty *p);
+	// void visitEmpty(Empty *p);
 	void visitBStmt(BStmt *p);
 	void visitDecl(Decl *p);
 	void visitNoInit(NoInit *p);
