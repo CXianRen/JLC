@@ -21,8 +21,7 @@ public:
 
   JLCTypeChecker() : temp_exp_type("DEFAULT"), isReturnStmt(false) {}
 
-  JLCTypeChecker(JLCContext context) : 
-    globalContext(context), temp_exp_type("DEFAULT"), isReturnStmt(false) {}
+  JLCTypeChecker(JLCContext context) : globalContext(context), temp_exp_type("DEFAULT"), isReturnStmt(false) {}
 
 public:
   // void visitProgram(Program *p);
@@ -106,6 +105,27 @@ public:
   // void visitListBracketsOpt(ListBracketsOpt *p);
   // void visitListDimExpr(ListDimExpr *p);
   void visitForLoop(ForLoop *p);
+
+  // for struct(pointer)
+  // void visitTypeDef(TypeDef *p);
+  // void visitStructDef(StructDef *p);
+  // void visitFnDefS(FnDefS *p); // function with struct return type
+  // void visitPtrgument(Ptrgument *p); // pointer argument
+
+  void visitDeclStruct(DeclStruct *p);
+  // void visitSStmt(SStmt *p);
+  // void visitMAccOp(MAccOp *p);
+  // void visitForStruct(ForStruct *p);
+  // void visitMInner(MInner *p);
+  // void visitMArray(MArray *p);
+  // void visitMpoint(Mpoint *p);
+  // void visitSArrayType(SArrayType *p);
+  // void visitENewSArray(ENewSArray *p);
+  // void visitENewStruct(ENewStruct *p);
+  // void visitEMember(EMember *p);
+  // void visitTypeCast(TypeCast *p);
+  // void visitMAcc(MAcc *p);
+  // void visitListSStmt(ListSStmt *p);
 };
 
 #endif

@@ -53,7 +53,8 @@ public:
   void visitSExp(SExp *p);
   void visitMInner(MInner *p);
   void visitMArray(MArray *p);
-  void visitMpoint(Mpoint *p);
+  void visitMSArray(MSArray *p);
+  void visitMStruct(MStruct *p);
   void visitInt(Int *p);
   void visitDoub(Doub *p);
   void visitBool(Bool *p);

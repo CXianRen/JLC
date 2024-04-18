@@ -1,4 +1,5 @@
 #include "context.H"
+#include "util.h"
 
 JLCContext::JLCContext()
 {
@@ -31,4 +32,17 @@ JLCContext::JLCContext()
         auto &frame = getFunc("readDouble");
         frame.returnType = JLCType(DOUB);
     }
+}
+
+JLCStruct &JLCContext::getStruct(const std::string &name)
+{
+    for (auto &it : defined_types)
+    {
+        if (it.second.name == name)
+        {
+            return it.second;
+        }
+    }
+    // should not reach here
+    ERROR_HANDLE("struct not found");
 }

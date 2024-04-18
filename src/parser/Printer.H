@@ -78,7 +78,8 @@ class PrintAbsyn : public Visitor
   void visitSStmt(SStmt *p); /* abstract class */
   void visitMInner(MInner *p);
   void visitMArray(MArray *p);
-  void visitMpoint(Mpoint *p);
+  void visitMSArray(MSArray *p);
+  void visitMStruct(MStruct *p);
   void visitListSStmt(ListSStmt *p);
   void iterListSStmt(ListSStmt::const_iterator i, ListSStmt::const_iterator j);
   void visitType(Type *p); /* abstract class */
@@ -250,7 +251,8 @@ class ShowAbsyn : public Visitor
   void visitSStmt(SStmt *p); /* abstract class */
   void visitMInner(MInner *p);
   void visitMArray(MArray *p);
-  void visitMpoint(Mpoint *p);
+  void visitMSArray(MSArray *p);
+  void visitMStruct(MStruct *p);
   void visitListSStmt(ListSStmt *p);
   void iterListSStmt(ListSStmt::const_iterator i, ListSStmt::const_iterator j);
   void visitType(Type *p); /* abstract class */

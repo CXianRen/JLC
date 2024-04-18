@@ -29,7 +29,7 @@ enum type_enum
 	VOID,
 	FUN,
 	CHAR,
-	STRING,
+	STRING, // user can not define a string type, but we need it
 	ARRAY,
 	STRUCT,
 	UNDEFINED
@@ -57,6 +57,10 @@ public:
 	// struct
 	JLCType(type_enum type, const std::string &name)
 		: type(type), base_type(UNDEFINED), dimension(0), name(name) {}
+	
+	// struct array
+	JLCType(type_enum type, type_enum base_type, int dimension, const std::string &name)
+		: type(type), base_type(base_type), dimension(dimension), name(name) {}
 
 	JLCType() = default;
 	~JLCType() = default;
@@ -222,6 +226,7 @@ public:
 	}
 
 	// typedef map of JLCStruct
+	// typedef struct (key2) type_name (key1)
 	std::map<std::string, JLCStruct> defined_types;
 
 	// add a new defined type
@@ -231,6 +236,15 @@ public:
 		JLCStruct JLCStruct(name_struct);
 		defined_types[name_type] = JLCStruct;
 	}
+	// check if the type is defined
+	bool isExistDefinedType(const std::string &name)
+	{
+		return defined_types.find(name) != defined_types.end();
+	}
+
+	// get struct by struct name
+	JLCStruct &getStruct(const std::string &name);
+
 };
 
 #endif

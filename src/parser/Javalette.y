@@ -223,7 +223,8 @@ ListItem : Item { $$ = new ListItem(); $$->push_back($1); }
 ;
 SStmt : Type _IDENT_ _SEMI { $$ = new MInner($1, $2); }
   | Type ListBracketsOpt _IDENT_ _SEMI { std::reverse($2->begin(),$2->end()) ;$$ = new MArray($1, $2, $3); }
-  | _IDENT_ _IDENT_ _SEMI { $$ = new Mpoint($1, $2); }
+  | _IDENT_ ListBracketsOpt _IDENT_ _SEMI { std::reverse($2->begin(),$2->end()) ;$$ = new MSArray($1, $2, $3); }
+  | _IDENT_ _IDENT_ _SEMI { $$ = new MStruct($1, $2); }
 ;
 ListSStmt : /* empty */ { $$ = new ListSStmt(); }
   | ListSStmt SStmt { $1->push_back($2); $$ = $1; }

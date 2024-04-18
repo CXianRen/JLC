@@ -1322,48 +1322,98 @@ MArray *MArray::clone() const
 
 
 
-/********************   Mpoint    ********************/
-Mpoint::Mpoint(Ident p1, Ident p2)
+/********************   MSArray    ********************/
+MSArray::MSArray(Ident p1, ListBracketsOpt *p2, Ident p3)
+{
+  ident_1 = p1;
+  listbracketsopt_ = p2;
+  ident_2 = p3;
+
+}
+
+MSArray::MSArray(const MSArray & other)
+{
+  ident_1 = other.ident_1;
+  listbracketsopt_ = other.listbracketsopt_->clone();
+  ident_2 = other.ident_2;
+
+}
+
+MSArray &MSArray::operator=(const MSArray & other)
+{
+  MSArray tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void MSArray::swap(MSArray & other)
+{
+  std::swap(ident_1, other.ident_1);
+  std::swap(listbracketsopt_, other.listbracketsopt_);
+  std::swap(ident_2, other.ident_2);
+
+}
+
+MSArray::~MSArray()
+{
+  delete(listbracketsopt_);
+
+}
+
+void MSArray::accept(Visitor *v)
+{
+  v->visitMSArray(this);
+}
+
+MSArray *MSArray::clone() const
+{
+  return new MSArray(*this);
+}
+
+
+
+/********************   MStruct    ********************/
+MStruct::MStruct(Ident p1, Ident p2)
 {
   ident_1 = p1;
   ident_2 = p2;
 
 }
 
-Mpoint::Mpoint(const Mpoint & other)
+MStruct::MStruct(const MStruct & other)
 {
   ident_1 = other.ident_1;
   ident_2 = other.ident_2;
 
 }
 
-Mpoint &Mpoint::operator=(const Mpoint & other)
+MStruct &MStruct::operator=(const MStruct & other)
 {
-  Mpoint tmp(other);
+  MStruct tmp(other);
   swap(tmp);
   return *this;
 }
 
-void Mpoint::swap(Mpoint & other)
+void MStruct::swap(MStruct & other)
 {
   std::swap(ident_1, other.ident_1);
   std::swap(ident_2, other.ident_2);
 
 }
 
-Mpoint::~Mpoint()
+MStruct::~MStruct()
 {
 
 }
 
-void Mpoint::accept(Visitor *v)
+void MStruct::accept(Visitor *v)
 {
-  v->visitMpoint(this);
+  v->visitMStruct(this);
 }
 
-Mpoint *Mpoint::clone() const
+MStruct *MStruct::clone() const
 {
-  return new Mpoint(*this);
+  return new MStruct(*this);
 }
 
 

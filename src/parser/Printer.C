@@ -599,7 +599,21 @@ void PrintAbsyn::visitMArray(MArray *p)
   _i_ = oldi;
 }
 
-void PrintAbsyn::visitMpoint(Mpoint *p)
+void PrintAbsyn::visitMSArray(MSArray *p)
+{
+  int oldi = _i_;
+  if (oldi > 0) render(_L_PAREN);
+
+  visitIdent(p->ident_1);
+  _i_ = 0; visitListBracketsOpt(p->listbracketsopt_);
+  visitIdent(p->ident_2);
+  render(';');
+
+  if (oldi > 0) render(_R_PAREN);
+  _i_ = oldi;
+}
+
+void PrintAbsyn::visitMStruct(MStruct *p)
 {
   int oldi = _i_;
   if (oldi > 0) render(_L_PAREN);
@@ -1655,10 +1669,25 @@ void ShowAbsyn::visitMArray(MArray *p)
   bufAppend(' ');
   bufAppend(')');
 }
-void ShowAbsyn::visitMpoint(Mpoint *p)
+void ShowAbsyn::visitMSArray(MSArray *p)
 {
   bufAppend('(');
-  bufAppend("Mpoint");
+  bufAppend("MSArray");
+  bufAppend(' ');
+  visitIdent(p->ident_1);
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->listbracketsopt_)  p->listbracketsopt_->accept(this);
+  bufAppend(']');
+  bufAppend(' ');
+  visitIdent(p->ident_2);
+  bufAppend(' ');
+  bufAppend(')');
+}
+void ShowAbsyn::visitMStruct(MStruct *p)
+{
+  bufAppend('(');
+  bufAppend("MStruct");
   bufAppend(' ');
   visitIdent(p->ident_1);
   bufAppend(' ');

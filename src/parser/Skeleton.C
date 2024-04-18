@@ -276,12 +276,22 @@ void Skeleton::visitMArray(MArray *m_array)
 
 }
 
-void Skeleton::visitMpoint(Mpoint *mpoint)
+void Skeleton::visitMSArray(MSArray *ms_array)
 {
-  /* Code For Mpoint Goes Here */
+  /* Code For MSArray Goes Here */
 
-  visitIdent(mpoint->ident_1);
-  visitIdent(mpoint->ident_2);
+  visitIdent(ms_array->ident_1);
+  if (ms_array->listbracketsopt_) ms_array->listbracketsopt_->accept(this);
+  visitIdent(ms_array->ident_2);
+
+}
+
+void Skeleton::visitMStruct(MStruct *m_struct)
+{
+  /* Code For MStruct Goes Here */
+
+  visitIdent(m_struct->ident_1);
+  visitIdent(m_struct->ident_2);
 
 }
 

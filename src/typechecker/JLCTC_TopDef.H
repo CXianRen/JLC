@@ -10,6 +10,7 @@ class JLCTC_TopDef : public Skeleton
 {
 public:
     JLCTC_TopDef() {}
+    JLCTC_TopDef(JLCContext context) : globalContext(context) {}
     ~JLCTC_TopDef() = default;
 
     // get the global context

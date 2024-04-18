@@ -38,6 +38,10 @@ std::string to_string(const JLCType &t)
 	if (t.type == ARRAY)
 	{
 		std::string res = to_string(t.base_type);
+		if (t.base_type == STRUCT)
+		{
+			res = res + " " + t.name;
+		}
 		for (int i = 0; i < t.dimension; i++)
 		{
 			res += "[]";

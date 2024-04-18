@@ -801,3 +801,17 @@ void JLCTypeChecker::visitListStmt(ListStmt *list_stmt)
     (*i)->accept(this);
   }
 }
+
+
+// for struct
+
+void JLCTypeChecker::visitDeclStruct(DeclStruct *decl_struct)
+{
+  auto struct_name = decl_struct->ident_;
+  // check it is a declared struct
+  if (!globalContext.isExistDefinedType(struct_name))
+  {
+    ERROR_HANDLE("Type: " << struct_name << " is not a valid type");
+  }
+  if (decl_struct->listitem_) decl_struct->listitem_->accept(this);
+}

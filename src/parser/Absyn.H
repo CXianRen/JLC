@@ -64,7 +64,8 @@ class ForStruct;
 class SExp;
 class MInner;
 class MArray;
-class Mpoint;
+class MSArray;
+class MStruct;
 class Int;
 class Doub;
 class Bool;
@@ -166,7 +167,8 @@ public:
   virtual void visitSExp(SExp *p) = 0;
   virtual void visitMInner(MInner *p) = 0;
   virtual void visitMArray(MArray *p) = 0;
-  virtual void visitMpoint(Mpoint *p) = 0;
+  virtual void visitMSArray(MSArray *p) = 0;
+  virtual void visitMStruct(MStruct *p) = 0;
   virtual void visitInt(Int *p) = 0;
   virtual void visitDoub(Doub *p) = 0;
   virtual void visitBool(Bool *p) = 0;
@@ -764,19 +766,35 @@ public:
   void swap(MArray &);
 };
 
-class Mpoint : public SStmt
+class MSArray : public SStmt
+{
+public:
+  Ident ident_1;
+  ListBracketsOpt *listbracketsopt_;
+  Ident ident_2;
+
+  MSArray(const MSArray &);
+  MSArray &operator=(const MSArray &);
+  MSArray(Ident p1, ListBracketsOpt *p2, Ident p3);
+  ~MSArray();
+  virtual void accept(Visitor *v);
+  virtual MSArray *clone() const;
+  void swap(MSArray &);
+};
+
+class MStruct : public SStmt
 {
 public:
   Ident ident_1;
   Ident ident_2;
 
-  Mpoint(const Mpoint &);
-  Mpoint &operator=(const Mpoint &);
-  Mpoint(Ident p1, Ident p2);
-  ~Mpoint();
+  MStruct(const MStruct &);
+  MStruct &operator=(const MStruct &);
+  MStruct(Ident p1, Ident p2);
+  ~MStruct();
   virtual void accept(Visitor *v);
-  virtual Mpoint *clone() const;
-  void swap(Mpoint &);
+  virtual MStruct *clone() const;
+  void swap(MStruct &);
 };
 
 class Int : public Type

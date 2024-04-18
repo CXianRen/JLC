@@ -64,7 +64,8 @@ SExp.      Stmt ::= Expr  ";" ;
 
 MInner.    SStmt ::= Type Ident  ";" ;
 MArray.    SStmt ::= Type [BracketsOpt] Ident ";" ;
-Mpoint.    SStmt ::= Ident Ident ";" ;
+MSArray.   SStmt ::= Ident [BracketsOpt] Ident ";" ;
+MStruct.   SStmt ::= Ident Ident ";" ; 
 separator  SStmt "" ;
 
 -- Types ---------------------------------------------------
