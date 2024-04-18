@@ -21,11 +21,13 @@ public:
 
   JLCTypeChecker() : temp_exp_type("DEFAULT"), isReturnStmt(false) {}
 
-public:
+  JLCTypeChecker(JLCContext context) : 
+    globalContext(context), temp_exp_type("DEFAULT"), isReturnStmt(false) {}
 
-  void visitProgram(Program *p);
+public:
+  // void visitProgram(Program *p);
   void visitFnDef(FnDef *p);
-  void visitArgument(Argument *p);
+  // void visitArgument(Argument *p);
   void visitBlock(Block *p);
   // void visitEmpty(Empty *p);
   // void visitBStmt(BStmt *p);

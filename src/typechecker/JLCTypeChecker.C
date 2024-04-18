@@ -23,53 +23,6 @@ static PrintAbsyn p = PrintAbsyn();
 
 static const std::string checkerName = "JLCTypeChecker";
 
-void JLCTypeChecker::visitProgram(Program *program)
-{
-  /* Code For Program Goes Here */
-  DEBUG_PRINT("[" + checkerName + "]" + " visiting Program");
-
-  /* iterate through the top definitions */
-  for (ListTopDef::iterator top_def = program->listtopdef_->begin();
-       top_def != program->listtopdef_->end(); ++top_def)
-  {
-    FnDef *fn_def = reinterpret_cast<FnDef *>(*top_def);
-    if (fn_def->type_)
-      fn_def->type_->accept(this);
-    DEBUG_PRINT("\tFunction type: " + to_string(temp_type));
-    // don't need to check type_, as long as the parser is correct, otherwise it will throw an error
-    // it is impossible to have a function without a type
-
-    // check function name
-    visitIdent(fn_def->ident_);
-    // check if the function is already declared
-    if (globalContext.isExistFunc(fn_def->ident_))
-    {
-      ERROR_HANDLE("Function " + fn_def->ident_ + " is already declared");
-    }
-
-    // add the function to the global context
-    globalContext.addFunc(fn_def->ident_);
-    globalContext.currentFuncName = fn_def->ident_;
-
-    // update the function return type
-    auto &func = globalContext.getFunc(fn_def->ident_);
-    func.returnType = temp_type;
-
-    // if fuction is main, check if it has int type
-    if (fn_def->ident_ == "main" && temp_type != INT)
-    {
-      ERROR_HANDLE("Function main should have int type return");
-    }
-    // check function arguments
-    if (fn_def->listarg_)
-      fn_def->listarg_->accept(this);
-  }
-
-  /* check function body */
-  if (program->listtopdef_)
-    program->listtopdef_->accept(this);
-}
-
 void JLCTypeChecker::visitFnDef(FnDef *fn_def)
 {
   /* Code For FnDef Goes Here */
@@ -85,30 +38,6 @@ void JLCTypeChecker::visitFnDef(FnDef *fn_def)
   DEBUG_PRINT("[" + checkerName + "]" + " visiting function body" + fn_def->ident_);
   if (fn_def->blk_)
     fn_def->blk_->accept(this);
-}
-
-void JLCTypeChecker::visitArgument(Argument *argument)
-{
-  /* Code For Argument Goes Here */
-  if (argument->type_)
-    argument->type_->accept(this);
-  DEBUG_PRINT("\tArgument name: " + argument->ident_ +
-              "\tArgument type: " + to_string(temp_type));
-  // check if the type is ok: case 072, void type
-  if (temp_type == VOID)
-  {
-    ERROR_HANDLE("Argument " + argument->ident_ + " in function:" + globalContext.currentFuncName + " has void type");
-  }
-
-  auto &func = globalContext.getFunc(globalContext.currentFuncName);
-  // check if the argument is already declared
-  if (func.isExistArg(argument->ident_))
-  {
-    ERROR_HANDLE("Argument " + argument->ident_ + " in function:" + globalContext.currentFuncName + " is already declared");
-  }
-  // add the argument to the function
-  func.addArg(argument->ident_, temp_type);
-  visitIdent(argument->ident_);
 }
 
 void JLCTypeChecker::visitBlock(Block *block)
