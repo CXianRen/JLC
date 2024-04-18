@@ -7,6 +7,7 @@
 #include "ParserError.H"
 #include "JLCTypeChecker.H"
 #include "JLCLLVMGenerator.H"
+#include "JLCTC_TopDef.H"
 
 void usage() {
   printf("usage: Call with one of the following argument combinations:\n");
@@ -62,11 +63,14 @@ int main(int argc, char ** argv)
         printf("%s\n\n", p->print(parse_tree));
       #endif
     }
+    JLCTC_TopDef *jlctc_td = new JLCTC_TopDef();
+    parse_tree->accept(jlctc_td);
+
     JLCTypeChecker *jlcvc = new JLCTypeChecker();
-    parse_tree->accept(jlcvc);
+    // parse_tree->accept(jlcvc);
     delete(jlcvc);
     JLCLLVMGenerator *jlcg = new JLCLLVMGenerator();
-    parse_tree->accept(jlcg);
+    // parse_tree->accept(jlcg);
     delete(jlcg);
     delete(parse_tree);
     std::cerr << "OK" << std::endl;

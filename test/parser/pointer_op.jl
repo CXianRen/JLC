@@ -1,48 +1,80 @@
 
 typedef struct Big *big;
 
+
 struct Big{
     int x01;
 };
 
-typedef struct A* A;
+void t(int x, double y, boolean z, int[] arr){
 
-struct A {
+}
+
+big mm(big b){
+    b->x01 = 1;
+}
+
+typedef struct A* A;
+struct A{
     int a;
     A b;
 };
 
-struct Foo_t{
-    int bar;
+
+int f(){
+    ;
+}
+
+struct B{
+    int x;
 };
 
-typedef struct Foo_t * Foo;
+typedef struct B* B;
+
+void g(B x){
+    ;
+}
+
+int[][] h(){
+    ;
+}
+
+# struct A {
+#     int a;
+#     A b;
+# };
+
+# struct Foo_t{
+#     int bar;
+# };
+
+# typedef struct Foo_t * Foo;
 
         
-int main(){
-    big b01 = new Big;
-    b01->x01 = 1;
-    printInt(b01->x01);
+# int main(){
+#     big b01 = new Big;
+#     b01->x01 = 1;
+#     printInt(b01->x01);
     
-    if(b01 == (big)null)
-        printInt(0);
-    else
-        printInt(1);
+#     if(b01 == (big)null)
+#         printInt(0);
+#     else
+#         printInt(1);
 
-    printInt((new A)->a);
-    new A->b = new A;
+#     printInt((new A)->a);
+#     new A->b = new A;
 
-    int c = p -> cool + 5;
-    # Foo[] foos = new Foo[10];
-    # foos[1] = new Foo_t;
-    # foos[1]->bar = 1;
+#     int c = p -> cool + 5;
+#     # Foo[] foos = new Foo[10];
+#     # foos[1] = new Foo_t;
+#     # foos[1]->bar = 1;
     
-    # printInt(foos.length);
-    # for(Foo foo : foos){
-    #    printInt(foo->bar);
-    # }
+#     # printInt(foos.length);
+#     # for(Foo foo : foos){
+#     #    printInt(foo->bar);
+#     # }
 
-    return 0;
+#     return 0;
 
-}
+# }
 

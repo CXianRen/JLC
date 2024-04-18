@@ -6,8 +6,9 @@
 #define __MMUTIL_H__
 
 #include "Absyn.H"
+#include "iostream"
 
-#define ENABLE_TYPE_CHECK_DEBUG 0
+#define ENABLE_TYPE_CHECK_DEBUG 1
 
 #if DEBUG
 #define DEBUG_PRINT(ss) \

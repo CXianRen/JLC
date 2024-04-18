@@ -31,6 +31,7 @@ enum type_enum
 	CHAR,
 	STRING,
 	ARRAY,
+	STRUCT,
 	UNDEFINED
 };
 std::string to_string(type_enum t);
@@ -41,10 +42,22 @@ public:
 	type_enum type;
 	// for array
 	type_enum base_type;
-	int dimension; // dimension of the array
+	int dimension; 
+	
+	// for struct
+	std::string name;
 
-	JLCType(type_enum type, type_enum base_type = UNDEFINED, int dimension = 0)
+	// basic type
+	JLCType(type_enum type): type(type), base_type(UNDEFINED), dimension(0){}
+
+	// array
+	JLCType(type_enum type, type_enum base_type, int dimension)
 		: type(type), base_type(base_type), dimension(dimension) {}
+	
+	// struct
+	JLCType(type_enum type, const std::string &name)
+		: type(type), base_type(UNDEFINED), dimension(0), name(name) {}
+
 	JLCType() = default;
 	~JLCType() = default;
 	// reload operator ==
@@ -67,6 +80,8 @@ public:
 };
 
 std::string to_string(const JLCType &t);
+
+bool is_basic_type(const std::string ident);
 
 // for each parameter, declared JLCVARiable, we create a new JLCVAR object
 class JLCVAR
@@ -150,6 +165,31 @@ public:
 	JLCType getVarType(const std::string &name);
 };
 
+class JLCStruct
+{
+public:
+	JLCStruct() = default;
+	JLCStruct(std::string name) : name(name) {}
+	~JLCStruct() = default;
+	std::string name;
+	std::map<std::string, JLCType> fields;
+
+	void addField(const std::string &name, JLCType type)
+	{
+		fields[name] = type;
+	}
+
+	bool isExistField(const std::string &name)
+	{
+		return fields.find(name) != fields.end();
+	}
+
+	JLCType getFieldType(const std::string &name)
+	{
+		return fields[name];
+	}
+};
+
 // JLCContext is a class that holds the current state of the program.
 class JLCContext
 {
@@ -179,6 +219,17 @@ public:
 	bool isExistFunc(const std::string &name)
 	{
 		return funcs.find(name) != funcs.end();
+	}
+
+	// typedef map of JLCStruct
+	std::map<std::string, JLCStruct> defined_types;
+
+	// add a new defined type
+	void addDefinedType(const std::string &name_struct,
+						const std::string &name_type)
+	{
+		JLCStruct JLCStruct(name_struct);
+		defined_types[name_type] = JLCStruct;
 	}
 };
 
