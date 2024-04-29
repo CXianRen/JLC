@@ -181,19 +181,24 @@ void JLCTC_TopDef::visitPtrgument(Ptrgument *ptrgument)
 {
     /* Code For Ptrgument Goes Here */
     // check if the ident_1 is a defined type
-    DEBUG_PRINT("\tPtrgument name: " + ptrgument->ident_2 +
-                "\tPtrgument type: " + ptrgument->ident_1);
-    if (defined_type_map.find(ptrgument->ident_1) == defined_type_map.end())
+    auto type_str = ptrgument->ident_1;
+    auto arg_name = ptrgument->ident_2;
+    DEBUG_PRINT("\tPtrgument name: " + arg_name +
+                "\tPtrgument type: " + type_str);
+    if (defined_type_map.find(type_str) == defined_type_map.end())
     {
         // add to the wait list, and check when all the types are defined
-        defined_type_wait_to_check_list.push_back(ptrgument->ident_1);
+        defined_type_wait_to_check_list.push_back(type_str);
     }
     auto &func = globalContext.getFunc(globalContext.currentFuncName);
     // check if the argument is already declared
-    if (func.isExistArg(ptrgument->ident_2))
+    if (func.isExistArg(arg_name))
     {
-        ERROR_HANDLE("Argument " + ptrgument->ident_2 + " in function:" + globalContext.currentFuncName + " is already declared");
+        ERROR_HANDLE("Argument " + arg_name + " in function:" + globalContext.currentFuncName + " is already declared");
     }
+    // add the argument to the function
+    auto arg_type = JLCType(STRUCT, type_str);
+    func.addArg(arg_name, arg_type);
 }
 
 // type

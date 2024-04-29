@@ -14,7 +14,6 @@ public:
   JLCContext globalContext;
   JLCType temp_type;
 
-  std::string temp_ident;
   std::string temp_exp_type;
   bool isReturnStmt;
   op_enum temp_op;
@@ -109,10 +108,10 @@ public:
   // for struct(pointer)
   // void visitTypeDef(TypeDef *p);
   // void visitStructDef(StructDef *p);
-  // void visitFnDefS(FnDefS *p); // function with struct return type
+  void visitFnDefS(FnDefS *p); // function with struct return type
   // void visitPtrgument(Ptrgument *p); // pointer argument
 
-  void visitDeclStruct(DeclStruct *p);
+  void visitDeclObjPtr(DeclObjPtr *p);
   // void visitSStmt(SStmt *p);
   // void visitMAccOp(MAccOp *p);
   // void visitForStruct(ForStruct *p);
@@ -121,9 +120,9 @@ public:
   // void visitMpoint(Mpoint *p);
   // void visitSArrayType(SArrayType *p);
   // void visitENewSArray(ENewSArray *p);
-  // void visitENewStruct(ENewStruct *p);
-  // void visitEMember(EMember *p);
-  // void visitTypeCast(TypeCast *p);
+  void visitENewStruct(ENewStruct *p);
+  void visitEMember(EMember *p);
+  void visitTypeCast(TypeCast *p);
   // void visitMAcc(MAcc *p);
   // void visitListSStmt(ListSStmt *p);
 };

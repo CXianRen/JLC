@@ -57,7 +57,7 @@ class PrintAbsyn : public Visitor
   void visitEmpty(Empty *p);
   void visitBStmt(BStmt *p);
   void visitDecl(Decl *p);
-  void visitDeclStruct(DeclStruct *p);
+  void visitDeclObjPtr(DeclObjPtr *p);
   void visitAss(Ass *p);
   void visitAssArr(AssArr *p);
   void visitIncr(Incr *p);
@@ -230,7 +230,7 @@ class ShowAbsyn : public Visitor
   void visitEmpty(Empty *p);
   void visitBStmt(BStmt *p);
   void visitDecl(Decl *p);
-  void visitDeclStruct(DeclStruct *p);
+  void visitDeclObjPtr(DeclObjPtr *p);
   void visitAss(Ass *p);
   void visitAssArr(AssArr *p);
   void visitIncr(Incr *p);

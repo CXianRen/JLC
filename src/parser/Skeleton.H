@@ -36,7 +36,7 @@ public:
   void visitEmpty(Empty *p);
   void visitBStmt(BStmt *p);
   void visitDecl(Decl *p);
-  void visitDeclStruct(DeclStruct *p);
+  void visitDeclObjPtr(DeclObjPtr *p);
   void visitNoInit(NoInit *p);
   void visitInit(Init *p);
   void visitAss(Ass *p);

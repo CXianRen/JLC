@@ -72,16 +72,16 @@ int main(int argc, char ** argv)
     parse_tree->accept(jlctc_sd);
 
     JLCTypeChecker *jlcvc = 
-      new JLCTypeChecker(jlctc_td->getContext());
+      new JLCTypeChecker(jlctc_sd->getContext());
     parse_tree->accept(jlcvc);
     
-    // JLCLLVMGenerator *jlcg = new JLCLLVMGenerator();
+    JLCLLVMGenerator *jlcg = new JLCLLVMGenerator();
     // parse_tree->accept(jlcg);
 
     delete(jlctc_td);
     delete(jlctc_sd);
     delete(jlcvc);
-    // delete(jlcg);
+    delete(jlcg);
     delete(parse_tree);
     std::cerr << "OK" << std::endl;
     return 0;

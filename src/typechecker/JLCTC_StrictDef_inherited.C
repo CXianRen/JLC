@@ -26,6 +26,7 @@ void JLCTC_StructDef::visitMInner(MInner *m_inner)
     DEBUG_PRINT("add member:" + to_string(member_type) + " " + member_name + " to struct " + current_struct_name);
 
     local_struct.addField(member_name, member_type);
+
 }
 
 void JLCTC_StructDef::visitMArray(MArray *m_array)
@@ -57,7 +58,8 @@ void JLCTC_StructDef::visitMArray(MArray *m_array)
     }
 
     // add the member to the struct
-    DEBUG_PRINT("add member:" + to_string(member_type) + " " + member_name + " to struct " + current_struct_name);
+    DEBUG_PRINT("add member:" + to_string(member_type) + 
+        " " + member_name + " to struct " + current_struct_name);
 
     local_struct.addField(member_name, member_type);
 }

@@ -340,13 +340,14 @@ void PrintAbsyn::visitDecl(Decl *p)
   _i_ = oldi;
 }
 
-void PrintAbsyn::visitDeclStruct(DeclStruct *p)
+void PrintAbsyn::visitDeclObjPtr(DeclObjPtr *p)
 {
   int oldi = _i_;
   if (oldi > 0) render(_L_PAREN);
 
   visitIdent(p->ident_);
   _i_ = 0; visitListItem(p->listitem_);
+  render(';');
 
   if (oldi > 0) render(_R_PAREN);
   _i_ = oldi;
@@ -1446,16 +1447,17 @@ void ShowAbsyn::visitDecl(Decl *p)
   bufAppend(' ');
   bufAppend(')');
 }
-void ShowAbsyn::visitDeclStruct(DeclStruct *p)
+void ShowAbsyn::visitDeclObjPtr(DeclObjPtr *p)
 {
   bufAppend('(');
-  bufAppend("DeclStruct");
+  bufAppend("DeclObjPtr");
   bufAppend(' ');
   visitIdent(p->ident_);
   bufAppend(' ');
   bufAppend('[');
   if (p->listitem_)  p->listitem_->accept(this);
   bufAppend(']');
+  bufAppend(' ');
   bufAppend(')');
 }
 void ShowAbsyn::visitAss(Ass *p)

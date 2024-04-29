@@ -124,12 +124,12 @@ void Skeleton::visitDecl(Decl *decl)
 
 }
 
-void Skeleton::visitDeclStruct(DeclStruct *decl_struct)
+void Skeleton::visitDeclObjPtr(DeclObjPtr *decl_obj_ptr)
 {
-  /* Code For DeclStruct Goes Here */
+  /* Code For DeclObjPtr Goes Here */
 
-  visitIdent(decl_struct->ident_);
-  if (decl_struct->listitem_) decl_struct->listitem_->accept(this);
+  visitIdent(decl_obj_ptr->ident_);
+  if (decl_obj_ptr->listitem_) decl_obj_ptr->listitem_->accept(this);
 
 }
 

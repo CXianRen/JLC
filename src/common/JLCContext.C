@@ -44,5 +44,5 @@ JLCStruct &JLCContext::getStruct(const std::string &name)
         }
     }
     // should not reach here
-    ERROR_HANDLE("struct not found");
+    ERROR_HANDLE("Struct " << name << " is not declared");
 }

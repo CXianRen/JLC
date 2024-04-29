@@ -44,7 +44,11 @@ public:
 	type_enum base_type;
 	int dimension; 
 	
-	// for struct
+	// for struct, is the defined type name
+	// eg. struct A {int a; int b;} 
+	// typedef struct A* Aptr;
+	// here name is Aptr
+	// will refactor this later
 	std::string name;
 
 	// basic type
@@ -241,9 +245,28 @@ public:
 	{
 		return defined_types.find(name) != defined_types.end();
 	}
+	
+	// get struct by the defined type name
+	JLCStruct &getStructByDefinedType(const std::string &name)
+	{
+		return defined_types[name];
+	}
 
 	// get struct by struct name
 	JLCStruct &getStruct(const std::string &name);
+
+	// check if the struct is defined
+	bool isExistStruct(const std::string &name)
+	{
+		for (auto &it : defined_types)
+		{
+			if (it.second.name == name)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
 };
 

@@ -30,7 +30,7 @@ BStmt.     Stmt ::= Blk ;
 
 Decl.      Stmt ::= Type [Item] ";" ;
 
-DeclStruct. Stmt ::= Ident [Item] ;
+DeclObjPtr. Stmt ::= Ident [Item] ";" ;
 
 NoInit.    Item ::= Ident ;
 
@@ -42,6 +42,7 @@ Ass.       Stmt ::= Ident "=" Expr  ";" ;
 
 AssArr.    Stmt ::= Expr "=" Expr  ";" ;
 -- @todo: it can merger with Ass, if have enough time. 
+-- @todo: accessing array and struct are now by this method. 
 
 Incr.      Stmt ::= Ident "++"  ";" ;
 

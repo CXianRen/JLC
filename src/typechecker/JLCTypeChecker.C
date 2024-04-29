@@ -35,10 +35,23 @@ void JLCTypeChecker::visitFnDef(FnDef *fn_def)
 
   // we move argument visiting to "visitProgram" function
   // if (fn_def->listarg_) fn_def->listarg_->accept(this);
-  DEBUG_PRINT("[" + checkerName + "]" + " visiting function body" + fn_def->ident_);
+  DEBUG_PRINT("[" + checkerName + "]" + " visiting function body of: " + fn_def->ident_);
   if (fn_def->blk_)
     fn_def->blk_->accept(this);
 }
+
+
+void JLCTypeChecker::visitFnDefS(FnDefS *fn_def_s)
+{
+  /* Code For FnDefS Goes Here */
+  auto func_name = fn_def_s->ident_2;
+  globalContext.currentFuncName = func_name;
+  DEBUG_PRINT("[" + checkerName + "]" + " visiting function body of: " + func_name);
+
+  if (fn_def_s->blk_) fn_def_s->blk_->accept(this);
+
+}
+
 
 void JLCTypeChecker::visitBlock(Block *block)
 {
@@ -70,31 +83,13 @@ void JLCTypeChecker::visitDecl(Decl *decl)
   {
     ERROR_HANDLE("cannot declare a variable with void type");
   }
-  //@TODO: maybe need to refactor type_enum to a class
+
   auto temp_decl_type = temp_type;
 
-  auto &frame = globalContext.currentFunc();
   for (auto &item : *(decl->listitem_))
   {
     temp_type = temp_decl_type; // !! this is important, as the type will pase to the next level
-
     item->accept(this);
-    if (frame.blk->isExistVar(temp_ident))
-    {
-      // check if the variable is already declared in this block !notice: not in the whole function
-      ERROR_HANDLE("Variable " + temp_ident + " is already declared");
-    }
-    // Add the variable to the current block
-    if (temp_decl_type == ARRAY)
-    {
-      std::string temp_array_type_str = to_string(temp_decl_type);
-      DEBUG_PRINT("[" + checkerName + "]" + "\tAdding variable " + temp_ident + " to the block with type " + temp_array_type_str);
-    }
-    else
-    {
-      DEBUG_PRINT("[" + checkerName + "]" + "\tAdding variable " + temp_ident + " to the block");
-    }
-    frame.addVar(temp_ident, temp_decl_type);
   }
 }
 
@@ -262,28 +257,55 @@ void JLCTypeChecker::visitNoInit(NoInit *no_init)
 {
   /* Code For NoInit Goes Here */
   DEBUG_PRINT("[" + checkerName + "]" + "\tNoInit");
-  visitIdent(no_init->ident_);
-  temp_ident = no_init->ident_;
+  auto var_name = no_init->ident_;
+  auto var_type = temp_type;
+
+  auto &frame = globalContext.currentFunc();
+  if (frame.blk->isExistVar(var_name))
+  {
+    // check if the variable is already declared in this block !notice: not in the whole function
+    ERROR_HANDLE("Variable " + var_name + " is already declared");
+  }
+
+  // Add the variable to the current block
+  DEBUG_PRINT("[" + checkerName + "]" + "\tAdding variable " +
+              var_name + " to the block with type " + to_string(var_type));
+
+  frame.addVar(var_name, var_type);
 }
 
 void JLCTypeChecker::visitInit(Init *init)
 {
   /* Code For Init Goes Here */
   DEBUG_PRINT("[" + checkerName + "]" + "\tInit");
-  visitIdent(init->ident_);
-  temp_ident = init->ident_;
-  auto temp_decl_type = temp_type; // !this type is passed from top level
+  auto var_name = init->ident_;
+  auto var_type = temp_type; // !this type is passed from top level
+
+  auto &frame = globalContext.currentFunc();
+  if (frame.blk->isExistVar(var_name))
+  {
+    // check if the variable is already declared in this block !notice: not in the whole function
+    ERROR_HANDLE("Variable " + var_name + " is already declared");
+  }
+
   if (init->expr_)
     init->expr_->accept(this);
+  auto init_type = temp_type;
   // check if the init type is same as the variable type
-  if (temp_type != temp_decl_type)
+  if (init_type != var_type)
   {
     ERROR_HANDLE("Type mismatch between expression and variable assignment."
-                 << " left-hand: " << init->ident_ << " type:"
-                 << to_string(temp_decl_type)
+                 << " left-hand: " << var_name << " type:"
+                 << to_string(var_type)
                  << " right-hand: " << std::string(p.print(init->expr_))
-                 << " type:" << to_string(temp_type));
+                 << " type:" << to_string(init_type));
   }
+
+  // Add the variable to the current block
+  DEBUG_PRINT("[" + checkerName + "]" + "\tAdding variable " +
+              var_name + " to the block with type " + to_string(var_type));
+
+  frame.addVar(var_name, var_type);
 }
 
 void JLCTypeChecker::visitENewArray(ENewArray *e_new_array)
@@ -502,13 +524,13 @@ void JLCTypeChecker::visitEVar(EVar *e_var)
 {
   /* Code For EVar Goes Here */
   // check if the variable is declared
-  auto &frame = globalContext.currentFunc();
-  if (!frame.isExistVar(e_var->ident_))
+  auto &func = globalContext.currentFunc();
+  auto var_name = e_var->ident_;
+  if (!func.isExistVar(var_name))
   {
-    ERROR_HANDLE("Variable " << e_var->ident_ << " is not declared.");
+    ERROR_HANDLE("Variable " << var_name << " is not declared in func:" << func.name);
   }
-  temp_type = frame.getVarType(e_var->ident_);
-  visitIdent(e_var->ident_);
+  temp_type = func.getVarType(var_name);
 }
 
 void JLCTypeChecker::visitELitInt(ELitInt *e_lit_int)
@@ -551,17 +573,17 @@ void JLCTypeChecker::visitEApp(EApp *e_app)
     ERROR_HANDLE("Function " << e_app->ident_ << " is not declared");
   }
 
-  auto &frame = globalContext.getFunc(e_app->ident_);
+  auto &func = globalContext.getFunc(e_app->ident_);
   // check if the number of arguments is correct
-  if (frame.args.size() != e_app->listexpr_->size())
+  if (func.args.size() != e_app->listexpr_->size())
   {
-    ERROR_HANDLE("Function " << e_app->ident_ << " has " << frame.args.size()
+    ERROR_HANDLE("Function " << e_app->ident_ << " has " << func.args.size()
                              << " arguments, but " << e_app->listexpr_->size() << " arguments are provided");
   }
 
   // check if the type of arguments is correct
   auto i = e_app->listexpr_->begin();
-  for (auto &arg : frame.args)
+  for (auto &arg : func.args)
   {
     (*i)->accept(this);
     if (temp_type != arg.second)
@@ -570,7 +592,7 @@ void JLCTypeChecker::visitEApp(EApp *e_app)
     }
     i++;
   }
-  temp_type = frame.returnType;
+  temp_type = func.returnType;
 
   // visitIdent(e_app->ident_);
   // if (e_app->listexpr_) e_app->listexpr_->accept(this);
@@ -802,16 +824,96 @@ void JLCTypeChecker::visitListStmt(ListStmt *list_stmt)
   }
 }
 
-
 // for struct
 
-void JLCTypeChecker::visitDeclStruct(DeclStruct *decl_struct)
+void JLCTypeChecker::visitDeclObjPtr(DeclObjPtr *decl_obj_ptr)
 {
-  auto struct_name = decl_struct->ident_;
+  // @todo need to refactor to align all the define of type
+  auto ptr_type_nick_name = decl_obj_ptr->ident_;
   // check it is a declared struct
-  if (!globalContext.isExistDefinedType(struct_name))
+  if (!globalContext.isExistDefinedType(ptr_type_nick_name))
   {
-    ERROR_HANDLE("Type: " << struct_name << " is not a valid type");
+    ERROR_HANDLE("Type: " << ptr_type_nick_name << " is not a valid type");
   }
-  if (decl_struct->listitem_) decl_struct->listitem_->accept(this);
+  // @todo, atucally, STRUCT should be Pointer
+  temp_type = JLCType(STRUCT, ptr_type_nick_name);
+  if (decl_obj_ptr->listitem_)
+    decl_obj_ptr->listitem_->accept(this);
+}
+
+
+void JLCTypeChecker::visitENewStruct(ENewStruct *e_new_struct)
+{
+  /* Code For ENewStruct Goes Here */
+
+  auto struct_name = e_new_struct->ident_;
+
+  // check if the struct is defined
+  if (!globalContext.isExistStruct(struct_name))
+  {
+    ERROR_HANDLE("Type " << struct_name << " is not defined");
+  }
+  
+  // map struct -> ptr type, because new return ptr in JLC, eg: ptrA a = new A;
+  temp_type = JLCType(UNDEFINED);
+  for (auto &it : globalContext.defined_types)
+  {
+    if (it.second.name == struct_name)
+    {
+      temp_type = JLCType(STRUCT, it.first);
+      break;
+    }
+  }
+  if (temp_type == JLCType(UNDEFINED))
+  {
+    // should not reach here
+    ERROR_HANDLE("Internal error: struct " << struct_name << " is not found");
+  }
+}
+
+void JLCTypeChecker::visitEMember(EMember *e_member)
+{
+  /* Code For EMember Goes Here */
+
+  if (e_member->expr_) e_member->expr_->accept(this);
+  auto right_type = temp_type;
+  if (e_member->maccop_) e_member->maccop_->accept(this);
+  // check if the type is struct ptr 
+  if (right_type.type != STRUCT)
+  {
+    ERROR_HANDLE("Variable " 
+      << std::string(p.print(e_member->expr_)) << " is not a struct ptr type");
+  }
+  auto member_name = e_member->ident_;
+  // check if the member is defined in the struct
+  DEBUG_PRINT("left type:" << to_string(right_type));
+  auto &temp_struct = globalContext.getStructByDefinedType(right_type.name);
+  if (!temp_struct.isExistField(member_name))
+  {
+    // print struct member
+    DEBUG_PRINT("Struct " << temp_struct.name << " has members:");
+    for (auto &it : temp_struct.fields)
+    {
+      DEBUG_PRINT("Member \t\t" + it.first + " : " + to_string(it.second));
+    }
+    ERROR_HANDLE("Struct " 
+      << temp_struct.name << " does not have member " << member_name);
+
+  }
+  temp_type = temp_struct.getFieldType(member_name);
+}
+
+void JLCTypeChecker::visitTypeCast(TypeCast *type_cast)
+{
+  /* Code For TypeCast Goes Here */
+
+  // visitIdent(type_cast->ident_);
+  auto type_name = type_cast->ident_;
+
+  // check if the struct is defined
+  if (!globalContext.isExistDefinedType(type_name))
+  {
+    ERROR_HANDLE("Type " << type_name << " is not defined");
+  }
+  temp_type = JLCType(STRUCT, type_name);
 }

@@ -127,3 +127,13 @@ printInt((new int[3])[2]);
 
 7: [], ->
 6: new
+
+
+## pointer type checker todo list
++ [x] check struct declearation and definition. 
++ [x] typer checker in function body
+  + [x] decleare with init 
+  + [x] decleare with no-init
++ [x] read accessing
++ [x] write accessing 
++ [x] type casting 

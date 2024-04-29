@@ -521,49 +521,49 @@ Decl *Decl::clone() const
 
 
 
-/********************   DeclStruct    ********************/
-DeclStruct::DeclStruct(Ident p1, ListItem *p2)
+/********************   DeclObjPtr    ********************/
+DeclObjPtr::DeclObjPtr(Ident p1, ListItem *p2)
 {
   ident_ = p1;
   listitem_ = p2;
 
 }
 
-DeclStruct::DeclStruct(const DeclStruct & other)
+DeclObjPtr::DeclObjPtr(const DeclObjPtr & other)
 {
   ident_ = other.ident_;
   listitem_ = other.listitem_->clone();
 
 }
 
-DeclStruct &DeclStruct::operator=(const DeclStruct & other)
+DeclObjPtr &DeclObjPtr::operator=(const DeclObjPtr & other)
 {
-  DeclStruct tmp(other);
+  DeclObjPtr tmp(other);
   swap(tmp);
   return *this;
 }
 
-void DeclStruct::swap(DeclStruct & other)
+void DeclObjPtr::swap(DeclObjPtr & other)
 {
   std::swap(ident_, other.ident_);
   std::swap(listitem_, other.listitem_);
 
 }
 
-DeclStruct::~DeclStruct()
+DeclObjPtr::~DeclObjPtr()
 {
   delete(listitem_);
 
 }
 
-void DeclStruct::accept(Visitor *v)
+void DeclObjPtr::accept(Visitor *v)
 {
-  v->visitDeclStruct(this);
+  v->visitDeclObjPtr(this);
 }
 
-DeclStruct *DeclStruct::clone() const
+DeclObjPtr *DeclObjPtr::clone() const
 {
-  return new DeclStruct(*this);
+  return new DeclObjPtr(*this);
 }
 
 

@@ -47,7 +47,7 @@ class Block;
 class Empty;
 class BStmt;
 class Decl;
-class DeclStruct;
+class DeclObjPtr;
 class NoInit;
 class Init;
 class Ass;
@@ -150,7 +150,7 @@ public:
   virtual void visitEmpty(Empty *p) = 0;
   virtual void visitBStmt(BStmt *p) = 0;
   virtual void visitDecl(Decl *p) = 0;
-  virtual void visitDeclStruct(DeclStruct *p) = 0;
+  virtual void visitDeclObjPtr(DeclObjPtr *p) = 0;
   virtual void visitNoInit(NoInit *p) = 0;
   virtual void visitInit(Init *p) = 0;
   virtual void visitAss(Ass *p) = 0;
@@ -512,19 +512,19 @@ public:
   void swap(Decl &);
 };
 
-class DeclStruct : public Stmt
+class DeclObjPtr : public Stmt
 {
 public:
   Ident ident_;
   ListItem *listitem_;
 
-  DeclStruct(const DeclStruct &);
-  DeclStruct &operator=(const DeclStruct &);
-  DeclStruct(Ident p1, ListItem *p2);
-  ~DeclStruct();
+  DeclObjPtr(const DeclObjPtr &);
+  DeclObjPtr &operator=(const DeclObjPtr &);
+  DeclObjPtr(Ident p1, ListItem *p2);
+  ~DeclObjPtr();
   virtual void accept(Visitor *v);
-  virtual DeclStruct *clone() const;
-  void swap(DeclStruct &);
+  virtual DeclObjPtr *clone() const;
+  void swap(DeclObjPtr &);
 };
 
 class Ass : public Stmt
