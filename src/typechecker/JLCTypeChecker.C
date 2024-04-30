@@ -40,7 +40,6 @@ void JLCTypeChecker::visitFnDef(FnDef *fn_def)
     fn_def->blk_->accept(this);
 }
 
-
 void JLCTypeChecker::visitFnDefS(FnDefS *fn_def_s)
 {
   /* Code For FnDefS Goes Here */
@@ -48,10 +47,9 @@ void JLCTypeChecker::visitFnDefS(FnDefS *fn_def_s)
   globalContext.currentFuncName = func_name;
   DEBUG_PRINT("[" + checkerName + "]" + " visiting function body of: " + func_name);
 
-  if (fn_def_s->blk_) fn_def_s->blk_->accept(this);
-
+  if (fn_def_s->blk_)
+    fn_def_s->blk_->accept(this);
 }
-
 
 void JLCTypeChecker::visitBlock(Block *block)
 {
@@ -384,11 +382,11 @@ void JLCTypeChecker::visitEAcc(EAcc *e_acc)
   // accessing the base type
   if (bracket_num == temp_type_1.dimension)
   {
-    temp_type = JLCType(temp_type_1.base_type);
+    temp_type = JLCType(temp_type_1.base_type, temp_type_1.name);
   }
   else if (bracket_num < temp_type_1.dimension)
   {
-    temp_type = JLCType(ARRAY, temp_type_1.base_type, temp_type_1.dimension - bracket_num);
+    temp_type = JLCType(ARRAY, temp_type_1.base_type, temp_type_1.dimension - bracket_num, temp_type_1.name);
   }
   else
   {
@@ -419,7 +417,7 @@ void JLCTypeChecker::visitAssArr(AssArr *ass_arr)
   {
     ERROR_HANDLE("Type mismatch in assignment,"
                  << " left side: " << to_string(l_type)
-                 << " right side:" << to_string(r_type));
+                 << " ,right side:" << to_string(r_type));
   }
   temp_type = l_type;
 }
@@ -466,6 +464,51 @@ void JLCTypeChecker::visitForLoop(ForLoop *for_loop)
   if (for_loop->stmt_)
     for_loop->stmt_->accept(this);
   func.releaseBlock();
+}
+
+void JLCTypeChecker::visitForStruct(ForStruct *for_struct)
+{
+
+  auto &func = globalContext.currentFunc();
+
+  auto element_type_name = for_struct->ident_1;
+  auto element_type = JLCType(STRUCT, element_type_name);
+  auto local_e_name = for_struct->ident_2;
+
+  // new logical block
+  func.newBlock();
+  if (for_struct->expr_)
+    for_struct->expr_->accept(this);
+  auto arr_type = temp_type;
+  // check if is array
+  if (arr_type.type != ARRAY)
+  {
+    ERROR_HANDLE("cannot apply for to an unarray variable");
+  }
+
+  // Check if the element type matches the n-1 dimension type
+  JLCType n_m1_type;
+  if (arr_type.dimension > 1)
+  {
+    n_m1_type = JLCType(ARRAY, arr_type.base_type, arr_type.dimension - 1, arr_type.name);
+  }
+  else
+  {
+    n_m1_type = JLCType(arr_type.base_type, arr_type.name);
+  }
+
+  if (element_type != n_m1_type)
+  {
+    ERROR_HANDLE("Type mismatch in for loop, expected " << to_string(n_m1_type)
+                                                        << " but got " << to_string(element_type));
+  }
+  // add the element to the block
+  func.addVar(local_e_name, element_type);
+
+  if (for_struct->stmt_) for_struct->stmt_->accept(this);
+
+  func.releaseBlock();
+
 }
 
 void JLCTypeChecker::visitInt(Int *int_)
@@ -841,7 +884,6 @@ void JLCTypeChecker::visitDeclObjPtr(DeclObjPtr *decl_obj_ptr)
     decl_obj_ptr->listitem_->accept(this);
 }
 
-
 void JLCTypeChecker::visitENewStruct(ENewStruct *e_new_struct)
 {
   /* Code For ENewStruct Goes Here */
@@ -853,7 +895,7 @@ void JLCTypeChecker::visitENewStruct(ENewStruct *e_new_struct)
   {
     ERROR_HANDLE("Type " << struct_name << " is not defined");
   }
-  
+
   // map struct -> ptr type, because new return ptr in JLC, eg: ptrA a = new A;
   temp_type = JLCType(UNDEFINED);
   for (auto &it : globalContext.defined_types)
@@ -875,14 +917,16 @@ void JLCTypeChecker::visitEMember(EMember *e_member)
 {
   /* Code For EMember Goes Here */
 
-  if (e_member->expr_) e_member->expr_->accept(this);
+  if (e_member->expr_)
+    e_member->expr_->accept(this);
   auto right_type = temp_type;
-  if (e_member->maccop_) e_member->maccop_->accept(this);
-  // check if the type is struct ptr 
+  if (e_member->maccop_)
+    e_member->maccop_->accept(this);
+  // check if the type is struct ptr
   if (right_type.type != STRUCT)
   {
-    ERROR_HANDLE("Variable " 
-      << std::string(p.print(e_member->expr_)) << " is not a struct ptr type");
+    ERROR_HANDLE("Variable "
+                 << std::string(p.print(e_member->expr_)) << " is not a struct ptr type");
   }
   auto member_name = e_member->ident_;
   // check if the member is defined in the struct
@@ -896,9 +940,8 @@ void JLCTypeChecker::visitEMember(EMember *e_member)
     {
       DEBUG_PRINT("Member \t\t" + it.first + " : " + to_string(it.second));
     }
-    ERROR_HANDLE("Struct " 
-      << temp_struct.name << " does not have member " << member_name);
-
+    ERROR_HANDLE("Struct "
+                 << temp_struct.name << " does not have member " << member_name);
   }
   temp_type = temp_struct.getFieldType(member_name);
 }
@@ -917,3 +960,35 @@ void JLCTypeChecker::visitTypeCast(TypeCast *type_cast)
   }
   temp_type = JLCType(STRUCT, type_name);
 }
+
+void JLCTypeChecker::visitSArrayType(SArrayType *s_array_type)
+{
+  /* Code For SArrayType Goes Here */
+
+  auto type_name = s_array_type->ident_;
+  // check if the type is already defined
+  if (!globalContext.isExistDefinedType(type_name))
+  {
+    ERROR_HANDLE("Type " << type_name << " is not defined");
+  }
+  auto dim =  s_array_type->listbracketsopt_->size();
+
+  temp_type = JLCType(ARRAY, STRUCT, dim, type_name);
+
+}
+
+void JLCTypeChecker::visitENewSArray(ENewSArray *e_new_s_array)
+{
+  /* Code For ENewSArray Goes Here */
+
+  auto type_name = e_new_s_array->ident_;
+  // check if the struct is defined
+  if (!globalContext.isExistDefinedType(type_name))
+  {
+    ERROR_HANDLE("Type " << type_name << " is not defined");
+  }
+
+  auto dim = e_new_s_array->listdimexpr_->size();
+  temp_type = JLCType(ARRAY, STRUCT, dim, type_name);
+}
+

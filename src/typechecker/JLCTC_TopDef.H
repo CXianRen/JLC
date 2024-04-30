@@ -34,6 +34,7 @@ public:
     void visitBool(Bool *p);
     void visitVoid(Void *p);
     void visitArrayType(ArrayType *p);
+    void visitSArrayType(SArrayType *p);
 
 private:
     JLCContext globalContext;

@@ -114,12 +114,12 @@ public:
   void visitDeclObjPtr(DeclObjPtr *p);
   // void visitSStmt(SStmt *p);
   // void visitMAccOp(MAccOp *p);
-  // void visitForStruct(ForStruct *p);
+  void visitForStruct(ForStruct *p);
   // void visitMInner(MInner *p);
   // void visitMArray(MArray *p);
   // void visitMpoint(Mpoint *p);
-  // void visitSArrayType(SArrayType *p);
-  // void visitENewSArray(ENewSArray *p);
+  void visitSArrayType(SArrayType *p);
+  void visitENewSArray(ENewSArray *p);
   void visitENewStruct(ENewStruct *p);
   void visitEMember(EMember *p);
   void visitTypeCast(TypeCast *p);

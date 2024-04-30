@@ -76,7 +76,7 @@ int main(int argc, char ** argv)
     parse_tree->accept(jlcvc);
     
     JLCLLVMGenerator *jlcg = new JLCLLVMGenerator();
-    // parse_tree->accept(jlcg);
+    //parse_tree->accept(jlcg);
 
     delete(jlctc_td);
     delete(jlctc_sd);

@@ -1,48 +1,59 @@
-typedef struct Node *list;
+// adapted from https://www.hackerrank.com/challenges/small-triangles-large-triangles/editorial
 
-struct Node {
-  int elem;
-  list next;
+struct Triangle
+{
+    int a;
+    int b;
+    int c;
 };
 
+typedef struct Triangle * PTriangle;
 
-int main() {
-  printInt(length(fromTo(1,50)));
-  printInt(length2(fromTo(1,100)));
-  return 0;
+
+void sort_by_square(PTriangle[] a)
+{
+    # int i = 0;
+    # while (i < a.length ){
+    #     int j = i + 1; 
+    #     while ( j < a.length ) {
+    #         if (square(a[i]) > square(a[j]))
+    #         {
+    #             PTriangle temp = a[i];
+    #             a[i] = a[j];
+    #             a[j] = temp;
+    #         }
+    #         j++;
+    #     }
+    #     i++;
+
+    # }
 }
 
-int head (list xs) {
-  return xs -> elem;
-}
- 
-list cons (int x, list xs) {
-  list n;
-  n = new Node;
-  n->elem = x;
-  n->next = xs;
-  return n;
-}
+int main()
+{
+    # int n;
+    # n = readInt();
+    # PTriangle[] a = new PTriangle[n];
 
-int length (list xs) {
-  if (xs==(list)null)
+    # int i = 0;
+    # while( i < a.length ) {
+    #     a[i] = new Triangle;
+    #     PTriangle pt = a[i];
+
+    #     pt->a = readInt();
+    #     pt->b = readInt();
+    #     pt->c = readInt();
+
+    #     i++;
+    # }
+    
+    # sort_by_square(a);
+
+    # for (PTriangle pt : a) {
+    #     printInt(pt->a);
+    #     printInt(pt->b);
+    #     printInt(pt->c);    
+    # }
+    
     return 0;
-  else
-    return 1 + length (xs->next);
-}
-
-list fromTo (int m, int n) {
-  if (m>n)
-    return (list)null;
-  else 
-    return cons (m,fromTo (m+1,n));
-}
-
-int length2 (list xs) {
-  int res = 0;
-  while (xs != (list)null) {
-    res++;
-    xs = xs->next;
-  }
-  return res;
 }

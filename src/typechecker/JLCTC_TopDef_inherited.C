@@ -242,3 +242,20 @@ void JLCTC_TopDef::visitArrayType(ArrayType *array_type)
     auto num = array_type->listbracketsopt_->size();
     temp_type = JLCType(ARRAY, temp_array_type.type, num);
 }
+
+void JLCTC_TopDef::visitSArrayType(SArrayType *s_array_type)
+{
+  /* Code For SArrayType Goes Here */
+
+  auto type_name = s_array_type->ident_;
+  // check if the type is already defined
+  if (!globalContext.isExistDefinedType(type_name))
+  {
+    // add to the wait list, and check when all the types are defined
+    defined_type_wait_to_check_list.push_back(type_name);
+  }
+  auto dim =  s_array_type->listbracketsopt_->size();
+
+  temp_type = JLCType(ARRAY, STRUCT, dim, type_name);
+
+}

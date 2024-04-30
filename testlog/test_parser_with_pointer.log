@@ -129,9 +129,9 @@ About to run tests with these settings:
 [121/152] testsuite/bad/bad042      ... OK
 [122/152] testsuite/bad/array03     ... OK
 [123/152] testsuite/bad/bad032      ... OK
-[124/152] testsuite/extensions/arrays1_pointers/mixed001 ... FAILED
-[125/152] testsuite/extensions/arrays1_pointers/mixed002 ... FAILED
-[126/152] testsuite/extensions/arrays1_pointers/mixed003 ... FAILED
+[124/152] testsuite/extensions/arrays1_pointers/mixed001 ... OK
+[125/152] testsuite/extensions/arrays1_pointers/mixed002 ... OK
+[126/152] testsuite/extensions/arrays1_pointers/mixed003 ... OK
 [127/152] testsuite/extensions/arrays1/array_default ... OK
 [128/152] testsuite/extensions/arrays1/array009 ... OK
 [129/152] testsuite/extensions/arrays1/array008 ... OK
@@ -157,43 +157,7 @@ About to run tests with these settings:
 [149/152] testsuite/extensions/pointers/bad/bad003 ... OK
 [150/152] testsuite/extensions/pointers/bad/bad001 ... OK
 [151/152] testsuite/extensions/pointers/bad/parentheses ... OK
-[152/152] testsuite/extensions/arrays2_pointers/mixed001 ... FAILED
+[152/152] testsuite/extensions/arrays2_pointers/mixed001 ... OK
 
-Some tests failed:
----------- !!! testsuite/extensions/arrays1_pointers/mixed001.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR: Variable  is not an array
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/arrays1_pointers/mixed002.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR: Type mismatch in assignment, left side: struct tree[] right side:int
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/arrays1_pointers/mixed003.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR: Argument a in function:sort_by_square has void type
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/arrays2_pointers/mixed001.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR: Argument pixels in function:initPixel has void type
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
+All tests succeeded.
 /chalmers/users/chenhon/lab-group-22

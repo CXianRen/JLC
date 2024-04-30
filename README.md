@@ -137,3 +137,4 @@ printInt((new int[3])[2]);
 + [x] read accessing
 + [x] write accessing 
 + [x] type casting 
++ [x] struct ARRAY
