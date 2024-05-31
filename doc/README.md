@@ -1,6 +1,11 @@
 # Documentation
 
-Documentation will be written here.
+what have we done?
+
++ support LLVM + multiarray 
++ support x86 (partial)
+
+
 
 # Part-a Front end 
 [Detail](https://github.com/TDA283-compiler-construction/project/blob/master/project/frontend.md)
