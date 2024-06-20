@@ -62,10 +62,7 @@ CFuncDef.   CMemdef ::= FnDef ;
 
 separator CMemdef "" ;
 
-
 -- statements ----------------------------------------------
-
- 
 
 Block.     Blk ::= "{" [Stmt] "}" ;
 
@@ -74,6 +71,39 @@ separator  Stmt "" ;
 Empty.     Stmt ::= ";" ;
 
 BStmt.     Stmt ::= Blk ;
+
+-- define variable -----------------------------------------
+
+Decl.      Stmt ::= Type [Item] ";" ;
+
+NoInit.    Item ::= Ident ;
+
+Init.      Item ::= Ident "=" Expr ;
+
+separator nonempty Item "," ;
+
+
+-- Expr ----------------------------------------------------
+
+
+ELitInt.   Expr7 ::= Integer ;
+
+ELitDoub.  Expr7 ::= Double ;
+
+ELitTrue.  Expr7 ::= "true" ;
+
+ELitFalse. Expr7 ::= "false" ;
+
+EString.   Expr7 ::= String ;
+
+EVar.      Expr7 ::= Ident ;
+
+
+EOr.       Expr ::= Expr7 "||" Expr ;
+
+coercions  Expr 7 ;
+
+separator  Expr "," ;
 
 -- comments ------------------------------------------------
 

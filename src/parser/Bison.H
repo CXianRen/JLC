@@ -60,19 +60,26 @@ extern int javalette_debug;
     _STAR = 261,                   /* _STAR  */
     _COMMA = 262,                  /* _COMMA  */
     _SEMI = 263,                   /* _SEMI  */
-    _EMPTYBRACK = 264,             /* _EMPTYBRACK  */
-    _KW_boolean = 265,             /* _KW_boolean  */
-    _KW_class = 266,               /* _KW_class  */
-    _KW_double = 267,              /* _KW_double  */
-    _KW_enum = 268,                /* _KW_enum  */
-    _KW_extends = 269,             /* _KW_extends  */
-    _KW_int = 270,                 /* _KW_int  */
-    _KW_struct = 271,              /* _KW_struct  */
-    _KW_typedef = 272,             /* _KW_typedef  */
-    _KW_void = 273,                /* _KW_void  */
-    _LBRACE = 274,                 /* _LBRACE  */
-    _RBRACE = 275,                 /* _RBRACE  */
-    _IDENT_ = 276                  /* _IDENT_  */
+    _EQ = 264,                     /* _EQ  */
+    _EMPTYBRACK = 265,             /* _EMPTYBRACK  */
+    _KW_boolean = 266,             /* _KW_boolean  */
+    _KW_class = 267,               /* _KW_class  */
+    _KW_double = 268,              /* _KW_double  */
+    _KW_enum = 269,                /* _KW_enum  */
+    _KW_extends = 270,             /* _KW_extends  */
+    _KW_false = 271,               /* _KW_false  */
+    _KW_int = 272,                 /* _KW_int  */
+    _KW_struct = 273,              /* _KW_struct  */
+    _KW_true = 274,                /* _KW_true  */
+    _KW_typedef = 275,             /* _KW_typedef  */
+    _KW_void = 276,                /* _KW_void  */
+    _LBRACE = 277,                 /* _LBRACE  */
+    _DBAR = 278,                   /* _DBAR  */
+    _RBRACE = 279,                 /* _RBRACE  */
+    _STRING_ = 280,                /* _STRING_  */
+    _INTEGER_ = 281,               /* _INTEGER_  */
+    _DOUBLE_ = 282,                /* _DOUBLE_  */
+    _IDENT_ = 283                  /* _IDENT_  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -108,8 +115,12 @@ union YYSTYPE
   Blk* blk_;
   ListStmt* liststmt_;
   Stmt* stmt_;
+  Item* item_;
+  ListItem* listitem_;
+  Expr* expr_;
+  ListExpr* listexpr_;
 
-#line 113 "Bison.H"
+#line 124 "Bison.H"
 
 };
 typedef union YYSTYPE YYSTYPE;

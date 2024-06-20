@@ -90,6 +90,22 @@ class PrintAbsyn : public Visitor
   void visitStmt(Stmt *p); /* abstract class */
   void visitEmpty(Empty *p);
   void visitBStmt(BStmt *p);
+  void visitDecl(Decl *p);
+  void visitItem(Item *p); /* abstract class */
+  void visitNoInit(NoInit *p);
+  void visitInit(Init *p);
+  void visitListItem(ListItem *p);
+  void iterListItem(ListItem::const_iterator i, ListItem::const_iterator j);
+  void visitExpr(Expr *p); /* abstract class */
+  void visitELitInt(ELitInt *p);
+  void visitELitDoub(ELitDoub *p);
+  void visitELitTrue(ELitTrue *p);
+  void visitELitFalse(ELitFalse *p);
+  void visitEString(EString *p);
+  void visitEVar(EVar *p);
+  void visitEOr(EOr *p);
+  void visitListExpr(ListExpr *p);
+  void iterListExpr(ListExpr::const_iterator i, ListExpr::const_iterator j);
 
   void visitInteger(Integer i);
   void visitDouble(Double d);
@@ -213,6 +229,22 @@ class ShowAbsyn : public Visitor
   void visitStmt(Stmt *p); /* abstract class */
   void visitEmpty(Empty *p);
   void visitBStmt(BStmt *p);
+  void visitDecl(Decl *p);
+  void visitItem(Item *p); /* abstract class */
+  void visitNoInit(NoInit *p);
+  void visitInit(Init *p);
+  void visitListItem(ListItem *p);
+  void iterListItem(ListItem::const_iterator i, ListItem::const_iterator j);
+  void visitExpr(Expr *p); /* abstract class */
+  void visitELitInt(ELitInt *p);
+  void visitELitDoub(ELitDoub *p);
+  void visitELitTrue(ELitTrue *p);
+  void visitELitFalse(ELitFalse *p);
+  void visitEString(EString *p);
+  void visitEVar(EVar *p);
+  void visitEOr(EOr *p);
+  void visitListExpr(ListExpr *p);
+  void iterListExpr(ListExpr::const_iterator i, ListExpr::const_iterator j);
 
   void visitInteger(Integer i);
   void visitDouble(Double d);

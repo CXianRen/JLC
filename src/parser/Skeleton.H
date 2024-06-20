@@ -23,6 +23,8 @@ public:
   void visitCMemdef(CMemdef *p);
   void visitBlk(Blk *p);
   void visitStmt(Stmt *p);
+  void visitItem(Item *p);
+  void visitExpr(Expr *p);
   void visitProgram(Program *p);
   void visitStruct(Struct *p);
   void visitTypeDef(TypeDef *p);
@@ -49,6 +51,16 @@ public:
   void visitBlock(Block *p);
   void visitEmpty(Empty *p);
   void visitBStmt(BStmt *p);
+  void visitDecl(Decl *p);
+  void visitNoInit(NoInit *p);
+  void visitInit(Init *p);
+  void visitELitInt(ELitInt *p);
+  void visitELitDoub(ELitDoub *p);
+  void visitELitTrue(ELitTrue *p);
+  void visitELitFalse(ELitFalse *p);
+  void visitEString(EString *p);
+  void visitEVar(EVar *p);
+  void visitEOr(EOr *p);
   void visitListEVal(ListEVal *p);
   void visitListArg(ListArg *p);
   void visitListTopDef(ListTopDef *p);
@@ -57,6 +69,8 @@ public:
   void visitListMemdef(ListMemdef *p);
   void visitListCMemdef(ListCMemdef *p);
   void visitListStmt(ListStmt *p);
+  void visitListItem(ListItem *p);
+  void visitListExpr(ListExpr *p);
 
   void visitInteger(Integer x);
   void visitChar(Char x);

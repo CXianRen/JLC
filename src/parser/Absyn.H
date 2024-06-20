@@ -34,6 +34,8 @@ class Memdef;
 class CMemdef;
 class Blk;
 class Stmt;
+class Item;
+class Expr;
 class Program;
 class Struct;
 class TypeDef;
@@ -60,6 +62,16 @@ class CFuncDef;
 class Block;
 class Empty;
 class BStmt;
+class Decl;
+class NoInit;
+class Init;
+class ELitInt;
+class ELitDoub;
+class ELitTrue;
+class ELitFalse;
+class EString;
+class EVar;
+class EOr;
 class ListEVal;
 class ListArg;
 class ListTopDef;
@@ -68,6 +80,8 @@ class ListType;
 class ListMemdef;
 class ListCMemdef;
 class ListStmt;
+class ListItem;
+class ListExpr;
 
 
 /********************   Visitor Interfaces    ********************/
@@ -88,6 +102,8 @@ public:
   virtual void visitCMemdef(CMemdef *p) = 0;
   virtual void visitBlk(Blk *p) = 0;
   virtual void visitStmt(Stmt *p) = 0;
+  virtual void visitItem(Item *p) = 0;
+  virtual void visitExpr(Expr *p) = 0;
   virtual void visitProgram(Program *p) = 0;
   virtual void visitStruct(Struct *p) = 0;
   virtual void visitTypeDef(TypeDef *p) = 0;
@@ -114,6 +130,16 @@ public:
   virtual void visitBlock(Block *p) = 0;
   virtual void visitEmpty(Empty *p) = 0;
   virtual void visitBStmt(BStmt *p) = 0;
+  virtual void visitDecl(Decl *p) = 0;
+  virtual void visitNoInit(NoInit *p) = 0;
+  virtual void visitInit(Init *p) = 0;
+  virtual void visitELitInt(ELitInt *p) = 0;
+  virtual void visitELitDoub(ELitDoub *p) = 0;
+  virtual void visitELitTrue(ELitTrue *p) = 0;
+  virtual void visitELitFalse(ELitFalse *p) = 0;
+  virtual void visitEString(EString *p) = 0;
+  virtual void visitEVar(EVar *p) = 0;
+  virtual void visitEOr(EOr *p) = 0;
   virtual void visitListEVal(ListEVal *p) = 0;
   virtual void visitListArg(ListArg *p) = 0;
   virtual void visitListTopDef(ListTopDef *p) = 0;
@@ -122,6 +148,8 @@ public:
   virtual void visitListMemdef(ListMemdef *p) = 0;
   virtual void visitListCMemdef(ListCMemdef *p) = 0;
   virtual void visitListStmt(ListStmt *p) = 0;
+  virtual void visitListItem(ListItem *p) = 0;
+  virtual void visitListExpr(ListExpr *p) = 0;
 
 
   virtual void visitInteger(Integer x) = 0;
@@ -231,6 +259,20 @@ class Stmt : public Visitable
 {
 public:
   virtual Stmt *clone() const = 0;
+
+};
+
+class Item : public Visitable
+{
+public:
+  virtual Item *clone() const = 0;
+
+};
+
+class Expr : public Visitable
+{
+public:
+  virtual Expr *clone() const = 0;
 
 };
 
@@ -608,6 +650,147 @@ public:
   void swap(BStmt &);
 };
 
+class Decl : public Stmt
+{
+public:
+  Type *type_;
+  ListItem *listitem_;
+
+  Decl(const Decl &);
+  Decl &operator=(const Decl &);
+  Decl(Type *p1, ListItem *p2);
+  ~Decl();
+  virtual void accept(Visitor *v);
+  virtual Decl *clone() const;
+  void swap(Decl &);
+};
+
+class NoInit : public Item
+{
+public:
+  Ident ident_;
+
+  NoInit(const NoInit &);
+  NoInit &operator=(const NoInit &);
+  NoInit(Ident p1);
+  ~NoInit();
+  virtual void accept(Visitor *v);
+  virtual NoInit *clone() const;
+  void swap(NoInit &);
+};
+
+class Init : public Item
+{
+public:
+  Ident ident_;
+  Expr *expr_;
+
+  Init(const Init &);
+  Init &operator=(const Init &);
+  Init(Ident p1, Expr *p2);
+  ~Init();
+  virtual void accept(Visitor *v);
+  virtual Init *clone() const;
+  void swap(Init &);
+};
+
+class ELitInt : public Expr
+{
+public:
+  Integer integer_;
+
+  ELitInt(const ELitInt &);
+  ELitInt &operator=(const ELitInt &);
+  ELitInt(Integer p1);
+  ~ELitInt();
+  virtual void accept(Visitor *v);
+  virtual ELitInt *clone() const;
+  void swap(ELitInt &);
+};
+
+class ELitDoub : public Expr
+{
+public:
+  Double double_;
+
+  ELitDoub(const ELitDoub &);
+  ELitDoub &operator=(const ELitDoub &);
+  ELitDoub(Double p1);
+  ~ELitDoub();
+  virtual void accept(Visitor *v);
+  virtual ELitDoub *clone() const;
+  void swap(ELitDoub &);
+};
+
+class ELitTrue : public Expr
+{
+public:
+
+  ELitTrue(const ELitTrue &);
+  ELitTrue &operator=(const ELitTrue &);
+  ELitTrue();
+  ~ELitTrue();
+  virtual void accept(Visitor *v);
+  virtual ELitTrue *clone() const;
+  void swap(ELitTrue &);
+};
+
+class ELitFalse : public Expr
+{
+public:
+
+  ELitFalse(const ELitFalse &);
+  ELitFalse &operator=(const ELitFalse &);
+  ELitFalse();
+  ~ELitFalse();
+  virtual void accept(Visitor *v);
+  virtual ELitFalse *clone() const;
+  void swap(ELitFalse &);
+};
+
+class EString : public Expr
+{
+public:
+  String string_;
+
+  EString(const EString &);
+  EString &operator=(const EString &);
+  EString(String p1);
+  ~EString();
+  virtual void accept(Visitor *v);
+  virtual EString *clone() const;
+  void swap(EString &);
+};
+
+class EVar : public Expr
+{
+public:
+  Ident ident_;
+
+  EVar(const EVar &);
+  EVar &operator=(const EVar &);
+  EVar(Ident p1);
+  ~EVar();
+  virtual void accept(Visitor *v);
+  virtual EVar *clone() const;
+  void swap(EVar &);
+};
+
+class EOr : public Expr
+{
+public:
+  Expr *expr_1;
+  Expr *expr_2;
+
+  EOr(const EOr &);
+  EOr &operator=(const EOr &);
+  EOr(Expr *p1, Expr *p2);
+  ~EOr();
+  virtual void accept(Visitor *v);
+  virtual EOr *clone() const;
+  void swap(EOr &);
+};
+
 
 
 class ListEVal : public Visitable, public std::vector<EVal*>
@@ -681,6 +864,24 @@ public:
 };
 
 ListStmt* consListStmt(Stmt* x, ListStmt* xs);
+
+class ListItem : public Visitable, public std::vector<Item*>
+{
+public:
+  virtual void accept(Visitor *v);
+  virtual ListItem *clone() const;
+};
+
+ListItem* consListItem(Item* x, ListItem* xs);
+
+class ListExpr : public Visitable, public std::vector<Expr*>
+{
+public:
+  virtual void accept(Visitor *v);
+  virtual ListExpr *clone() const;
+};
+
+ListExpr* consListExpr(Expr* x, ListExpr* xs);
 
 
 

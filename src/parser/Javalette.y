@@ -73,6 +73,10 @@ extern yyscan_t javalette__initialize_lexer(FILE * inp);
   Blk* blk_;
   ListStmt* liststmt_;
   Stmt* stmt_;
+  Item* item_;
+  ListItem* listitem_;
+  Expr* expr_;
+  ListExpr* listexpr_;
 }
 
 %{
@@ -93,18 +97,25 @@ extern int yylex(YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner);
 %token          _STAR        /* * */
 %token          _COMMA       /* , */
 %token          _SEMI        /* ; */
+%token          _EQ          /* = */
 %token          _EMPTYBRACK  /* [] */
 %token          _KW_boolean  /* boolean */
 %token          _KW_class    /* class */
 %token          _KW_double   /* double */
 %token          _KW_enum     /* enum */
 %token          _KW_extends  /* extends */
+%token          _KW_false    /* false */
 %token          _KW_int      /* int */
 %token          _KW_struct   /* struct */
+%token          _KW_true     /* true */
 %token          _KW_typedef  /* typedef */
 %token          _KW_void     /* void */
 %token          _LBRACE      /* { */
+%token          _DBAR        /* || */
 %token          _RBRACE      /* } */
+%token<_string> _STRING_
+%token<_int>    _INTEGER_
+%token<_double> _DOUBLE_
 %token<_string> _IDENT_
 
 %type <prog_> Prog
@@ -128,6 +139,17 @@ extern int yylex(YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner);
 %type <blk_> Blk
 %type <liststmt_> ListStmt
 %type <stmt_> Stmt
+%type <item_> Item
+%type <listitem_> ListItem
+%type <expr_> Expr7
+%type <expr_> Expr
+%type <expr_> Expr1
+%type <expr_> Expr2
+%type <expr_> Expr3
+%type <expr_> Expr4
+%type <expr_> Expr5
+%type <expr_> Expr6
+%type <listexpr_> ListExpr
 
 %start Prog
 
@@ -198,6 +220,40 @@ ListStmt : /* empty */ { $$ = new ListStmt(); }
 ;
 Stmt : _SEMI { $$ = new Empty(); }
   | Blk { $$ = new BStmt($1); }
+  | Type ListItem _SEMI { std::reverse($2->begin(),$2->end()) ;$$ = new Decl($1, $2); }
+;
+Item : _IDENT_ { $$ = new NoInit($1); }
+  | _IDENT_ _EQ Expr { $$ = new Init($1, $3); }
+;
+ListItem : Item { $$ = new ListItem(); $$->push_back($1); }
+  | Item _COMMA ListItem { $3->push_back($1); $$ = $3; }
+;
+Expr7 : _INTEGER_ { $$ = new ELitInt($1); }
+  | _DOUBLE_ { $$ = new ELitDoub($1); }
+  | _KW_true { $$ = new ELitTrue(); }
+  | _KW_false { $$ = new ELitFalse(); }
+  | _STRING_ { $$ = new EString($1); }
+  | _IDENT_ { $$ = new EVar($1); }
+  | _LPAREN Expr _RPAREN { $$ = $2; }
+;
+Expr : Expr7 _DBAR Expr { $$ = new EOr($1, $3); }
+  | Expr1 { $$ = $1; }
+;
+Expr1 : Expr2 { $$ = $1; }
+;
+Expr2 : Expr3 { $$ = $1; }
+;
+Expr3 : Expr4 { $$ = $1; }
+;
+Expr4 : Expr5 { $$ = $1; }
+;
+Expr5 : Expr6 { $$ = $1; }
+;
+Expr6 : Expr7 { $$ = $1; }
+;
+ListExpr : /* empty */ { $$ = new ListExpr(); }
+  | Expr { $$ = new ListExpr(); $$->push_back($1); }
+  | Expr _COMMA ListExpr { $3->push_back($1); $$ = $3; }
 ;
 
 %%

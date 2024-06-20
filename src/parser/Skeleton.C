@@ -23,6 +23,8 @@ void Skeleton::visitMemdef(Memdef *t) {} //abstract class
 void Skeleton::visitCMemdef(CMemdef *t) {} //abstract class
 void Skeleton::visitBlk(Blk *t) {} //abstract class
 void Skeleton::visitStmt(Stmt *t) {} //abstract class
+void Skeleton::visitItem(Item *t) {} //abstract class
+void Skeleton::visitExpr(Expr *t) {} //abstract class
 
 void Skeleton::visitProgram(Program *program)
 {
@@ -240,6 +242,87 @@ void Skeleton::visitBStmt(BStmt *b_stmt)
 
 }
 
+void Skeleton::visitDecl(Decl *decl)
+{
+  /* Code For Decl Goes Here */
+
+  if (decl->type_) decl->type_->accept(this);
+  if (decl->listitem_) decl->listitem_->accept(this);
+
+}
+
+void Skeleton::visitNoInit(NoInit *no_init)
+{
+  /* Code For NoInit Goes Here */
+
+  visitIdent(no_init->ident_);
+
+}
+
+void Skeleton::visitInit(Init *init)
+{
+  /* Code For Init Goes Here */
+
+  visitIdent(init->ident_);
+  if (init->expr_) init->expr_->accept(this);
+
+}
+
+void Skeleton::visitELitInt(ELitInt *e_lit_int)
+{
+  /* Code For ELitInt Goes Here */
+
+  visitInteger(e_lit_int->integer_);
+
+}
+
+void Skeleton::visitELitDoub(ELitDoub *e_lit_doub)
+{
+  /* Code For ELitDoub Goes Here */
+
+  visitDouble(e_lit_doub->double_);
+
+}
+
+void Skeleton::visitELitTrue(ELitTrue *e_lit_true)
+{
+  /* Code For ELitTrue Goes Here */
+
+
+}
+
+void Skeleton::visitELitFalse(ELitFalse *e_lit_false)
+{
+  /* Code For ELitFalse Goes Here */
+
+
+}
+
+void Skeleton::visitEString(EString *e_string)
+{
+  /* Code For EString Goes Here */
+
+  visitString(e_string->string_);
+
+}
+
+void Skeleton::visitEVar(EVar *e_var)
+{
+  /* Code For EVar Goes Here */
+
+  visitIdent(e_var->ident_);
+
+}
+
+void Skeleton::visitEOr(EOr *e_or)
+{
+  /* Code For EOr Goes Here */
+
+  if (e_or->expr_1) e_or->expr_1->accept(this);
+  if (e_or->expr_2) e_or->expr_2->accept(this);
+
+}
+
 
 void Skeleton::visitListEVal(ListEVal *list_e_val)
 {
@@ -300,6 +383,22 @@ void Skeleton::visitListCMemdef(ListCMemdef *list_c_memdef)
 void Skeleton::visitListStmt(ListStmt *list_stmt)
 {
   for (ListStmt::iterator i = list_stmt->begin() ; i != list_stmt->end() ; ++i)
+  {
+    (*i)->accept(this);
+  }
+}
+
+void Skeleton::visitListItem(ListItem *list_item)
+{
+  for (ListItem::iterator i = list_item->begin() ; i != list_item->end() ; ++i)
+  {
+    (*i)->accept(this);
+  }
+}
+
+void Skeleton::visitListExpr(ListExpr *list_expr)
+{
+  for (ListExpr::iterator i = list_expr->begin() ; i != list_expr->end() ; ++i)
   {
     (*i)->accept(this);
   }
