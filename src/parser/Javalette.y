@@ -54,28 +54,25 @@ extern yyscan_t javalette__initialize_lexer(FILE * inp);
   char*  _string;
   Prog* prog_;
   TopDef* topdef_;
-  ListTopDef* listtopdef_;
+  FnDef* fndef_;
+  EVal* eval_;
+  ListEVal* listeval_;
   Arg* arg_;
   ListArg* listarg_;
+  ListTopDef* listtopdef_;
+  Type* type_;
+  BracketsOpt* bracketsopt_;
+  ListBracketsOpt* listbracketsopt_;
+  ListType* listtype_;
+  SBlk* sblk_;
+  CBlk* cblk_;
+  Memdef* memdef_;
+  ListMemdef* listmemdef_;
+  CMemdef* cmemdef_;
+  ListCMemdef* listcmemdef_;
   Blk* blk_;
   ListStmt* liststmt_;
   Stmt* stmt_;
-  Item* item_;
-  ListItem* listitem_;
-  SStmt* sstmt_;
-  ListSStmt* listsstmt_;
-  Type* type_;
-  ListType* listtype_;
-  BracketsOpt* bracketsopt_;
-  ListBracketsOpt* listbracketsopt_;
-  Expr* expr_;
-  DimExpr* dimexpr_;
-  ListDimExpr* listdimexpr_;
-  ListExpr* listexpr_;
-  AddOp* addop_;
-  MulOp* mulop_;
-  RelOp* relop_;
-  MAccOp* maccop_;
 }
 
 %{
@@ -91,86 +88,46 @@ extern int yylex(YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner);
 %}
 
 %token          _ERROR_
-%token          _BANG        /* ! */
-%token          _BANGEQ      /* != */
-%token          _PERCENT     /* % */
-%token          _DAMP        /* && */
 %token          _LPAREN      /* ( */
 %token          _RPAREN      /* ) */
 %token          _STAR        /* * */
-%token          _PLUS        /* + */
-%token          _DPLUS       /* ++ */
 %token          _COMMA       /* , */
-%token          _MINUS       /* - */
-%token          _DMINUS      /* -- */
-%token          _RARROW      /* -> */
-%token          _DOT         /* . */
-%token          _SLASH       /* / */
-%token          _COLON       /* : */
 %token          _SEMI        /* ; */
-%token          _LT          /* < */
-%token          _LDARROW     /* <= */
-%token          _EQ          /* = */
-%token          _DEQ         /* == */
-%token          _GT          /* > */
-%token          _GTEQ        /* >= */
-%token          _LBRACK      /* [ */
 %token          _EMPTYBRACK  /* [] */
-%token          _RBRACK      /* ] */
 %token          _KW_boolean  /* boolean */
+%token          _KW_class    /* class */
 %token          _KW_double   /* double */
-%token          _KW_else     /* else */
-%token          _KW_false    /* false */
-%token          _KW_for      /* for */
-%token          _KW_if       /* if */
+%token          _KW_enum     /* enum */
+%token          _KW_extends  /* extends */
 %token          _KW_int      /* int */
-%token          _KW_new      /* new */
-%token          _KW_null     /* null */
-%token          _KW_return   /* return */
 %token          _KW_struct   /* struct */
-%token          _KW_true     /* true */
 %token          _KW_typedef  /* typedef */
 %token          _KW_void     /* void */
-%token          _KW_while    /* while */
 %token          _LBRACE      /* { */
-%token          _DBAR        /* || */
 %token          _RBRACE      /* } */
-%token<_string> _STRING_
-%token<_int>    _INTEGER_
-%token<_double> _DOUBLE_
 %token<_string> _IDENT_
 
 %type <prog_> Prog
 %type <topdef_> TopDef
-%type <listtopdef_> ListTopDef
+%type <fndef_> FnDef
+%type <eval_> EVal
+%type <listeval_> ListEVal
 %type <arg_> Arg
 %type <listarg_> ListArg
+%type <listtopdef_> ListTopDef
+%type <type_> Type
+%type <bracketsopt_> BracketsOpt
+%type <listbracketsopt_> ListBracketsOpt
+%type <listtype_> ListType
+%type <sblk_> SBlk
+%type <cblk_> CBlk
+%type <memdef_> Memdef
+%type <listmemdef_> ListMemdef
+%type <cmemdef_> CMemdef
+%type <listcmemdef_> ListCMemdef
 %type <blk_> Blk
 %type <liststmt_> ListStmt
 %type <stmt_> Stmt
-%type <item_> Item
-%type <listitem_> ListItem
-%type <sstmt_> SStmt
-%type <listsstmt_> ListSStmt
-%type <type_> Type
-%type <listtype_> ListType
-%type <bracketsopt_> BracketsOpt
-%type <listbracketsopt_> ListBracketsOpt
-%type <expr_> Expr6
-%type <dimexpr_> DimExpr
-%type <listdimexpr_> ListDimExpr
-%type <expr_> Expr7
-%type <expr_> Expr5
-%type <expr_> Expr4
-%type <expr_> Expr3
-%type <expr_> Expr2
-%type <expr_> Expr1
-%type <expr_> Expr
-%type <listexpr_> ListExpr
-%type <addop_> AddOp
-%type <mulop_> MulOp
-%type <relop_> RelOp
-%type <maccop_> MAccOp
 
 %start Prog
 
@@ -178,20 +135,61 @@ extern int yylex(YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner);
 
 Prog : ListTopDef { std::reverse($1->begin(),$1->end()) ;$$ = new Program($1); result->prog_ = $$; }
 ;
-TopDef : _KW_typedef _KW_struct _IDENT_ _STAR _IDENT_ _SEMI { $$ = new TypeDef($3, $5); }
-  | _KW_struct _IDENT_ _LBRACE ListSStmt _RBRACE _SEMI { $$ = new StructDef($2, $4); }
-  | Type _IDENT_ _LPAREN ListArg _RPAREN Blk { std::reverse($4->begin(),$4->end()) ;$$ = new FnDef($1, $2, $4, $6); }
-  | _IDENT_ _IDENT_ _LPAREN ListArg _RPAREN Blk { std::reverse($4->begin(),$4->end()) ;$$ = new FnDefS($1, $2, $4, $6); }
+TopDef : _KW_struct _IDENT_ SBlk _SEMI { $$ = new Struct($2, $3); }
+  | _KW_typedef _KW_struct _IDENT_ _STAR _IDENT_ _SEMI { $$ = new TypeDef($3, $5); }
+  | _KW_typedef _KW_struct _IDENT_ SBlk _STAR _IDENT_ _SEMI { $$ = new TypeDefWS($3, $4, $6); }
+  | _KW_enum _IDENT_ _LBRACE ListEVal _RBRACE _SEMI { std::reverse($4->begin(),$4->end()) ;$$ = new Enum($2, $4); }
+  | _KW_class _IDENT_ CBlk { $$ = new Class($2, $3); }
+  | _KW_class _IDENT_ _KW_extends _IDENT_ CBlk { $$ = new ClassWE($2, $4, $5); }
+  | FnDef { $$ = new GFuncDef($1); }
 ;
-ListTopDef : TopDef { $$ = new ListTopDef(); $$->push_back($1); }
-  | TopDef ListTopDef { $2->push_back($1); $$ = $2; }
+FnDef : Type _IDENT_ _LPAREN ListArg _RPAREN Blk { std::reverse($4->begin(),$4->end()) ;$$ = new FuncDef($1, $2, $4, $6); }
+;
+EVal : _IDENT_ { $$ = new EnumValue($1); }
+;
+ListEVal : /* empty */ { $$ = new ListEVal(); }
+  | EVal { $$ = new ListEVal(); $$->push_back($1); }
+  | EVal _COMMA ListEVal { $3->push_back($1); $$ = $3; }
 ;
 Arg : Type _IDENT_ { $$ = new Argument($1, $2); }
-  | _IDENT_ _IDENT_ { $$ = new Ptrgument($1, $2); }
 ;
 ListArg : /* empty */ { $$ = new ListArg(); }
   | Arg { $$ = new ListArg(); $$->push_back($1); }
   | Arg _COMMA ListArg { $3->push_back($1); $$ = $3; }
+;
+ListTopDef : TopDef { $$ = new ListTopDef(); $$->push_back($1); }
+  | TopDef ListTopDef { $2->push_back($1); $$ = $2; }
+;
+Type : _KW_int { $$ = new Int(); }
+  | _KW_double { $$ = new Doub(); }
+  | _KW_boolean { $$ = new Bool(); }
+  | _KW_void { $$ = new Void(); }
+  | _IDENT_ { $$ = new ObjT($1); }
+  | Type BracketsOpt { $$ = new Array($1, $2); }
+;
+BracketsOpt : _EMPTYBRACK { $$ = new BracketsEmpty(); }
+;
+ListBracketsOpt : BracketsOpt { $$ = new ListBracketsOpt(); $$->push_back($1); }
+  | BracketsOpt ListBracketsOpt { $2->push_back($1); $$ = $2; }
+;
+ListType : /* empty */ { $$ = new ListType(); }
+  | Type { $$ = new ListType(); $$->push_back($1); }
+  | Type _COMMA ListType { $3->push_back($1); $$ = $3; }
+;
+SBlk : _LBRACE ListMemdef _RBRACE { $$ = new SBlock($2); }
+;
+CBlk : _LBRACE ListCMemdef _RBRACE { $$ = new CBlock($2); }
+;
+Memdef : Type _IDENT_ _SEMI { $$ = new MemberDef($1, $2); }
+;
+ListMemdef : /* empty */ { $$ = new ListMemdef(); }
+  | ListMemdef Memdef { $1->push_back($2); $$ = $1; }
+;
+CMemdef : Memdef { $$ = new CVarDef($1); }
+  | FnDef { $$ = new CFuncDef($1); }
+;
+ListCMemdef : /* empty */ { $$ = new ListCMemdef(); }
+  | ListCMemdef CMemdef { $1->push_back($2); $$ = $1; }
 ;
 Blk : _LBRACE ListStmt _RBRACE { $$ = new Block($2); }
 ;
@@ -200,112 +198,6 @@ ListStmt : /* empty */ { $$ = new ListStmt(); }
 ;
 Stmt : _SEMI { $$ = new Empty(); }
   | Blk { $$ = new BStmt($1); }
-  | Type ListItem _SEMI { std::reverse($2->begin(),$2->end()) ;$$ = new Decl($1, $2); }
-  | _IDENT_ ListItem _SEMI { std::reverse($2->begin(),$2->end()) ;$$ = new DeclObjPtr($1, $2); }
-  | _IDENT_ _EQ Expr _SEMI { $$ = new Ass($1, $3); }
-  | Expr _EQ Expr _SEMI { $$ = new AssArr($1, $3); }
-  | _IDENT_ _DPLUS _SEMI { $$ = new Incr($1); }
-  | _IDENT_ _DMINUS _SEMI { $$ = new Decr($1); }
-  | _KW_return Expr _SEMI { $$ = new Ret($2); }
-  | _KW_return _SEMI { $$ = new VRet(); }
-  | _KW_if _LPAREN Expr _RPAREN Stmt { $$ = new Cond($3, $5); }
-  | _KW_if _LPAREN Expr _RPAREN Stmt _KW_else Stmt { $$ = new CondElse($3, $5, $7); }
-  | _KW_while _LPAREN Expr _RPAREN Stmt { $$ = new While($3, $5); }
-  | _KW_for _LPAREN Type _IDENT_ _COLON Expr _RPAREN Stmt { $$ = new ForLoop($3, $4, $6, $8); }
-  | _KW_for _LPAREN _IDENT_ _IDENT_ _COLON Expr _RPAREN Stmt { $$ = new ForStruct($3, $4, $6, $8); }
-  | Expr _SEMI { $$ = new SExp($1); }
-;
-Item : _IDENT_ { $$ = new NoInit($1); }
-  | _IDENT_ _EQ Expr { $$ = new Init($1, $3); }
-;
-ListItem : Item { $$ = new ListItem(); $$->push_back($1); }
-  | Item _COMMA ListItem { $3->push_back($1); $$ = $3; }
-;
-SStmt : Type _IDENT_ _SEMI { $$ = new MInner($1, $2); }
-  | Type ListBracketsOpt _IDENT_ _SEMI { std::reverse($2->begin(),$2->end()) ;$$ = new MArray($1, $2, $3); }
-  | _IDENT_ ListBracketsOpt _IDENT_ _SEMI { std::reverse($2->begin(),$2->end()) ;$$ = new MSArray($1, $2, $3); }
-  | _IDENT_ _IDENT_ _SEMI { $$ = new MStruct($1, $2); }
-;
-ListSStmt : /* empty */ { $$ = new ListSStmt(); }
-  | ListSStmt SStmt { $1->push_back($2); $$ = $1; }
-;
-Type : _KW_int { $$ = new Int(); }
-  | _KW_double { $$ = new Doub(); }
-  | _KW_boolean { $$ = new Bool(); }
-  | _KW_void { $$ = new Void(); }
-  | Type ListBracketsOpt { std::reverse($2->begin(),$2->end()) ;$$ = new ArrayType($1, $2); }
-  | _IDENT_ ListBracketsOpt { std::reverse($2->begin(),$2->end()) ;$$ = new SArrayType($1, $2); }
-;
-ListType : /* empty */ { $$ = new ListType(); }
-  | Type { $$ = new ListType(); $$->push_back($1); }
-  | Type _COMMA ListType { $3->push_back($1); $$ = $3; }
-;
-BracketsOpt : _EMPTYBRACK { $$ = new BracketsEmpty(); }
-;
-ListBracketsOpt : BracketsOpt { $$ = new ListBracketsOpt(); $$->push_back($1); }
-  | BracketsOpt ListBracketsOpt { $2->push_back($1); $$ = $2; }
-;
-Expr6 : _KW_new Type ListDimExpr { std::reverse($3->begin(),$3->end()) ;$$ = new ENewArray($2, $3); }
-  | _KW_new _IDENT_ ListDimExpr { std::reverse($3->begin(),$3->end()) ;$$ = new ENewSArray($2, $3); }
-  | Expr6 _DOT _IDENT_ { $$ = new EDot($1, $3); }
-  | _KW_new _IDENT_ { $$ = new ENewStruct($2); }
-  | _LPAREN _IDENT_ _RPAREN _KW_null { $$ = new TypeCast($2); }
-  | Expr7 { $$ = $1; }
-;
-DimExpr : _LBRACK Expr _RBRACK { $$ = new Dim($2); }
-;
-ListDimExpr : DimExpr { $$ = new ListDimExpr(); $$->push_back($1); }
-  | DimExpr ListDimExpr { $2->push_back($1); $$ = $2; }
-;
-Expr7 : Expr7 ListDimExpr { std::reverse($2->begin(),$2->end()) ;$$ = new EAcc($1, $2); }
-  | Expr6 MAccOp _IDENT_ { $$ = new EMember($1, $2, $3); }
-  | _INTEGER_ { $$ = new ELitInt($1); }
-  | _DOUBLE_ { $$ = new ELitDoub($1); }
-  | _KW_true { $$ = new ELitTrue(); }
-  | _KW_false { $$ = new ELitFalse(); }
-  | _STRING_ { $$ = new EString($1); }
-  | _IDENT_ { $$ = new EVar($1); }
-  | _IDENT_ _LPAREN ListExpr _RPAREN { std::reverse($3->begin(),$3->end()) ;$$ = new EApp($1, $3); }
-  | _LPAREN Expr _RPAREN { $$ = $2; }
-;
-Expr5 : _MINUS Expr6 { $$ = new Neg($2); }
-  | _BANG Expr6 { $$ = new Not($2); }
-  | Expr6 { $$ = $1; }
-;
-Expr4 : Expr4 MulOp Expr5 { $$ = new EMul($1, $2, $3); }
-  | Expr5 { $$ = $1; }
-;
-Expr3 : Expr3 AddOp Expr4 { $$ = new EAdd($1, $2, $3); }
-  | Expr4 { $$ = $1; }
-;
-Expr2 : Expr2 RelOp Expr3 { $$ = new ERel($1, $2, $3); }
-  | Expr3 { $$ = $1; }
-;
-Expr1 : Expr2 _DAMP Expr1 { $$ = new EAnd($1, $3); }
-  | Expr2 { $$ = $1; }
-;
-Expr : Expr1 _DBAR Expr { $$ = new EOr($1, $3); }
-  | Expr1 { $$ = $1; }
-;
-ListExpr : /* empty */ { $$ = new ListExpr(); }
-  | Expr { $$ = new ListExpr(); $$->push_back($1); }
-  | Expr _COMMA ListExpr { $3->push_back($1); $$ = $3; }
-;
-AddOp : _PLUS { $$ = new Plus(); }
-  | _MINUS { $$ = new Minus(); }
-;
-MulOp : _STAR { $$ = new Times(); }
-  | _SLASH { $$ = new Div(); }
-  | _PERCENT { $$ = new Mod(); }
-;
-RelOp : _LT { $$ = new LTH(); }
-  | _LDARROW { $$ = new LE(); }
-  | _GT { $$ = new GTH(); }
-  | _GTEQ { $$ = new GE(); }
-  | _DEQ { $$ = new EQU(); }
-  | _BANGEQ { $$ = new NE(); }
-;
-MAccOp : _RARROW { $$ = new MAcc(); }
 ;
 
 %%

@@ -24,6 +24,7 @@ PARSER_DIR := parser
 TYPECHECKER_DIR := typechecker
 LLVM_DIR := llvm
 COMMON_DIR := common
+TEST_DIR := test
 
 # for test docker, due to the dependenced libraries are not installed correctly.
 LIBS_DIR := libs
@@ -45,6 +46,9 @@ LLVM_DIR_OBJS := $(patsubst $(SRC_DIR)/$(LLVM_DIR)/%.C, $(BUILD_DIR)/$(LLVM_DIR)
 COMMON_DIR_H_FILES := $(wildcard $(SRC_DIR)/$(COMMON_DIR)/*.H)
 COMMON_DIR_CC_FILES := $(wildcard $(SRC_DIR)/$(COMMON_DIR)/*.C)
 COMMON_DIR_OBJS := $(patsubst $(SRC_DIR)/$(COMMON_DIR)/%.C, $(BUILD_DIR)/$(COMMON_DIR)/%.o, $(COMMON_DIR_CC_FILES))
+
+TEST_DIR_H_FILES := $(wildcard $(SRC_DIR)/$(TEST_DIR)/*.h)
+TEST_DIR_CC_FILES := $(wildcard $(SRC_DIR)/$(TEST_DIR)/*.cpp)
 
 
 HEADERS := $(PARSER_DIR_H_FILES) \
@@ -85,6 +89,8 @@ clean:
 	mkdir -p $(BUILD_DIR)/$(TYPECHECKER_DIR)
 	mkdir -p $(BUILD_DIR)/$(LLVM_DIR)
 	mkdir -p $(BUILD_DIR)/$(COMMON_DIR)
+	mkdir -p $(BUILD_DIR)/$(TEST_DIR)
+
 # this folder is for test docker, due to the dependenced libraries are not installed.
 	mkdir -p $(BUILD_DIR)/$(LIBS_DIR)
 	bash scripts/docker_fix.sh $(BUILD_DIR)/$(LIBS_DIR)
@@ -114,6 +120,17 @@ jlc: $(OBJS) $(SRC_DIR)/jlc.cpp
 	$(CC) $(CCFLAGS) $(LLVM_CC_CONFIG) \
 		$(CC_INCLUDES) $(OBJS) $(SRC_DIR)/jlc.cpp $(LD_FLAGS) $(LLVM_LD_CONFIG)  -o jlc 
 
+# test target
+test: $(OBJS) $(SRC_DIR)/$(TEST_DIR)/jlc_parser.cpp
+	@echo "Building test..."
+	$(CC) $(CCFLAGS) $(LLVM_CC_CONFIG) \
+		$(CC_INCLUDES) $(OBJS) \
+		$(SRC_DIR)/$(TEST_DIR)/jlc_parser.cpp \
+		$(LD_FLAGS) -o $(BUILD_DIR)/$(TEST_DIR)/jlc_parser
+	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser -s < $(SRC_DIR)/$(TEST_DIR)/top_def.jl
+	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser -s < $(SRC_DIR)/$(TEST_DIR)/type.jl
+	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser  < $(SRC_DIR)/$(TEST_DIR)/struct_and_class.jl
+
 # remove this target, because we just need to generate it once,
 # thus, we generate it manually.
 # also we have to modify the generated files to make it work.
@@ -124,7 +141,7 @@ BISON = bison
 BISON_OPTS = -t -pjavalette_
 
 CF_FILE=$(SRC_DIR)/Javalette.cf
-generate_parser:
+gen:
 	@echo "clean the parser directory..."
 	rm -rf $(SRC_DIR)/$(PARSER_DIR)/*
 	@echo "Generating parser..."

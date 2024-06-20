@@ -5,41 +5,11 @@
 %option noyywrap noinput nounput
 %option reentrant bison-bridge bison-locations
 
-/* Additional data for the lexer: a buffer for lexing string literals. */
-%option extra-type="Buffer"
-
 %{
 #include "Absyn.H"
 #include "Bison.H"
 
 #define initialize_lexer javalette__initialize_lexer
-
-/* BEGIN extensible string buffer */
-
-#include "Buffer.H"
-
-/* The initial size of the buffer to lex string literals. */
-#define LITERAL_BUFFER_INITIAL_SIZE 1024
-
-/* The pointer to the literal buffer. */
-#define literal_buffer yyextra
-
-/* Initialize the literal buffer. */
-#define LITERAL_BUFFER_CREATE() literal_buffer = newBuffer(LITERAL_BUFFER_INITIAL_SIZE)
-
-/* Append characters at the end of the buffer. */
-#define LITERAL_BUFFER_APPEND(s) bufferAppendString(literal_buffer, s)
-
-/* Append a character at the end of the buffer. */
-#define LITERAL_BUFFER_APPEND_CHAR(c) bufferAppendChar(literal_buffer, c)
-
-/* Release the buffer, returning a pointer to its content. */
-#define LITERAL_BUFFER_HARVEST() releaseBuffer(literal_buffer)
-
-/* In exceptional cases, e.g. when reaching EOF, we have to free the buffer. */
-#define LITERAL_BUFFER_FREE() freeBuffer(literal_buffer)
-
-/* END extensible string buffer */
 
 static void update_loc(YYLTYPE* loc, char* text)
 {
@@ -68,50 +38,23 @@ IDENT [a-zA-Z0-9'_]
 
 %%  /* Rules. */
 
-<INITIAL>"*"      	 return _STAR;
 <INITIAL>";"      	 return _SEMI;
+<INITIAL>"*"      	 return _STAR;
 <INITIAL>"{"      	 return _LBRACE;
 <INITIAL>"}"      	 return _RBRACE;
 <INITIAL>"("      	 return _LPAREN;
 <INITIAL>")"      	 return _RPAREN;
 <INITIAL>","      	 return _COMMA;
-<INITIAL>"="      	 return _EQ;
-<INITIAL>"++"      	 return _DPLUS;
-<INITIAL>"--"      	 return _DMINUS;
-<INITIAL>":"      	 return _COLON;
 <INITIAL>"[]"      	 return _EMPTYBRACK;
-<INITIAL>"["      	 return _LBRACK;
-<INITIAL>"]"      	 return _RBRACK;
-<INITIAL>"."      	 return _DOT;
-<INITIAL>"-"      	 return _MINUS;
-<INITIAL>"!"      	 return _BANG;
-<INITIAL>"&&"      	 return _DAMP;
-<INITIAL>"||"      	 return _DBAR;
-<INITIAL>"+"      	 return _PLUS;
-<INITIAL>"/"      	 return _SLASH;
-<INITIAL>"%"      	 return _PERCENT;
-<INITIAL>"<"      	 return _LT;
-<INITIAL>"<="      	 return _LDARROW;
-<INITIAL>">"      	 return _GT;
-<INITIAL>">="      	 return _GTEQ;
-<INITIAL>"=="      	 return _DEQ;
-<INITIAL>"!="      	 return _BANGEQ;
-<INITIAL>"->"      	 return _RARROW;
 <INITIAL>"boolean"      	 return _KW_boolean;
+<INITIAL>"class"      	 return _KW_class;
 <INITIAL>"double"      	 return _KW_double;
-<INITIAL>"else"      	 return _KW_else;
-<INITIAL>"false"      	 return _KW_false;
-<INITIAL>"for"      	 return _KW_for;
-<INITIAL>"if"      	 return _KW_if;
+<INITIAL>"enum"      	 return _KW_enum;
+<INITIAL>"extends"      	 return _KW_extends;
 <INITIAL>"int"      	 return _KW_int;
-<INITIAL>"new"      	 return _KW_new;
-<INITIAL>"null"      	 return _KW_null;
-<INITIAL>"return"      	 return _KW_return;
 <INITIAL>"struct"      	 return _KW_struct;
-<INITIAL>"true"      	 return _KW_true;
 <INITIAL>"typedef"      	 return _KW_typedef;
 <INITIAL>"void"      	 return _KW_void;
-<INITIAL>"while"      	 return _KW_while;
 
 <INITIAL>"#"[^\n]* /* skip */; /* BNFC: comment "#" */
 <INITIAL>"//"[^\n]* /* skip */; /* BNFC: comment "//" */
@@ -120,20 +63,6 @@ IDENT [a-zA-Z0-9'_]
 <COMMENT>.    /* skip */;
 <COMMENT>[\n] /* skip */;
 
-<INITIAL>"\""        	 LITERAL_BUFFER_CREATE(); BEGIN STRING;
-<STRING>\\             	 BEGIN ESCAPED;
-<STRING>\"             	 yylval->_string = LITERAL_BUFFER_HARVEST(); BEGIN INITIAL; return _STRING_;
-<STRING>.              	 LITERAL_BUFFER_APPEND_CHAR(yytext[0]);
-<ESCAPED>f             	 LITERAL_BUFFER_APPEND_CHAR('\f'); BEGIN STRING;
-<ESCAPED>n             	 LITERAL_BUFFER_APPEND_CHAR('\n'); BEGIN STRING;
-<ESCAPED>r             	 LITERAL_BUFFER_APPEND_CHAR('\r'); BEGIN STRING;
-<ESCAPED>t             	 LITERAL_BUFFER_APPEND_CHAR('\t'); BEGIN STRING;
-<ESCAPED>\"            	 LITERAL_BUFFER_APPEND_CHAR('"');  BEGIN STRING;
-<ESCAPED>\\            	 LITERAL_BUFFER_APPEND_CHAR('\\'); BEGIN STRING;
-<ESCAPED>.             	 LITERAL_BUFFER_APPEND(yytext);    BEGIN STRING;
-<STRING,ESCAPED><<EOF>>	 LITERAL_BUFFER_FREE(); return _ERROR_;
-<INITIAL>{DIGIT}+"."{DIGIT}+("e"(\-)?{DIGIT}+)?      	 yylval->_double = atof(yytext); return _DOUBLE_;
-<INITIAL>{DIGIT}+      	 yylval->_int = atoi(yytext); return _INTEGER_;
 <INITIAL>{LETTER}{IDENT}*      	 yylval->_string = strdup(yytext); return _IDENT_;
 <INITIAL>[ \t\r\n\f]      	 /* ignore white space. */;
 <INITIAL>.      	 return _ERROR_;

@@ -55,54 +55,24 @@ extern int javalette_debug;
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
     _ERROR_ = 258,                 /* _ERROR_  */
-    _BANG = 259,                   /* _BANG  */
-    _BANGEQ = 260,                 /* _BANGEQ  */
-    _PERCENT = 261,                /* _PERCENT  */
-    _DAMP = 262,                   /* _DAMP  */
-    _LPAREN = 263,                 /* _LPAREN  */
-    _RPAREN = 264,                 /* _RPAREN  */
-    _STAR = 265,                   /* _STAR  */
-    _PLUS = 266,                   /* _PLUS  */
-    _DPLUS = 267,                  /* _DPLUS  */
-    _COMMA = 268,                  /* _COMMA  */
-    _MINUS = 269,                  /* _MINUS  */
-    _DMINUS = 270,                 /* _DMINUS  */
-    _RARROW = 271,                 /* _RARROW  */
-    _DOT = 272,                    /* _DOT  */
-    _SLASH = 273,                  /* _SLASH  */
-    _COLON = 274,                  /* _COLON  */
-    _SEMI = 275,                   /* _SEMI  */
-    _LT = 276,                     /* _LT  */
-    _LDARROW = 277,                /* _LDARROW  */
-    _EQ = 278,                     /* _EQ  */
-    _DEQ = 279,                    /* _DEQ  */
-    _GT = 280,                     /* _GT  */
-    _GTEQ = 281,                   /* _GTEQ  */
-    _LBRACK = 282,                 /* _LBRACK  */
-    _EMPTYBRACK = 283,             /* _EMPTYBRACK  */
-    _RBRACK = 284,                 /* _RBRACK  */
-    _KW_boolean = 285,             /* _KW_boolean  */
-    _KW_double = 286,              /* _KW_double  */
-    _KW_else = 287,                /* _KW_else  */
-    _KW_false = 288,               /* _KW_false  */
-    _KW_for = 289,                 /* _KW_for  */
-    _KW_if = 290,                  /* _KW_if  */
-    _KW_int = 291,                 /* _KW_int  */
-    _KW_new = 292,                 /* _KW_new  */
-    _KW_null = 293,                /* _KW_null  */
-    _KW_return = 294,              /* _KW_return  */
-    _KW_struct = 295,              /* _KW_struct  */
-    _KW_true = 296,                /* _KW_true  */
-    _KW_typedef = 297,             /* _KW_typedef  */
-    _KW_void = 298,                /* _KW_void  */
-    _KW_while = 299,               /* _KW_while  */
-    _LBRACE = 300,                 /* _LBRACE  */
-    _DBAR = 301,                   /* _DBAR  */
-    _RBRACE = 302,                 /* _RBRACE  */
-    _STRING_ = 303,                /* _STRING_  */
-    _INTEGER_ = 304,               /* _INTEGER_  */
-    _DOUBLE_ = 305,                /* _DOUBLE_  */
-    _IDENT_ = 306                  /* _IDENT_  */
+    _LPAREN = 259,                 /* _LPAREN  */
+    _RPAREN = 260,                 /* _RPAREN  */
+    _STAR = 261,                   /* _STAR  */
+    _COMMA = 262,                  /* _COMMA  */
+    _SEMI = 263,                   /* _SEMI  */
+    _EMPTYBRACK = 264,             /* _EMPTYBRACK  */
+    _KW_boolean = 265,             /* _KW_boolean  */
+    _KW_class = 266,               /* _KW_class  */
+    _KW_double = 267,              /* _KW_double  */
+    _KW_enum = 268,                /* _KW_enum  */
+    _KW_extends = 269,             /* _KW_extends  */
+    _KW_int = 270,                 /* _KW_int  */
+    _KW_struct = 271,              /* _KW_struct  */
+    _KW_typedef = 272,             /* _KW_typedef  */
+    _KW_void = 273,                /* _KW_void  */
+    _LBRACE = 274,                 /* _LBRACE  */
+    _RBRACE = 275,                 /* _RBRACE  */
+    _IDENT_ = 276                  /* _IDENT_  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -119,30 +89,27 @@ union YYSTYPE
   char*  _string;
   Prog* prog_;
   TopDef* topdef_;
-  ListTopDef* listtopdef_;
+  FnDef* fndef_;
+  EVal* eval_;
+  ListEVal* listeval_;
   Arg* arg_;
   ListArg* listarg_;
+  ListTopDef* listtopdef_;
+  Type* type_;
+  BracketsOpt* bracketsopt_;
+  ListBracketsOpt* listbracketsopt_;
+  ListType* listtype_;
+  SBlk* sblk_;
+  CBlk* cblk_;
+  Memdef* memdef_;
+  ListMemdef* listmemdef_;
+  CMemdef* cmemdef_;
+  ListCMemdef* listcmemdef_;
   Blk* blk_;
   ListStmt* liststmt_;
   Stmt* stmt_;
-  Item* item_;
-  ListItem* listitem_;
-  SStmt* sstmt_;
-  ListSStmt* listsstmt_;
-  Type* type_;
-  ListType* listtype_;
-  BracketsOpt* bracketsopt_;
-  ListBracketsOpt* listbracketsopt_;
-  Expr* expr_;
-  DimExpr* dimexpr_;
-  ListDimExpr* listdimexpr_;
-  ListExpr* listexpr_;
-  AddOp* addop_;
-  MulOp* mulop_;
-  RelOp* relop_;
-  MAccOp* maccop_;
 
-#line 146 "Bison.H"
+#line 113 "Bison.H"
 
 };
 typedef union YYSTYPE YYSTYPE;

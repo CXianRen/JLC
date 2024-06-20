@@ -5,10 +5,6 @@
 #include "Printer.H"
 #include "Absyn.H"
 #include "ParserError.H"
-// #include "JLCTypeChecker.H"
-// #include "JLCLLVMGenerator.H"
-// #include "JLCTC_TopDef.H"
-// #include "JLCTC_StructDef.H"
 
 void usage() {
   printf("usage: Call with one of the following argument combinations:\n");
@@ -54,7 +50,6 @@ int main(int argc, char ** argv)
   if (parse_tree)
   {
     if (!quiet) {
-      #if DEBUG
         printf("\nParse Successful!\n");
         printf("\n[Abstract Syntax]\n");
         ShowAbsyn *s = new ShowAbsyn();
@@ -62,26 +57,8 @@ int main(int argc, char ** argv)
         printf("[Linearized Tree]\n");
         PrintAbsyn *p = new PrintAbsyn();
         printf("%s\n\n", p->print(parse_tree));
-      #endif
     }
-    // JLCTC_TopDef *jlctc_td = new JLCTC_TopDef();
-    // parse_tree->accept(jlctc_td);
 
-    // JLCTC_StructDef *jlctc_sd = 
-    //   new JLCTC_StructDef(jlctc_td->getContext());
-    // parse_tree->accept(jlctc_sd);
-
-    // JLCTypeChecker *jlcvc = 
-    //   new JLCTypeChecker(jlctc_sd->getContext());
-    // parse_tree->accept(jlcvc);
-    
-    // JLCLLVMGenerator *jlcg = new JLCLLVMGenerator();
-    //parse_tree->accept(jlcg);
-
-    // delete(jlctc_td);
-    // delete(jlctc_sd);
-    // delete(jlcvc);
-    // delete(jlcg);
     delete(parse_tree);
     std::cerr << "OK" << std::endl;
     return 0;
