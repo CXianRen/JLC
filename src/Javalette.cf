@@ -31,17 +31,24 @@ separator nonempty TopDef "" ;
 
 
 -- Type ----------------------------------------------
-Int.       Type ::= "int" ;
+Int.       BType ::= "int" ;
 
-Doub.      Type ::= "double" ;
+Doub.      BType ::= "double" ;
 
-Bool.      Type ::= "boolean" ;
+Bool.      BType ::= "boolean" ;
 
-Void.      Type ::= "void" ;
+Void.      BType ::= "void" ;
 
-ObjT.      Type ::= Ident ;
+ObjT.      OType ::= Ident ;
 
-Array.     Type ::= Type BracketsOpt ;
+Array.    AType ::= Type BracketsOpt ;
+
+BaseType. Type ::= BType ;
+
+ObjType.  Type ::= OType ;
+
+ArrType.  Type ::= AType ;
+
 
 BracketsEmpty.   BracketsOpt ::= "[]" ;
 separator nonempty BracketsOpt "";
@@ -62,7 +69,7 @@ CFuncDef.   CMemdef ::= FnDef ;
 
 separator CMemdef "" ;
 
--- statements ----------------------------------------------
+-- function statements ----------------------------------------------
 
 Block.     Blk ::= "{" [Stmt] "}" ;
 
@@ -80,11 +87,11 @@ NoInit.    Item ::= Ident ;
 
 Init.      Item ::= Ident "=" Expr ;
 
+SExp.      Stmt ::= Expr  ";" ;
+
 separator nonempty Item "," ;
 
-
 -- Expr ----------------------------------------------------
-
 
 ELitInt.   Expr7 ::= Integer ;
 
@@ -97,6 +104,25 @@ ELitFalse. Expr7 ::= "false" ;
 EString.   Expr7 ::= String ;
 
 EVar.      Expr7 ::= Ident ;
+
+EApp.      Expr7 ::= Ident "(" [Expr] ")" ;
+
+ENewObj.   Expr7 ::= "new" Ident; 
+
+EArrow.    Expr7 ::= Expr7 "->" Ident ;
+
+ELen.      Expr7 ::= Expr7 "." "length" ;
+
+EFunc.     Expr7 ::= Expr7 "." Ident "(" [Expr] ")" ;
+
+Dim.       DimExpr ::= "[" Expr "]" ;
+terminator nonempty DimExpr "" ;
+
+ENewBArr.  Expr7 ::= "new" BType [DimExpr] ;
+
+ENewOArr.  Expr7 ::= "new" OType [DimExpr] ;
+
+EAcc.      Expr7 ::= Expr7 [DimExpr] ;
 
 
 EOr.       Expr ::= Expr7 "||" Expr ;

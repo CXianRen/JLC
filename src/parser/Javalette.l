@@ -77,6 +77,10 @@ IDENT [a-zA-Z0-9'_]
 <INITIAL>","      	 return _COMMA;
 <INITIAL>"[]"      	 return _EMPTYBRACK;
 <INITIAL>"="      	 return _EQ;
+<INITIAL>"->"      	 return _RARROW;
+<INITIAL>"."      	 return _DOT;
+<INITIAL>"["      	 return _LBRACK;
+<INITIAL>"]"      	 return _RBRACK;
 <INITIAL>"||"      	 return _DBAR;
 <INITIAL>"boolean"      	 return _KW_boolean;
 <INITIAL>"class"      	 return _KW_class;
@@ -85,6 +89,8 @@ IDENT [a-zA-Z0-9'_]
 <INITIAL>"extends"      	 return _KW_extends;
 <INITIAL>"false"      	 return _KW_false;
 <INITIAL>"int"      	 return _KW_int;
+<INITIAL>"length"      	 return _KW_length;
+<INITIAL>"new"      	 return _KW_new;
 <INITIAL>"struct"      	 return _KW_struct;
 <INITIAL>"true"      	 return _KW_true;
 <INITIAL>"typedef"      	 return _KW_typedef;

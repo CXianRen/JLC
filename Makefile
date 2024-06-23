@@ -129,8 +129,9 @@ test: $(OBJS) $(SRC_DIR)/$(TEST_DIR)/jlc_parser.cpp
 		$(LD_FLAGS) -o $(BUILD_DIR)/$(TEST_DIR)/jlc_parser
 	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser -s < $(SRC_DIR)/$(TEST_DIR)/top_def.jl
 	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser -s < $(SRC_DIR)/$(TEST_DIR)/type.jl
-	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser -s< $(SRC_DIR)/$(TEST_DIR)/struct_and_class.jl
-	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser  < $(SRC_DIR)/$(TEST_DIR)/def_var.jl
+	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser -s < $(SRC_DIR)/$(TEST_DIR)/struct_and_class.jl
+	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser -s < $(SRC_DIR)/$(TEST_DIR)/def_var.jl
+	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser  < $(SRC_DIR)/$(TEST_DIR)/new_dot_arr_op.jl
 
 # remove this target, because we just need to generate it once,
 # thus, we generate it manually.

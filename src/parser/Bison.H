@@ -59,27 +59,33 @@ extern int javalette_debug;
     _RPAREN = 260,                 /* _RPAREN  */
     _STAR = 261,                   /* _STAR  */
     _COMMA = 262,                  /* _COMMA  */
-    _SEMI = 263,                   /* _SEMI  */
-    _EQ = 264,                     /* _EQ  */
-    _EMPTYBRACK = 265,             /* _EMPTYBRACK  */
-    _KW_boolean = 266,             /* _KW_boolean  */
-    _KW_class = 267,               /* _KW_class  */
-    _KW_double = 268,              /* _KW_double  */
-    _KW_enum = 269,                /* _KW_enum  */
-    _KW_extends = 270,             /* _KW_extends  */
-    _KW_false = 271,               /* _KW_false  */
-    _KW_int = 272,                 /* _KW_int  */
-    _KW_struct = 273,              /* _KW_struct  */
-    _KW_true = 274,                /* _KW_true  */
-    _KW_typedef = 275,             /* _KW_typedef  */
-    _KW_void = 276,                /* _KW_void  */
-    _LBRACE = 277,                 /* _LBRACE  */
-    _DBAR = 278,                   /* _DBAR  */
-    _RBRACE = 279,                 /* _RBRACE  */
-    _STRING_ = 280,                /* _STRING_  */
-    _INTEGER_ = 281,               /* _INTEGER_  */
-    _DOUBLE_ = 282,                /* _DOUBLE_  */
-    _IDENT_ = 283                  /* _IDENT_  */
+    _RARROW = 263,                 /* _RARROW  */
+    _DOT = 264,                    /* _DOT  */
+    _SEMI = 265,                   /* _SEMI  */
+    _EQ = 266,                     /* _EQ  */
+    _LBRACK = 267,                 /* _LBRACK  */
+    _EMPTYBRACK = 268,             /* _EMPTYBRACK  */
+    _RBRACK = 269,                 /* _RBRACK  */
+    _KW_boolean = 270,             /* _KW_boolean  */
+    _KW_class = 271,               /* _KW_class  */
+    _KW_double = 272,              /* _KW_double  */
+    _KW_enum = 273,                /* _KW_enum  */
+    _KW_extends = 274,             /* _KW_extends  */
+    _KW_false = 275,               /* _KW_false  */
+    _KW_int = 276,                 /* _KW_int  */
+    _KW_length = 277,              /* _KW_length  */
+    _KW_new = 278,                 /* _KW_new  */
+    _KW_struct = 279,              /* _KW_struct  */
+    _KW_true = 280,                /* _KW_true  */
+    _KW_typedef = 281,             /* _KW_typedef  */
+    _KW_void = 282,                /* _KW_void  */
+    _LBRACE = 283,                 /* _LBRACE  */
+    _DBAR = 284,                   /* _DBAR  */
+    _RBRACE = 285,                 /* _RBRACE  */
+    _STRING_ = 286,                /* _STRING_  */
+    _INTEGER_ = 287,               /* _INTEGER_  */
+    _DOUBLE_ = 288,                /* _DOUBLE_  */
+    _IDENT_ = 289                  /* _IDENT_  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -102,6 +108,9 @@ union YYSTYPE
   Arg* arg_;
   ListArg* listarg_;
   ListTopDef* listtopdef_;
+  BType* btype_;
+  OType* otype_;
+  AType* atype_;
   Type* type_;
   BracketsOpt* bracketsopt_;
   ListBracketsOpt* listbracketsopt_;
@@ -118,9 +127,11 @@ union YYSTYPE
   Item* item_;
   ListItem* listitem_;
   Expr* expr_;
+  DimExpr* dimexpr_;
+  ListDimExpr* listdimexpr_;
   ListExpr* listexpr_;
 
-#line 124 "Bison.H"
+#line 135 "Bison.H"
 
 };
 typedef union YYSTYPE YYSTYPE;

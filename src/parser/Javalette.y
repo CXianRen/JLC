@@ -60,6 +60,9 @@ extern yyscan_t javalette__initialize_lexer(FILE * inp);
   Arg* arg_;
   ListArg* listarg_;
   ListTopDef* listtopdef_;
+  BType* btype_;
+  OType* otype_;
+  AType* atype_;
   Type* type_;
   BracketsOpt* bracketsopt_;
   ListBracketsOpt* listbracketsopt_;
@@ -76,6 +79,8 @@ extern yyscan_t javalette__initialize_lexer(FILE * inp);
   Item* item_;
   ListItem* listitem_;
   Expr* expr_;
+  DimExpr* dimexpr_;
+  ListDimExpr* listdimexpr_;
   ListExpr* listexpr_;
 }
 
@@ -96,9 +101,13 @@ extern int yylex(YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner);
 %token          _RPAREN      /* ) */
 %token          _STAR        /* * */
 %token          _COMMA       /* , */
+%token          _RARROW      /* -> */
+%token          _DOT         /* . */
 %token          _SEMI        /* ; */
 %token          _EQ          /* = */
+%token          _LBRACK      /* [ */
 %token          _EMPTYBRACK  /* [] */
+%token          _RBRACK      /* ] */
 %token          _KW_boolean  /* boolean */
 %token          _KW_class    /* class */
 %token          _KW_double   /* double */
@@ -106,6 +115,8 @@ extern int yylex(YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner);
 %token          _KW_extends  /* extends */
 %token          _KW_false    /* false */
 %token          _KW_int      /* int */
+%token          _KW_length   /* length */
+%token          _KW_new      /* new */
 %token          _KW_struct   /* struct */
 %token          _KW_true     /* true */
 %token          _KW_typedef  /* typedef */
@@ -126,6 +137,9 @@ extern int yylex(YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner);
 %type <arg_> Arg
 %type <listarg_> ListArg
 %type <listtopdef_> ListTopDef
+%type <btype_> BType
+%type <otype_> OType
+%type <atype_> AType
 %type <type_> Type
 %type <bracketsopt_> BracketsOpt
 %type <listbracketsopt_> ListBracketsOpt
@@ -142,6 +156,8 @@ extern int yylex(YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner);
 %type <item_> Item
 %type <listitem_> ListItem
 %type <expr_> Expr7
+%type <dimexpr_> DimExpr
+%type <listdimexpr_> ListDimExpr
 %type <expr_> Expr
 %type <expr_> Expr1
 %type <expr_> Expr2
@@ -182,12 +198,18 @@ ListArg : /* empty */ { $$ = new ListArg(); }
 ListTopDef : TopDef { $$ = new ListTopDef(); $$->push_back($1); }
   | TopDef ListTopDef { $2->push_back($1); $$ = $2; }
 ;
-Type : _KW_int { $$ = new Int(); }
+BType : _KW_int { $$ = new Int(); }
   | _KW_double { $$ = new Doub(); }
   | _KW_boolean { $$ = new Bool(); }
   | _KW_void { $$ = new Void(); }
-  | _IDENT_ { $$ = new ObjT($1); }
-  | Type BracketsOpt { $$ = new Array($1, $2); }
+;
+OType : _IDENT_ { $$ = new ObjT($1); }
+;
+AType : Type BracketsOpt { $$ = new Array($1, $2); }
+;
+Type : BType { $$ = new BaseType($1); }
+  | OType { $$ = new ObjType($1); }
+  | AType { $$ = new ArrType($1); }
 ;
 BracketsOpt : _EMPTYBRACK { $$ = new BracketsEmpty(); }
 ;
@@ -221,6 +243,7 @@ ListStmt : /* empty */ { $$ = new ListStmt(); }
 Stmt : _SEMI { $$ = new Empty(); }
   | Blk { $$ = new BStmt($1); }
   | Type ListItem _SEMI { std::reverse($2->begin(),$2->end()) ;$$ = new Decl($1, $2); }
+  | Expr _SEMI { $$ = new SExp($1); }
 ;
 Item : _IDENT_ { $$ = new NoInit($1); }
   | _IDENT_ _EQ Expr { $$ = new Init($1, $3); }
@@ -234,7 +257,20 @@ Expr7 : _INTEGER_ { $$ = new ELitInt($1); }
   | _KW_false { $$ = new ELitFalse(); }
   | _STRING_ { $$ = new EString($1); }
   | _IDENT_ { $$ = new EVar($1); }
+  | _IDENT_ _LPAREN ListExpr _RPAREN { std::reverse($3->begin(),$3->end()) ;$$ = new EApp($1, $3); }
+  | _KW_new _IDENT_ { $$ = new ENewObj($2); }
+  | Expr7 _RARROW _IDENT_ { $$ = new EArrow($1, $3); }
+  | Expr7 _DOT _KW_length { $$ = new ELen($1); }
+  | Expr7 _DOT _IDENT_ _LPAREN ListExpr _RPAREN { std::reverse($5->begin(),$5->end()) ;$$ = new EFunc($1, $3, $5); }
+  | _KW_new BType ListDimExpr { std::reverse($3->begin(),$3->end()) ;$$ = new ENewBArr($2, $3); }
+  | _KW_new OType ListDimExpr { std::reverse($3->begin(),$3->end()) ;$$ = new ENewOArr($2, $3); }
+  | Expr7 ListDimExpr { std::reverse($2->begin(),$2->end()) ;$$ = new EAcc($1, $2); }
   | _LPAREN Expr _RPAREN { $$ = $2; }
+;
+DimExpr : _LBRACK Expr _RBRACK { $$ = new Dim($2); }
+;
+ListDimExpr : DimExpr { $$ = new ListDimExpr(); $$->push_back($1); }
+  | DimExpr ListDimExpr { $2->push_back($1); $$ = $2; }
 ;
 Expr : Expr7 _DBAR Expr { $$ = new EOr($1, $3); }
   | Expr1 { $$ = $1; }

@@ -15,6 +15,9 @@ public:
   void visitFnDef(FnDef *p);
   void visitEVal(EVal *p);
   void visitArg(Arg *p);
+  void visitBType(BType *p);
+  void visitOType(OType *p);
+  void visitAType(AType *p);
   void visitType(Type *p);
   void visitBracketsOpt(BracketsOpt *p);
   void visitSBlk(SBlk *p);
@@ -25,6 +28,7 @@ public:
   void visitStmt(Stmt *p);
   void visitItem(Item *p);
   void visitExpr(Expr *p);
+  void visitDimExpr(DimExpr *p);
   void visitProgram(Program *p);
   void visitStruct(Struct *p);
   void visitTypeDef(TypeDef *p);
@@ -42,6 +46,9 @@ public:
   void visitVoid(Void *p);
   void visitObjT(ObjT *p);
   void visitArray(Array *p);
+  void visitBaseType(BaseType *p);
+  void visitObjType(ObjType *p);
+  void visitArrType(ArrType *p);
   void visitBracketsEmpty(BracketsEmpty *p);
   void visitSBlock(SBlock *p);
   void visitCBlock(CBlock *p);
@@ -54,12 +61,22 @@ public:
   void visitDecl(Decl *p);
   void visitNoInit(NoInit *p);
   void visitInit(Init *p);
+  void visitSExp(SExp *p);
   void visitELitInt(ELitInt *p);
   void visitELitDoub(ELitDoub *p);
   void visitELitTrue(ELitTrue *p);
   void visitELitFalse(ELitFalse *p);
   void visitEString(EString *p);
   void visitEVar(EVar *p);
+  void visitEApp(EApp *p);
+  void visitENewObj(ENewObj *p);
+  void visitEArrow(EArrow *p);
+  void visitELen(ELen *p);
+  void visitEFunc(EFunc *p);
+  void visitDim(Dim *p);
+  void visitENewBArr(ENewBArr *p);
+  void visitENewOArr(ENewOArr *p);
+  void visitEAcc(EAcc *p);
   void visitEOr(EOr *p);
   void visitListEVal(ListEVal *p);
   void visitListArg(ListArg *p);
@@ -70,6 +87,7 @@ public:
   void visitListCMemdef(ListCMemdef *p);
   void visitListStmt(ListStmt *p);
   void visitListItem(ListItem *p);
+  void visitListDimExpr(ListDimExpr *p);
   void visitListExpr(ListExpr *p);
 
   void visitInteger(Integer x);

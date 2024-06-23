@@ -26,6 +26,9 @@ class TopDef;
 class FnDef;
 class EVal;
 class Arg;
+class BType;
+class OType;
+class AType;
 class Type;
 class BracketsOpt;
 class SBlk;
@@ -36,6 +39,7 @@ class Blk;
 class Stmt;
 class Item;
 class Expr;
+class DimExpr;
 class Program;
 class Struct;
 class TypeDef;
@@ -53,6 +57,9 @@ class Bool;
 class Void;
 class ObjT;
 class Array;
+class BaseType;
+class ObjType;
+class ArrType;
 class BracketsEmpty;
 class SBlock;
 class CBlock;
@@ -65,12 +72,22 @@ class BStmt;
 class Decl;
 class NoInit;
 class Init;
+class SExp;
 class ELitInt;
 class ELitDoub;
 class ELitTrue;
 class ELitFalse;
 class EString;
 class EVar;
+class EApp;
+class ENewObj;
+class EArrow;
+class ELen;
+class EFunc;
+class Dim;
+class ENewBArr;
+class ENewOArr;
+class EAcc;
 class EOr;
 class ListEVal;
 class ListArg;
@@ -81,6 +98,7 @@ class ListMemdef;
 class ListCMemdef;
 class ListStmt;
 class ListItem;
+class ListDimExpr;
 class ListExpr;
 
 
@@ -94,6 +112,9 @@ public:
   virtual void visitFnDef(FnDef *p) = 0;
   virtual void visitEVal(EVal *p) = 0;
   virtual void visitArg(Arg *p) = 0;
+  virtual void visitBType(BType *p) = 0;
+  virtual void visitOType(OType *p) = 0;
+  virtual void visitAType(AType *p) = 0;
   virtual void visitType(Type *p) = 0;
   virtual void visitBracketsOpt(BracketsOpt *p) = 0;
   virtual void visitSBlk(SBlk *p) = 0;
@@ -104,6 +125,7 @@ public:
   virtual void visitStmt(Stmt *p) = 0;
   virtual void visitItem(Item *p) = 0;
   virtual void visitExpr(Expr *p) = 0;
+  virtual void visitDimExpr(DimExpr *p) = 0;
   virtual void visitProgram(Program *p) = 0;
   virtual void visitStruct(Struct *p) = 0;
   virtual void visitTypeDef(TypeDef *p) = 0;
@@ -121,6 +143,9 @@ public:
   virtual void visitVoid(Void *p) = 0;
   virtual void visitObjT(ObjT *p) = 0;
   virtual void visitArray(Array *p) = 0;
+  virtual void visitBaseType(BaseType *p) = 0;
+  virtual void visitObjType(ObjType *p) = 0;
+  virtual void visitArrType(ArrType *p) = 0;
   virtual void visitBracketsEmpty(BracketsEmpty *p) = 0;
   virtual void visitSBlock(SBlock *p) = 0;
   virtual void visitCBlock(CBlock *p) = 0;
@@ -133,12 +158,22 @@ public:
   virtual void visitDecl(Decl *p) = 0;
   virtual void visitNoInit(NoInit *p) = 0;
   virtual void visitInit(Init *p) = 0;
+  virtual void visitSExp(SExp *p) = 0;
   virtual void visitELitInt(ELitInt *p) = 0;
   virtual void visitELitDoub(ELitDoub *p) = 0;
   virtual void visitELitTrue(ELitTrue *p) = 0;
   virtual void visitELitFalse(ELitFalse *p) = 0;
   virtual void visitEString(EString *p) = 0;
   virtual void visitEVar(EVar *p) = 0;
+  virtual void visitEApp(EApp *p) = 0;
+  virtual void visitENewObj(ENewObj *p) = 0;
+  virtual void visitEArrow(EArrow *p) = 0;
+  virtual void visitELen(ELen *p) = 0;
+  virtual void visitEFunc(EFunc *p) = 0;
+  virtual void visitDim(Dim *p) = 0;
+  virtual void visitENewBArr(ENewBArr *p) = 0;
+  virtual void visitENewOArr(ENewOArr *p) = 0;
+  virtual void visitEAcc(EAcc *p) = 0;
   virtual void visitEOr(EOr *p) = 0;
   virtual void visitListEVal(ListEVal *p) = 0;
   virtual void visitListArg(ListArg *p) = 0;
@@ -149,6 +184,7 @@ public:
   virtual void visitListCMemdef(ListCMemdef *p) = 0;
   virtual void visitListStmt(ListStmt *p) = 0;
   virtual void visitListItem(ListItem *p) = 0;
+  virtual void visitListDimExpr(ListDimExpr *p) = 0;
   virtual void visitListExpr(ListExpr *p) = 0;
 
 
@@ -203,6 +239,27 @@ class Arg : public Visitable
 {
 public:
   virtual Arg *clone() const = 0;
+
+};
+
+class BType : public Visitable
+{
+public:
+  virtual BType *clone() const = 0;
+
+};
+
+class OType : public Visitable
+{
+public:
+  virtual OType *clone() const = 0;
+
+};
+
+class AType : public Visitable
+{
+public:
+  virtual AType *clone() const = 0;
 
 };
 
@@ -273,6 +330,13 @@ class Expr : public Visitable
 {
 public:
   virtual Expr *clone() const = 0;
+
+};
+
+class DimExpr : public Visitable
+{
+public:
+  virtual DimExpr *clone() const = 0;
 
 };
 
@@ -444,7 +508,7 @@ public:
   void swap(Argument &);
 };
 
-class Int : public Type
+class Int : public BType
 {
 public:
 
@@ -457,7 +521,7 @@ public:
   void swap(Int &);
 };
 
-class Doub : public Type
+class Doub : public BType
 {
 public:
 
@@ -470,7 +534,7 @@ public:
   void swap(Doub &);
 };
 
-class Bool : public Type
+class Bool : public BType
 {
 public:
 
@@ -483,7 +547,7 @@ public:
   void swap(Bool &);
 };
 
-class Void : public Type
+class Void : public BType
 {
 public:
 
@@ -496,7 +560,7 @@ public:
   void swap(Void &);
 };
 
-class ObjT : public Type
+class ObjT : public OType
 {
 public:
   Ident ident_;
@@ -510,7 +574,7 @@ public:
   void swap(ObjT &);
 };
 
-class Array : public Type
+class Array : public AType
 {
 public:
   Type *type_;
@@ -523,6 +587,48 @@ public:
   virtual void accept(Visitor *v);
   virtual Array *clone() const;
   void swap(Array &);
+};
+
+class BaseType : public Type
+{
+public:
+  BType *btype_;
+
+  BaseType(const BaseType &);
+  BaseType &operator=(const BaseType &);
+  BaseType(BType *p1);
+  ~BaseType();
+  virtual void accept(Visitor *v);
+  virtual BaseType *clone() const;
+  void swap(BaseType &);
+};
+
+class ObjType : public Type
+{
+public:
+  OType *otype_;
+
+  ObjType(const ObjType &);
+  ObjType &operator=(const ObjType &);
+  ObjType(OType *p1);
+  ~ObjType();
+  virtual void accept(Visitor *v);
+  virtual ObjType *clone() const;
+  void swap(ObjType &);
+};
+
+class ArrType : public Type
+{
+public:
+  AType *atype_;
+
+  ArrType(const ArrType &);
+  ArrType &operator=(const ArrType &);
+  ArrType(AType *p1);
+  ~ArrType();
+  virtual void accept(Visitor *v);
+  virtual ArrType *clone() const;
+  void swap(ArrType &);
 };
 
 class BracketsEmpty : public BracketsOpt
@@ -665,6 +771,20 @@ public:
   void swap(Decl &);
 };
 
+class SExp : public Stmt
+{
+public:
+  Expr *expr_;
+
+  SExp(const SExp &);
+  SExp &operator=(const SExp &);
+  SExp(Expr *p1);
+  ~SExp();
+  virtual void accept(Visitor *v);
+  virtual SExp *clone() const;
+  void swap(SExp &);
+};
+
 class NoInit : public Item
 {
 public:
@@ -776,6 +896,125 @@ public:
   void swap(EVar &);
 };
 
+class EApp : public Expr
+{
+public:
+  Ident ident_;
+  ListExpr *listexpr_;
+
+  EApp(const EApp &);
+  EApp &operator=(const EApp &);
+  EApp(Ident p1, ListExpr *p2);
+  ~EApp();
+  virtual void accept(Visitor *v);
+  virtual EApp *clone() const;
+  void swap(EApp &);
+};
+
+class ENewObj : public Expr
+{
+public:
+  Ident ident_;
+
+  ENewObj(const ENewObj &);
+  ENewObj &operator=(const ENewObj &);
+  ENewObj(Ident p1);
+  ~ENewObj();
+  virtual void accept(Visitor *v);
+  virtual ENewObj *clone() const;
+  void swap(ENewObj &);
+};
+
+class EArrow : public Expr
+{
+public:
+  Expr *expr_;
+  Ident ident_;
+
+  EArrow(const EArrow &);
+  EArrow &operator=(const EArrow &);
+  EArrow(Expr *p1, Ident p2);
+  ~EArrow();
+  virtual void accept(Visitor *v);
+  virtual EArrow *clone() const;
+  void swap(EArrow &);
+};
+
+class ELen : public Expr
+{
+public:
+  Expr *expr_;
+
+  ELen(const ELen &);
+  ELen &operator=(const ELen &);
+  ELen(Expr *p1);
+  ~ELen();
+  virtual void accept(Visitor *v);
+  virtual ELen *clone() const;
+  void swap(ELen &);
+};
+
+class EFunc : public Expr
+{
+public:
+  Expr *expr_;
+  Ident ident_;
+  ListExpr *listexpr_;
+
+  EFunc(const EFunc &);
+  EFunc &operator=(const EFunc &);
+  EFunc(Expr *p1, Ident p2, ListExpr *p3);
+  ~EFunc();
+  virtual void accept(Visitor *v);
+  virtual EFunc *clone() const;
+  void swap(EFunc &);
+};
+
+class ENewBArr : public Expr
+{
+public:
+  BType *btype_;
+  ListDimExpr *listdimexpr_;
+
+  ENewBArr(const ENewBArr &);
+  ENewBArr &operator=(const ENewBArr &);
+  ENewBArr(BType *p1, ListDimExpr *p2);
+  ~ENewBArr();
+  virtual void accept(Visitor *v);
+  virtual ENewBArr *clone() const;
+  void swap(ENewBArr &);
+};
+
+class ENewOArr : public Expr
+{
+public:
+  OType *otype_;
+  ListDimExpr *listdimexpr_;
+
+  ENewOArr(const ENewOArr &);
+  ENewOArr &operator=(const ENewOArr &);
+  ENewOArr(OType *p1, ListDimExpr *p2);
+  ~ENewOArr();
+  virtual void accept(Visitor *v);
+  virtual ENewOArr *clone() const;
+  void swap(ENewOArr &);
+};
+
+class EAcc : public Expr
+{
+public:
+  Expr *expr_;
+  ListDimExpr *listdimexpr_;
+
+  EAcc(const EAcc &);
+  EAcc &operator=(const EAcc &);
+  EAcc(Expr *p1, ListDimExpr *p2);
+  ~EAcc();
+  virtual void accept(Visitor *v);
+  virtual EAcc *clone() const;
+  void swap(EAcc &);
+};
+
 class EOr : public Expr
 {
 public:
@@ -789,6 +1028,20 @@ public:
   virtual void accept(Visitor *v);
   virtual EOr *clone() const;
   void swap(EOr &);
+};
+
+class Dim : public DimExpr
+{
+public:
+  Expr *expr_;
+
+  Dim(const Dim &);
+  Dim &operator=(const Dim &);
+  Dim(Expr *p1);
+  ~Dim();
+  virtual void accept(Visitor *v);
+  virtual Dim *clone() const;
+  void swap(Dim &);
 };
 
 
@@ -873,6 +1126,15 @@ public:
 };
 
 ListItem* consListItem(Item* x, ListItem* xs);
+
+class ListDimExpr : public Visitable, public std::vector<DimExpr*>
+{
+public:
+  virtual void accept(Visitor *v);
+  virtual ListDimExpr *clone() const;
+};
+
+ListDimExpr* consListDimExpr(DimExpr* x, ListDimExpr* xs);
 
 class ListExpr : public Visitable, public std::vector<Expr*>
 {

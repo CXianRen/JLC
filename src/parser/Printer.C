@@ -350,7 +350,7 @@ void PrintAbsyn::iterListTopDef(ListTopDef::const_iterator i, ListTopDef::const_
   }
 }
 
-void PrintAbsyn::visitType(Type *p) {} //abstract class
+void PrintAbsyn::visitBType(BType *p) {} //abstract class
 
 void PrintAbsyn::visitInt(Int *p)
 {
@@ -396,6 +396,8 @@ void PrintAbsyn::visitVoid(Void *p)
   _i_ = oldi;
 }
 
+void PrintAbsyn::visitOType(OType *p) {} //abstract class
+
 void PrintAbsyn::visitObjT(ObjT *p)
 {
   int oldi = _i_;
@@ -407,6 +409,8 @@ void PrintAbsyn::visitObjT(ObjT *p)
   _i_ = oldi;
 }
 
+void PrintAbsyn::visitAType(AType *p) {} //abstract class
+
 void PrintAbsyn::visitArray(Array *p)
 {
   int oldi = _i_;
@@ -414,6 +418,41 @@ void PrintAbsyn::visitArray(Array *p)
 
   _i_ = 0; p->type_->accept(this);
   _i_ = 0; p->bracketsopt_->accept(this);
+
+  if (oldi > 0) render(_R_PAREN);
+  _i_ = oldi;
+}
+
+void PrintAbsyn::visitType(Type *p) {} //abstract class
+
+void PrintAbsyn::visitBaseType(BaseType *p)
+{
+  int oldi = _i_;
+  if (oldi > 0) render(_L_PAREN);
+
+  _i_ = 0; p->btype_->accept(this);
+
+  if (oldi > 0) render(_R_PAREN);
+  _i_ = oldi;
+}
+
+void PrintAbsyn::visitObjType(ObjType *p)
+{
+  int oldi = _i_;
+  if (oldi > 0) render(_L_PAREN);
+
+  _i_ = 0; p->otype_->accept(this);
+
+  if (oldi > 0) render(_R_PAREN);
+  _i_ = oldi;
+}
+
+void PrintAbsyn::visitArrType(ArrType *p)
+{
+  int oldi = _i_;
+  if (oldi > 0) render(_L_PAREN);
+
+  _i_ = 0; p->atype_->accept(this);
 
   if (oldi > 0) render(_R_PAREN);
   _i_ = oldi;
@@ -628,6 +667,18 @@ void PrintAbsyn::visitDecl(Decl *p)
   _i_ = oldi;
 }
 
+void PrintAbsyn::visitSExp(SExp *p)
+{
+  int oldi = _i_;
+  if (oldi > 0) render(_L_PAREN);
+
+  _i_ = 0; p->expr_->accept(this);
+  render(';');
+
+  if (oldi > 0) render(_R_PAREN);
+  _i_ = oldi;
+}
+
 void PrintAbsyn::visitItem(Item *p) {} //abstract class
 
 void PrintAbsyn::visitNoInit(NoInit *p)
@@ -740,6 +791,112 @@ void PrintAbsyn::visitEVar(EVar *p)
   _i_ = oldi;
 }
 
+void PrintAbsyn::visitEApp(EApp *p)
+{
+  int oldi = _i_;
+  if (oldi > 7) render(_L_PAREN);
+
+  visitIdent(p->ident_);
+  render('(');
+  _i_ = 0; visitListExpr(p->listexpr_);
+  render(')');
+
+  if (oldi > 7) render(_R_PAREN);
+  _i_ = oldi;
+}
+
+void PrintAbsyn::visitENewObj(ENewObj *p)
+{
+  int oldi = _i_;
+  if (oldi > 7) render(_L_PAREN);
+
+  render("new");
+  visitIdent(p->ident_);
+
+  if (oldi > 7) render(_R_PAREN);
+  _i_ = oldi;
+}
+
+void PrintAbsyn::visitEArrow(EArrow *p)
+{
+  int oldi = _i_;
+  if (oldi > 7) render(_L_PAREN);
+
+  _i_ = 7; p->expr_->accept(this);
+  render("->");
+  visitIdent(p->ident_);
+
+  if (oldi > 7) render(_R_PAREN);
+  _i_ = oldi;
+}
+
+void PrintAbsyn::visitELen(ELen *p)
+{
+  int oldi = _i_;
+  if (oldi > 7) render(_L_PAREN);
+
+  _i_ = 7; p->expr_->accept(this);
+  render('.');
+  render("length");
+
+  if (oldi > 7) render(_R_PAREN);
+  _i_ = oldi;
+}
+
+void PrintAbsyn::visitEFunc(EFunc *p)
+{
+  int oldi = _i_;
+  if (oldi > 7) render(_L_PAREN);
+
+  _i_ = 7; p->expr_->accept(this);
+  render('.');
+  visitIdent(p->ident_);
+  render('(');
+  _i_ = 0; visitListExpr(p->listexpr_);
+  render(')');
+
+  if (oldi > 7) render(_R_PAREN);
+  _i_ = oldi;
+}
+
+void PrintAbsyn::visitENewBArr(ENewBArr *p)
+{
+  int oldi = _i_;
+  if (oldi > 7) render(_L_PAREN);
+
+  render("new");
+  _i_ = 0; p->btype_->accept(this);
+  _i_ = 0; visitListDimExpr(p->listdimexpr_);
+
+  if (oldi > 7) render(_R_PAREN);
+  _i_ = oldi;
+}
+
+void PrintAbsyn::visitENewOArr(ENewOArr *p)
+{
+  int oldi = _i_;
+  if (oldi > 7) render(_L_PAREN);
+
+  render("new");
+  _i_ = 0; p->otype_->accept(this);
+  _i_ = 0; visitListDimExpr(p->listdimexpr_);
+
+  if (oldi > 7) render(_R_PAREN);
+  _i_ = oldi;
+}
+
+void PrintAbsyn::visitEAcc(EAcc *p)
+{
+  int oldi = _i_;
+  if (oldi > 7) render(_L_PAREN);
+
+  _i_ = 7; p->expr_->accept(this);
+  _i_ = 0; visitListDimExpr(p->listdimexpr_);
+
+  if (oldi > 7) render(_R_PAREN);
+  _i_ = oldi;
+}
+
 void PrintAbsyn::visitEOr(EOr *p)
 {
   int oldi = _i_;
@@ -751,6 +908,39 @@ void PrintAbsyn::visitEOr(EOr *p)
 
   if (oldi > 0) render(_R_PAREN);
   _i_ = oldi;
+}
+
+void PrintAbsyn::visitDimExpr(DimExpr *p) {} //abstract class
+
+void PrintAbsyn::visitDim(Dim *p)
+{
+  int oldi = _i_;
+  if (oldi > 0) render(_L_PAREN);
+
+  render('[');
+  _i_ = 0; p->expr_->accept(this);
+  render(']');
+
+  if (oldi > 0) render(_R_PAREN);
+  _i_ = oldi;
+}
+
+void PrintAbsyn::visitListDimExpr(ListDimExpr *listdimexpr)
+{
+  iterListDimExpr(listdimexpr->begin(), listdimexpr->end());
+}
+
+void PrintAbsyn::iterListDimExpr(ListDimExpr::const_iterator i, ListDimExpr::const_iterator j)
+{
+  if (i == j) return;
+  if (i == j-1)
+  { /* last */
+    (*i)->accept(this);
+  }
+  else
+  { /* cons */
+    (*i)->accept(this); iterListDimExpr(i+1, j);
+  }
 }
 
 void PrintAbsyn::visitListExpr(ListExpr *listexpr)
@@ -997,7 +1187,7 @@ void ShowAbsyn::visitListTopDef(ListTopDef *listtopdef)
   }
 }
 
-void ShowAbsyn::visitType(Type *p) {} //abstract class
+void ShowAbsyn::visitBType(BType *p) {} //abstract class
 
 void ShowAbsyn::visitInt(Int *p)
 {
@@ -1015,6 +1205,8 @@ void ShowAbsyn::visitVoid(Void *p)
 {
   bufAppend("Void");
 }
+void ShowAbsyn::visitOType(OType *p) {} //abstract class
+
 void ShowAbsyn::visitObjT(ObjT *p)
 {
   bufAppend('(');
@@ -1023,6 +1215,8 @@ void ShowAbsyn::visitObjT(ObjT *p)
   visitIdent(p->ident_);
   bufAppend(')');
 }
+void ShowAbsyn::visitAType(AType *p) {} //abstract class
+
 void ShowAbsyn::visitArray(Array *p)
 {
   bufAppend('(');
@@ -1034,6 +1228,38 @@ void ShowAbsyn::visitArray(Array *p)
   bufAppend(' ');
   bufAppend('[');
   if (p->bracketsopt_)  p->bracketsopt_->accept(this);
+  bufAppend(']');
+  bufAppend(')');
+}
+void ShowAbsyn::visitType(Type *p) {} //abstract class
+
+void ShowAbsyn::visitBaseType(BaseType *p)
+{
+  bufAppend('(');
+  bufAppend("BaseType");
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->btype_)  p->btype_->accept(this);
+  bufAppend(']');
+  bufAppend(')');
+}
+void ShowAbsyn::visitObjType(ObjType *p)
+{
+  bufAppend('(');
+  bufAppend("ObjType");
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->otype_)  p->otype_->accept(this);
+  bufAppend(']');
+  bufAppend(')');
+}
+void ShowAbsyn::visitArrType(ArrType *p)
+{
+  bufAppend('(');
+  bufAppend("ArrType");
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->atype_)  p->atype_->accept(this);
   bufAppend(']');
   bufAppend(')');
 }
@@ -1195,6 +1421,17 @@ void ShowAbsyn::visitDecl(Decl *p)
   bufAppend(' ');
   bufAppend(')');
 }
+void ShowAbsyn::visitSExp(SExp *p)
+{
+  bufAppend('(');
+  bufAppend("SExp");
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->expr_)  p->expr_->accept(this);
+  bufAppend(']');
+  bufAppend(' ');
+  bufAppend(')');
+}
 void ShowAbsyn::visitItem(Item *p) {} //abstract class
 
 void ShowAbsyn::visitNoInit(NoInit *p)
@@ -1268,6 +1505,109 @@ void ShowAbsyn::visitEVar(EVar *p)
   visitIdent(p->ident_);
   bufAppend(')');
 }
+void ShowAbsyn::visitEApp(EApp *p)
+{
+  bufAppend('(');
+  bufAppend("EApp");
+  bufAppend(' ');
+  visitIdent(p->ident_);
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->listexpr_)  p->listexpr_->accept(this);
+  bufAppend(']');
+  bufAppend(' ');
+  bufAppend(')');
+}
+void ShowAbsyn::visitENewObj(ENewObj *p)
+{
+  bufAppend('(');
+  bufAppend("ENewObj");
+  bufAppend(' ');
+  visitIdent(p->ident_);
+  bufAppend(')');
+}
+void ShowAbsyn::visitEArrow(EArrow *p)
+{
+  bufAppend('(');
+  bufAppend("EArrow");
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->expr_)  p->expr_->accept(this);
+  bufAppend(']');
+  bufAppend(' ');
+  visitIdent(p->ident_);
+  bufAppend(')');
+}
+void ShowAbsyn::visitELen(ELen *p)
+{
+  bufAppend('(');
+  bufAppend("ELen");
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->expr_)  p->expr_->accept(this);
+  bufAppend(']');
+  bufAppend(' ');
+  bufAppend(')');
+}
+void ShowAbsyn::visitEFunc(EFunc *p)
+{
+  bufAppend('(');
+  bufAppend("EFunc");
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->expr_)  p->expr_->accept(this);
+  bufAppend(']');
+  bufAppend(' ');
+  visitIdent(p->ident_);
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->listexpr_)  p->listexpr_->accept(this);
+  bufAppend(']');
+  bufAppend(' ');
+  bufAppend(')');
+}
+void ShowAbsyn::visitENewBArr(ENewBArr *p)
+{
+  bufAppend('(');
+  bufAppend("ENewBArr");
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->btype_)  p->btype_->accept(this);
+  bufAppend(']');
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->listdimexpr_)  p->listdimexpr_->accept(this);
+  bufAppend(']');
+  bufAppend(')');
+}
+void ShowAbsyn::visitENewOArr(ENewOArr *p)
+{
+  bufAppend('(');
+  bufAppend("ENewOArr");
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->otype_)  p->otype_->accept(this);
+  bufAppend(']');
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->listdimexpr_)  p->listdimexpr_->accept(this);
+  bufAppend(']');
+  bufAppend(')');
+}
+void ShowAbsyn::visitEAcc(EAcc *p)
+{
+  bufAppend('(');
+  bufAppend("EAcc");
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->expr_)  p->expr_->accept(this);
+  bufAppend(']');
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->listdimexpr_)  p->listdimexpr_->accept(this);
+  bufAppend(']');
+  bufAppend(')');
+}
 void ShowAbsyn::visitEOr(EOr *p)
 {
   bufAppend('(');
@@ -1278,6 +1618,28 @@ void ShowAbsyn::visitEOr(EOr *p)
   p->expr_2->accept(this);
   bufAppend(')');
 }
+void ShowAbsyn::visitDimExpr(DimExpr *p) {} //abstract class
+
+void ShowAbsyn::visitDim(Dim *p)
+{
+  bufAppend('(');
+  bufAppend("Dim");
+  bufAppend(' ');
+  bufAppend('[');
+  if (p->expr_)  p->expr_->accept(this);
+  bufAppend(']');
+  bufAppend(' ');
+  bufAppend(')');
+}
+void ShowAbsyn::visitListDimExpr(ListDimExpr *listdimexpr)
+{
+  for (ListDimExpr::const_iterator i = listdimexpr->begin() ; i != listdimexpr->end() ; ++i)
+  {
+    (*i)->accept(this);
+    if (i != listdimexpr->end() - 1) bufAppend(", ");
+  }
+}
+
 void ShowAbsyn::visitListExpr(ListExpr *listexpr)
 {
   for (ListExpr::const_iterator i = listexpr->begin() ; i != listexpr->end() ; ++i)

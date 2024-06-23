@@ -777,6 +777,138 @@ Array *Array::clone() const
 
 
 
+/********************   BaseType    ********************/
+BaseType::BaseType(BType *p1)
+{
+  btype_ = p1;
+
+}
+
+BaseType::BaseType(const BaseType & other)
+{
+  btype_ = other.btype_->clone();
+
+}
+
+BaseType &BaseType::operator=(const BaseType & other)
+{
+  BaseType tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void BaseType::swap(BaseType & other)
+{
+  std::swap(btype_, other.btype_);
+
+}
+
+BaseType::~BaseType()
+{
+  delete(btype_);
+
+}
+
+void BaseType::accept(Visitor *v)
+{
+  v->visitBaseType(this);
+}
+
+BaseType *BaseType::clone() const
+{
+  return new BaseType(*this);
+}
+
+
+
+/********************   ObjType    ********************/
+ObjType::ObjType(OType *p1)
+{
+  otype_ = p1;
+
+}
+
+ObjType::ObjType(const ObjType & other)
+{
+  otype_ = other.otype_->clone();
+
+}
+
+ObjType &ObjType::operator=(const ObjType & other)
+{
+  ObjType tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void ObjType::swap(ObjType & other)
+{
+  std::swap(otype_, other.otype_);
+
+}
+
+ObjType::~ObjType()
+{
+  delete(otype_);
+
+}
+
+void ObjType::accept(Visitor *v)
+{
+  v->visitObjType(this);
+}
+
+ObjType *ObjType::clone() const
+{
+  return new ObjType(*this);
+}
+
+
+
+/********************   ArrType    ********************/
+ArrType::ArrType(AType *p1)
+{
+  atype_ = p1;
+
+}
+
+ArrType::ArrType(const ArrType & other)
+{
+  atype_ = other.atype_->clone();
+
+}
+
+ArrType &ArrType::operator=(const ArrType & other)
+{
+  ArrType tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void ArrType::swap(ArrType & other)
+{
+  std::swap(atype_, other.atype_);
+
+}
+
+ArrType::~ArrType()
+{
+  delete(atype_);
+
+}
+
+void ArrType::accept(Visitor *v)
+{
+  v->visitArrType(this);
+}
+
+ArrType *ArrType::clone() const
+{
+  return new ArrType(*this);
+}
+
+
+
 /********************   BracketsEmpty    ********************/
 BracketsEmpty::BracketsEmpty()
 {
@@ -1216,6 +1348,50 @@ Decl *Decl::clone() const
 
 
 
+/********************   SExp    ********************/
+SExp::SExp(Expr *p1)
+{
+  expr_ = p1;
+
+}
+
+SExp::SExp(const SExp & other)
+{
+  expr_ = other.expr_->clone();
+
+}
+
+SExp &SExp::operator=(const SExp & other)
+{
+  SExp tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void SExp::swap(SExp & other)
+{
+  std::swap(expr_, other.expr_);
+
+}
+
+SExp::~SExp()
+{
+  delete(expr_);
+
+}
+
+void SExp::accept(Visitor *v)
+{
+  v->visitSExp(this);
+}
+
+SExp *SExp::clone() const
+{
+  return new SExp(*this);
+}
+
+
+
 /********************   NoInit    ********************/
 NoInit::NoInit(Ident p1)
 {
@@ -1558,6 +1734,382 @@ EVar *EVar::clone() const
 
 
 
+/********************   EApp    ********************/
+EApp::EApp(Ident p1, ListExpr *p2)
+{
+  ident_ = p1;
+  listexpr_ = p2;
+
+}
+
+EApp::EApp(const EApp & other)
+{
+  ident_ = other.ident_;
+  listexpr_ = other.listexpr_->clone();
+
+}
+
+EApp &EApp::operator=(const EApp & other)
+{
+  EApp tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void EApp::swap(EApp & other)
+{
+  std::swap(ident_, other.ident_);
+  std::swap(listexpr_, other.listexpr_);
+
+}
+
+EApp::~EApp()
+{
+  delete(listexpr_);
+
+}
+
+void EApp::accept(Visitor *v)
+{
+  v->visitEApp(this);
+}
+
+EApp *EApp::clone() const
+{
+  return new EApp(*this);
+}
+
+
+
+/********************   ENewObj    ********************/
+ENewObj::ENewObj(Ident p1)
+{
+  ident_ = p1;
+
+}
+
+ENewObj::ENewObj(const ENewObj & other)
+{
+  ident_ = other.ident_;
+
+}
+
+ENewObj &ENewObj::operator=(const ENewObj & other)
+{
+  ENewObj tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void ENewObj::swap(ENewObj & other)
+{
+  std::swap(ident_, other.ident_);
+
+}
+
+ENewObj::~ENewObj()
+{
+
+}
+
+void ENewObj::accept(Visitor *v)
+{
+  v->visitENewObj(this);
+}
+
+ENewObj *ENewObj::clone() const
+{
+  return new ENewObj(*this);
+}
+
+
+
+/********************   EArrow    ********************/
+EArrow::EArrow(Expr *p1, Ident p2)
+{
+  expr_ = p1;
+  ident_ = p2;
+
+}
+
+EArrow::EArrow(const EArrow & other)
+{
+  expr_ = other.expr_->clone();
+  ident_ = other.ident_;
+
+}
+
+EArrow &EArrow::operator=(const EArrow & other)
+{
+  EArrow tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void EArrow::swap(EArrow & other)
+{
+  std::swap(expr_, other.expr_);
+  std::swap(ident_, other.ident_);
+
+}
+
+EArrow::~EArrow()
+{
+  delete(expr_);
+
+}
+
+void EArrow::accept(Visitor *v)
+{
+  v->visitEArrow(this);
+}
+
+EArrow *EArrow::clone() const
+{
+  return new EArrow(*this);
+}
+
+
+
+/********************   ELen    ********************/
+ELen::ELen(Expr *p1)
+{
+  expr_ = p1;
+
+}
+
+ELen::ELen(const ELen & other)
+{
+  expr_ = other.expr_->clone();
+
+}
+
+ELen &ELen::operator=(const ELen & other)
+{
+  ELen tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void ELen::swap(ELen & other)
+{
+  std::swap(expr_, other.expr_);
+
+}
+
+ELen::~ELen()
+{
+  delete(expr_);
+
+}
+
+void ELen::accept(Visitor *v)
+{
+  v->visitELen(this);
+}
+
+ELen *ELen::clone() const
+{
+  return new ELen(*this);
+}
+
+
+
+/********************   EFunc    ********************/
+EFunc::EFunc(Expr *p1, Ident p2, ListExpr *p3)
+{
+  expr_ = p1;
+  ident_ = p2;
+  listexpr_ = p3;
+
+}
+
+EFunc::EFunc(const EFunc & other)
+{
+  expr_ = other.expr_->clone();
+  ident_ = other.ident_;
+  listexpr_ = other.listexpr_->clone();
+
+}
+
+EFunc &EFunc::operator=(const EFunc & other)
+{
+  EFunc tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void EFunc::swap(EFunc & other)
+{
+  std::swap(expr_, other.expr_);
+  std::swap(ident_, other.ident_);
+  std::swap(listexpr_, other.listexpr_);
+
+}
+
+EFunc::~EFunc()
+{
+  delete(expr_);
+  delete(listexpr_);
+
+}
+
+void EFunc::accept(Visitor *v)
+{
+  v->visitEFunc(this);
+}
+
+EFunc *EFunc::clone() const
+{
+  return new EFunc(*this);
+}
+
+
+
+/********************   ENewBArr    ********************/
+ENewBArr::ENewBArr(BType *p1, ListDimExpr *p2)
+{
+  btype_ = p1;
+  listdimexpr_ = p2;
+
+}
+
+ENewBArr::ENewBArr(const ENewBArr & other)
+{
+  btype_ = other.btype_->clone();
+  listdimexpr_ = other.listdimexpr_->clone();
+
+}
+
+ENewBArr &ENewBArr::operator=(const ENewBArr & other)
+{
+  ENewBArr tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void ENewBArr::swap(ENewBArr & other)
+{
+  std::swap(btype_, other.btype_);
+  std::swap(listdimexpr_, other.listdimexpr_);
+
+}
+
+ENewBArr::~ENewBArr()
+{
+  delete(btype_);
+  delete(listdimexpr_);
+
+}
+
+void ENewBArr::accept(Visitor *v)
+{
+  v->visitENewBArr(this);
+}
+
+ENewBArr *ENewBArr::clone() const
+{
+  return new ENewBArr(*this);
+}
+
+
+
+/********************   ENewOArr    ********************/
+ENewOArr::ENewOArr(OType *p1, ListDimExpr *p2)
+{
+  otype_ = p1;
+  listdimexpr_ = p2;
+
+}
+
+ENewOArr::ENewOArr(const ENewOArr & other)
+{
+  otype_ = other.otype_->clone();
+  listdimexpr_ = other.listdimexpr_->clone();
+
+}
+
+ENewOArr &ENewOArr::operator=(const ENewOArr & other)
+{
+  ENewOArr tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void ENewOArr::swap(ENewOArr & other)
+{
+  std::swap(otype_, other.otype_);
+  std::swap(listdimexpr_, other.listdimexpr_);
+
+}
+
+ENewOArr::~ENewOArr()
+{
+  delete(otype_);
+  delete(listdimexpr_);
+
+}
+
+void ENewOArr::accept(Visitor *v)
+{
+  v->visitENewOArr(this);
+}
+
+ENewOArr *ENewOArr::clone() const
+{
+  return new ENewOArr(*this);
+}
+
+
+
+/********************   EAcc    ********************/
+EAcc::EAcc(Expr *p1, ListDimExpr *p2)
+{
+  expr_ = p1;
+  listdimexpr_ = p2;
+
+}
+
+EAcc::EAcc(const EAcc & other)
+{
+  expr_ = other.expr_->clone();
+  listdimexpr_ = other.listdimexpr_->clone();
+
+}
+
+EAcc &EAcc::operator=(const EAcc & other)
+{
+  EAcc tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void EAcc::swap(EAcc & other)
+{
+  std::swap(expr_, other.expr_);
+  std::swap(listdimexpr_, other.listdimexpr_);
+
+}
+
+EAcc::~EAcc()
+{
+  delete(expr_);
+  delete(listdimexpr_);
+
+}
+
+void EAcc::accept(Visitor *v)
+{
+  v->visitEAcc(this);
+}
+
+EAcc *EAcc::clone() const
+{
+  return new EAcc(*this);
+}
+
+
+
 /********************   EOr    ********************/
 EOr::EOr(Expr *p1, Expr *p2)
 {
@@ -1602,6 +2154,50 @@ void EOr::accept(Visitor *v)
 EOr *EOr::clone() const
 {
   return new EOr(*this);
+}
+
+
+
+/********************   Dim    ********************/
+Dim::Dim(Expr *p1)
+{
+  expr_ = p1;
+
+}
+
+Dim::Dim(const Dim & other)
+{
+  expr_ = other.expr_->clone();
+
+}
+
+Dim &Dim::operator=(const Dim & other)
+{
+  Dim tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+void Dim::swap(Dim & other)
+{
+  std::swap(expr_, other.expr_);
+
+}
+
+Dim::~Dim()
+{
+  delete(expr_);
+
+}
+
+void Dim::accept(Visitor *v)
+{
+  v->visitDim(this);
+}
+
+Dim *Dim::clone() const
+{
+  return new Dim(*this);
 }
 
 
@@ -1764,6 +2360,24 @@ ListItem *ListItem::clone() const
 }
 
 ListItem* consListItem(Item* x, ListItem* xs) {
+  xs->insert(xs->begin(), x);
+  return xs;
+}
+
+
+/********************   ListDimExpr    ********************/
+
+void ListDimExpr::accept(Visitor *v)
+{
+  v->visitListDimExpr(this);
+}
+
+ListDimExpr *ListDimExpr::clone() const
+{
+  return new ListDimExpr(*this);
+}
+
+ListDimExpr* consListDimExpr(DimExpr* x, ListDimExpr* xs) {
   xs->insert(xs->begin(), x);
   return xs;
 }

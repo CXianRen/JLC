@@ -15,6 +15,9 @@ void Skeleton::visitTopDef(TopDef *t) {} //abstract class
 void Skeleton::visitFnDef(FnDef *t) {} //abstract class
 void Skeleton::visitEVal(EVal *t) {} //abstract class
 void Skeleton::visitArg(Arg *t) {} //abstract class
+void Skeleton::visitBType(BType *t) {} //abstract class
+void Skeleton::visitOType(OType *t) {} //abstract class
+void Skeleton::visitAType(AType *t) {} //abstract class
 void Skeleton::visitType(Type *t) {} //abstract class
 void Skeleton::visitBracketsOpt(BracketsOpt *t) {} //abstract class
 void Skeleton::visitSBlk(SBlk *t) {} //abstract class
@@ -25,6 +28,7 @@ void Skeleton::visitBlk(Blk *t) {} //abstract class
 void Skeleton::visitStmt(Stmt *t) {} //abstract class
 void Skeleton::visitItem(Item *t) {} //abstract class
 void Skeleton::visitExpr(Expr *t) {} //abstract class
+void Skeleton::visitDimExpr(DimExpr *t) {} //abstract class
 
 void Skeleton::visitProgram(Program *program)
 {
@@ -171,6 +175,30 @@ void Skeleton::visitArray(Array *array)
 
 }
 
+void Skeleton::visitBaseType(BaseType *base_type)
+{
+  /* Code For BaseType Goes Here */
+
+  if (base_type->btype_) base_type->btype_->accept(this);
+
+}
+
+void Skeleton::visitObjType(ObjType *obj_type)
+{
+  /* Code For ObjType Goes Here */
+
+  if (obj_type->otype_) obj_type->otype_->accept(this);
+
+}
+
+void Skeleton::visitArrType(ArrType *arr_type)
+{
+  /* Code For ArrType Goes Here */
+
+  if (arr_type->atype_) arr_type->atype_->accept(this);
+
+}
+
 void Skeleton::visitBracketsEmpty(BracketsEmpty *brackets_empty)
 {
   /* Code For BracketsEmpty Goes Here */
@@ -251,6 +279,14 @@ void Skeleton::visitDecl(Decl *decl)
 
 }
 
+void Skeleton::visitSExp(SExp *s_exp)
+{
+  /* Code For SExp Goes Here */
+
+  if (s_exp->expr_) s_exp->expr_->accept(this);
+
+}
+
 void Skeleton::visitNoInit(NoInit *no_init)
 {
   /* Code For NoInit Goes Here */
@@ -314,12 +350,91 @@ void Skeleton::visitEVar(EVar *e_var)
 
 }
 
+void Skeleton::visitEApp(EApp *e_app)
+{
+  /* Code For EApp Goes Here */
+
+  visitIdent(e_app->ident_);
+  if (e_app->listexpr_) e_app->listexpr_->accept(this);
+
+}
+
+void Skeleton::visitENewObj(ENewObj *e_new_obj)
+{
+  /* Code For ENewObj Goes Here */
+
+  visitIdent(e_new_obj->ident_);
+
+}
+
+void Skeleton::visitEArrow(EArrow *e_arrow)
+{
+  /* Code For EArrow Goes Here */
+
+  if (e_arrow->expr_) e_arrow->expr_->accept(this);
+  visitIdent(e_arrow->ident_);
+
+}
+
+void Skeleton::visitELen(ELen *e_len)
+{
+  /* Code For ELen Goes Here */
+
+  if (e_len->expr_) e_len->expr_->accept(this);
+
+}
+
+void Skeleton::visitEFunc(EFunc *e_func)
+{
+  /* Code For EFunc Goes Here */
+
+  if (e_func->expr_) e_func->expr_->accept(this);
+  visitIdent(e_func->ident_);
+  if (e_func->listexpr_) e_func->listexpr_->accept(this);
+
+}
+
+void Skeleton::visitENewBArr(ENewBArr *e_new_b_arr)
+{
+  /* Code For ENewBArr Goes Here */
+
+  if (e_new_b_arr->btype_) e_new_b_arr->btype_->accept(this);
+  if (e_new_b_arr->listdimexpr_) e_new_b_arr->listdimexpr_->accept(this);
+
+}
+
+void Skeleton::visitENewOArr(ENewOArr *e_new_o_arr)
+{
+  /* Code For ENewOArr Goes Here */
+
+  if (e_new_o_arr->otype_) e_new_o_arr->otype_->accept(this);
+  if (e_new_o_arr->listdimexpr_) e_new_o_arr->listdimexpr_->accept(this);
+
+}
+
+void Skeleton::visitEAcc(EAcc *e_acc)
+{
+  /* Code For EAcc Goes Here */
+
+  if (e_acc->expr_) e_acc->expr_->accept(this);
+  if (e_acc->listdimexpr_) e_acc->listdimexpr_->accept(this);
+
+}
+
 void Skeleton::visitEOr(EOr *e_or)
 {
   /* Code For EOr Goes Here */
 
   if (e_or->expr_1) e_or->expr_1->accept(this);
   if (e_or->expr_2) e_or->expr_2->accept(this);
+
+}
+
+void Skeleton::visitDim(Dim *dim)
+{
+  /* Code For Dim Goes Here */
+
+  if (dim->expr_) dim->expr_->accept(this);
 
 }
 
@@ -391,6 +506,14 @@ void Skeleton::visitListStmt(ListStmt *list_stmt)
 void Skeleton::visitListItem(ListItem *list_item)
 {
   for (ListItem::iterator i = list_item->begin() ; i != list_item->end() ; ++i)
+  {
+    (*i)->accept(this);
+  }
+}
+
+void Skeleton::visitListDimExpr(ListDimExpr *list_dim_expr)
+{
+  for (ListDimExpr::iterator i = list_dim_expr->begin() ; i != list_dim_expr->end() ; ++i)
   {
     (*i)->accept(this);
   }
