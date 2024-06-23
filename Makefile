@@ -14,8 +14,8 @@ ifdef DEBUG
 endif
 
 # llvm config
-LLVM_CC_CONFIG = `llvm-config --cxxflags` -fexceptions
-LLVM_LD_CONFIG = `llvm-config --ldflags --libs core --system-libs`
+# LLVM_CC_CONFIG = `llvm-config --cxxflags` -fexceptions
+# LLVM_LD_CONFIG = `llvm-config --ldflags --libs core --system-libs`
 
 BUILD_DIR := build
 SRC_DIR := src
@@ -90,6 +90,8 @@ clean:
 	mkdir -p $(BUILD_DIR)/$(LLVM_DIR)
 	mkdir -p $(BUILD_DIR)/$(COMMON_DIR)
 	mkdir -p $(BUILD_DIR)/$(TEST_DIR)
+	mkdir -p $(BUILD_DIR)/ast_viewer/
+	cp -r ast_viewer/* $(BUILD_DIR)/ast_viewer/
 
 # this folder is for test docker, due to the dependenced libraries are not installed.
 	mkdir -p $(BUILD_DIR)/$(LIBS_DIR)
@@ -127,11 +129,6 @@ test: $(OBJS) $(SRC_DIR)/$(TEST_DIR)/jlc_parser.cpp
 		$(CC_INCLUDES) $(OBJS) \
 		$(SRC_DIR)/$(TEST_DIR)/jlc_parser.cpp \
 		$(LD_FLAGS) -o $(BUILD_DIR)/$(TEST_DIR)/jlc_parser
-	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser -s < $(SRC_DIR)/$(TEST_DIR)/top_def.jl
-	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser -s < $(SRC_DIR)/$(TEST_DIR)/type.jl
-	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser -s < $(SRC_DIR)/$(TEST_DIR)/struct_and_class.jl
-	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser -s < $(SRC_DIR)/$(TEST_DIR)/def_var.jl
-	$(BUILD_DIR)/$(TEST_DIR)/jlc_parser  < $(SRC_DIR)/$(TEST_DIR)/new_dot_arr_op.jl
 
 # remove this target, because we just need to generate it once,
 # thus, we generate it manually.

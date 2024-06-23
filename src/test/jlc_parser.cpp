@@ -14,6 +14,8 @@ void usage() {
   printf("\t-s (files)\tSilent mode. Parse content of files silently.\n");
 }
 
+std::string output_dir = "build/test/";
+
 int main(int argc, char ** argv)
 {
   FILE *input;
@@ -40,6 +42,21 @@ int main(int argc, char ** argv)
       exit(1);
     }
   } else input = stdin;
+
+  // new file name for the output
+  if (filename == NULL) {
+    filename = (char *) "stdin";
+  }
+  // get the name of the file to write the AST to
+  std::string file_base_name = std::string(filename);
+  std::cout << file_base_name << std::endl;
+  size_t lastindex = file_base_name.find_last_of("/");
+  if (lastindex != std::string::npos) {
+    file_base_name = file_base_name.substr(lastindex, file_base_name.size());
+  }
+  std::string ast_file_name = output_dir + file_base_name + ".ast";
+
+
   /* The default entry point is used. For other options see Parser.H */
   Prog *parse_tree = NULL;
   try {
@@ -48,16 +65,24 @@ int main(int argc, char ** argv)
      std::cerr << "Parse error on line " << e.getLine() << "\n";
   }
   if (parse_tree)
-  {
+  { 
+    PrintAbsyn *p = new PrintAbsyn();
+    ShowAbsyn *s = new ShowAbsyn();
     if (!quiet) {
         printf("\nParse Successful!\n");
         printf("\n[Abstract Syntax]\n");
-        ShowAbsyn *s = new ShowAbsyn();
+        
         printf("%s\n\n", s->show(parse_tree));
         printf("[Linearized Tree]\n");
-        PrintAbsyn *p = new PrintAbsyn();
         printf("%s\n\n", p->print(parse_tree));
     }
+    // write the AST to a file
+    FILE *ast_file = fopen(ast_file_name.c_str(), "w");
+    if (ast_file == NULL) {
+      std::cerr << "Error: Could not open file " << ast_file_name << std::endl;
+      return 1;
+    }
+    fprintf(ast_file, "%s\n", s->show(parse_tree));
 
     delete(parse_tree);
     std::cerr << "OK" << std::endl;
