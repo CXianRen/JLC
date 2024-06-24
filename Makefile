@@ -13,10 +13,6 @@ ifdef DEBUG
 	CCFLAGS += -DDEBUG
 endif
 
-# llvm config
-# LLVM_CC_CONFIG = `llvm-config --cxxflags` -fexceptions
-# LLVM_LD_CONFIG = `llvm-config --ldflags --libs core --system-libs`
-
 BUILD_DIR := build
 SRC_DIR := src
 
@@ -46,9 +42,6 @@ LLVM_DIR_OBJS := $(patsubst $(SRC_DIR)/$(LLVM_DIR)/%.C, $(BUILD_DIR)/$(LLVM_DIR)
 COMMON_DIR_H_FILES := $(wildcard $(SRC_DIR)/$(COMMON_DIR)/*.H)
 COMMON_DIR_CC_FILES := $(wildcard $(SRC_DIR)/$(COMMON_DIR)/*.C)
 COMMON_DIR_OBJS := $(patsubst $(SRC_DIR)/$(COMMON_DIR)/%.C, $(BUILD_DIR)/$(COMMON_DIR)/%.o, $(COMMON_DIR_CC_FILES))
-
-TEST_DIR_H_FILES := $(wildcard $(SRC_DIR)/$(TEST_DIR)/*.h)
-TEST_DIR_CC_FILES := $(wildcard $(SRC_DIR)/$(TEST_DIR)/*.cpp)
 
 
 HEADERS := $(PARSER_DIR_H_FILES) \
@@ -90,12 +83,6 @@ clean:
 	mkdir -p $(BUILD_DIR)/$(LLVM_DIR)
 	mkdir -p $(BUILD_DIR)/$(COMMON_DIR)
 	mkdir -p $(BUILD_DIR)/$(TEST_DIR)
-	mkdir -p $(BUILD_DIR)/ast_viewer/
-	cp -r ast_viewer/* $(BUILD_DIR)/ast_viewer/
-
-# this folder is for test docker, due to the dependenced libraries are not installed.
-	mkdir -p $(BUILD_DIR)/$(LIBS_DIR)
-	bash scripts/docker_fix.sh $(BUILD_DIR)/$(LIBS_DIR)
 
 # generate the object files
 $(BUILD_DIR)/$(COMMON_DIR)/%.o: $(SRC_DIR)/$(COMMON_DIR)/%.C $(HEADERS) 
@@ -123,12 +110,15 @@ jlc: $(OBJS) $(SRC_DIR)/jlc.cpp
 		$(CC_INCLUDES) $(OBJS) $(SRC_DIR)/jlc.cpp $(LD_FLAGS) $(LLVM_LD_CONFIG)  -o jlc 
 
 # test target
-test: $(OBJS) $(SRC_DIR)/$(TEST_DIR)/jlc_parser.cpp
-	@echo "Building test..."
-	$(CC) $(CCFLAGS) $(LLVM_CC_CONFIG) \
-		$(CC_INCLUDES) $(OBJS) \
-		$(SRC_DIR)/$(TEST_DIR)/jlc_parser.cpp \
-		$(LD_FLAGS) -o $(BUILD_DIR)/$(TEST_DIR)/jlc_parser
+TEST_TARGETS := $(patsubst $(SRC_DIR)/$(TEST_DIR)/%.cpp, $(BUILD_DIR)/$(TEST_DIR)/%, $(wildcard $(SRC_DIR)/$(TEST_DIR)/*.cpp))
+$(info "TEST_TARGETS:"$(TEST_TARGETS))
+
+$(BUILD_DIR)/$(TEST_DIR)/%: $(SRC_DIR)/$(TEST_DIR)/%.cpp $(OBJS) 
+	@echo "Building test: $@..."
+	$(CC) $(CCFLAGS) $(CC_INCLUDES) $(OBJS) $(LD_FLAGS) $< -o $@
+
+test: $(TEST_TARGETS)
+	@echo "All tests are built."
 
 # remove this target, because we just need to generate it once,
 # thus, we generate it manually.
