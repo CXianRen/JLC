@@ -12,14 +12,14 @@ namespace JLC::STRUCT
     class JLCStruct
     {
     public:
-        std::string struct_name;
+        std::string obj_name;
         std::vector<std::pair<std::string,
                               std::shared_ptr<TYPE::JLCType>>>
             members;
 
         // int size = 0;
 
-        JLCStruct(const std::string &name) : struct_name(name){};
+        JLCStruct(const std::string &name) : obj_name(name){};
 
         void add_member(const std::string &name,
                         std::shared_ptr<TYPE::JLCType> type);

@@ -24,7 +24,7 @@ namespace JLC::STRUCT
 
     std::string JLCStruct::str()
     {
-        std::string ret = "struct " + struct_name + " {\n";
+        std::string ret = "struct " + obj_name + " {\n";
         for (auto &member : members)
         {
             ret += "    " + member.second->str() + " " + member.first + ";\n";
