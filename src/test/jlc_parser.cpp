@@ -55,7 +55,7 @@ int main(int argc, char ** argv)
     file_base_name = file_base_name.substr(lastindex, file_base_name.size());
   }
   std::string ast_file_name = output_dir + file_base_name + ".ast";
-
+  std::string relined_file_name = output_dir + file_base_name + ".relined";
 
   /* The default entry point is used. For other options see Parser.H */
   Prog *parse_tree = NULL;
@@ -83,6 +83,13 @@ int main(int argc, char ** argv)
       return 1;
     }
     fprintf(ast_file, "%s\n", s->show(parse_tree));
+    // write the relined file to a file
+    FILE *relined_file = fopen(relined_file_name.c_str(), "w");
+    if (relined_file == NULL) {
+      std::cerr << "Error: Could not open file " << relined_file_name << std::endl;
+      return 1;
+    }
+    fprintf(relined_file, "%s\n", p->print(parse_tree));
 
     delete(parse_tree);
     std::cerr << "OK" << std::endl;

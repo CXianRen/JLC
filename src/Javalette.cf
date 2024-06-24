@@ -61,7 +61,10 @@ SBlock.     SBlk ::= "{" [Memdef] "}" ;
 
 CBlock.     CBlk ::= "{" [CMemdef] "}" ;
 
-MemberDef.  Memdef ::= Type Ident ";" ;
+MemberItem. MemItem ::= Ident ;
+separator  MemItem "," ;
+
+MemberDef.  Memdef ::= Type [MemItem] ";" ;
 separator Memdef "" ;
 
 CVarDef.    CMemdef ::= Memdef ;
@@ -91,45 +94,103 @@ SExp.      Stmt ::= Expr  ";" ;
 
 separator nonempty Item "," ;
 
+-- Access a variable ---------------------------------------
+Ass.       Stmt ::= Expr "=" Expr ";" ;
+
+-- Return --------------------------------------------------
+Ret.       Stmt ::= "return" Expr ";" ;
+
+VRet.      Stmt ::= "return" ";" ;
+
+-- Condition and loop --------------------------------------
+Cond.      Stmt ::= "if" "(" Expr ")" Stmt  ;
+
+CondElse.  Stmt ::= "if" "(" Expr ")" Stmt "else" Stmt  ;
+
+While.     Stmt ::= "while" "(" Expr ")" Stmt ;
+
+ForLoop.   Stmt ::= "for" "(" Type Ident ":" Expr ")" Stmt ;
+
 -- Expr ----------------------------------------------------
+Ecast.     Expr6 ::= "(" Type ")" Expr6 ;
 
-ELitInt.   Expr7 ::= Integer ;
+ELitNull.  Expr6 ::= "null";
 
-ELitDoub.  Expr7 ::= Double ;
+ELitInt.   Expr6 ::= Integer ;
 
-ELitTrue.  Expr7 ::= "true" ;
+ELitDoub.  Expr6 ::= Double ;
 
-ELitFalse. Expr7 ::= "false" ;
+ELitTrue.  Expr6 ::= "true" ;
 
-EString.   Expr7 ::= String ;
+ELitFalse. Expr6 ::= "false" ;
 
-EVar.      Expr7 ::= Ident ;
+EString.   Expr6 ::= String ;
 
-EApp.      Expr7 ::= Ident "(" [Expr] ")" ;
+EVar.      Expr6 ::= Ident ;
 
-ENewObj.   Expr7 ::= "new" Ident; 
+EApp.      Expr6 ::= Ident "(" [Expr] ")" ;
 
-EArrow.    Expr7 ::= Expr7 "->" Ident ;
+ENewObj.   Expr6 ::= "new" Ident; 
 
-ELen.      Expr7 ::= Expr7 "." "length" ;
+EArrow.    Expr6 ::= Expr6 "->" Ident ;
 
-EFunc.     Expr7 ::= Expr7 "." Ident "(" [Expr] ")" ;
+Epropety.  Expr6 ::= Expr6 "." Ident ;
+
+EFunc.     Expr6 ::= Expr6 "." Ident "(" [Expr] ")" ;
 
 Dim.       DimExpr ::= "[" Expr "]" ;
 terminator nonempty DimExpr "" ;
 
-ENewBArr.  Expr7 ::= "new" BType [DimExpr] ;
+ENewBArr.  Expr6 ::= "new" BType [DimExpr] ;
 
-ENewOArr.  Expr7 ::= "new" OType [DimExpr] ;
+ENewOArr.  Expr6 ::= "new" OType [DimExpr] ;
 
-EAcc.      Expr7 ::= Expr7 [DimExpr] ;
+EAcc.      Expr6 ::= Expr6 [DimExpr] ;
 
+EInc.      Expr6 ::= Expr6 "++" ;
 
-EOr.       Expr ::= Expr7 "||" Expr ;
+EDecr.     Expr6 ::= Expr6 "--" ;
 
-coercions  Expr 7 ;
+ENeg.      Expr5 ::= "-" Expr6 ;
 
+ENot.      Expr5 ::= "!" Expr5 ;
+
+EMul.      Expr4 ::= Expr4 MulOp Expr5 ;
+
+EAdd.      Expr3 ::= Expr3 AddOp Expr4 ;
+
+ERel.      Expr2 ::= Expr2 RelOp Expr3 ;
+
+EAnd.      Expr3 ::= Expr2  "&&" Expr1 ;
+
+EOr.       Expr ::= Expr1 "||" Expr; 
+
+coercions  Expr 6 ;
 separator  Expr "," ;
+
+-- operators -----------------------------------------------
+
+Plus.      AddOp ::= "+" ;
+
+Minus.     AddOp ::= "-" ;
+
+Times.     MulOp ::= "*" ;
+
+Div.       MulOp ::= "/" ;
+
+Mod.       MulOp ::= "%" ;
+
+LTH.       RelOp ::= "<" ;
+
+LE.        RelOp ::= "<=" ;
+
+GTH.       RelOp ::= ">" ;
+
+GE.        RelOp ::= ">=" ;
+
+EQU.       RelOp ::= "==" ;
+
+NE.        RelOp ::= "!=" ;
 
 -- comments ------------------------------------------------
 

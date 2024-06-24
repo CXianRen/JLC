@@ -33,3 +33,11 @@ echo "--- Testing parser new_dot_arr_op ---"
 $BUILD_DIR/$TEST_DIR/jlc_parser -s $SRC_DIR/$TEST_DIR/new_dot_arr_op.jl
 python3 ast_viewer/gen_html.py $BUILD_DIR/$TEST_DIR/new_dot_arr_op.jl.ast > $BUILD_DIR/$TEST_DIR/new_dot_arr_op.html
 
+echo "--- Testing parser basic_op ---"
+$BUILD_DIR/$TEST_DIR/jlc_parser -s $SRC_DIR/$TEST_DIR/basic_op.jl
+python3 ast_viewer/gen_html.py $BUILD_DIR/$TEST_DIR/basic_op.jl.ast > $BUILD_DIR/$TEST_DIR/basic_op.html
+
+
+echo "--- Testing parser cases ---"
+$BUILD_DIR/$TEST_DIR/jlc_parser -s $SRC_DIR/$TEST_DIR/cases.jl
+python3 ast_viewer/gen_html.py $BUILD_DIR/$TEST_DIR/cases.jl.ast > $BUILD_DIR/$TEST_DIR/cases.html

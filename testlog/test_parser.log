@@ -1,0 +1,651 @@
+- Running make in /chalmers/users/chenhon/lab-group-22 ... Ok.
+- Checking for executable(s) ...Ok.
+- Checking for runtime(s) ... Ok.
+About to run tests with these settings:
+  Prefix:     jlc
+  Backends:   None (type checking only)
+  Extensions: ['arrays1', 'arrays2', 'pointers', 'objects1', 'objects2', 'advstructs']
+
+[  1/172] testsuite/good/core030    ... OK
+[  2/172] testsuite/good/intarith3  ... OK
+[  3/172] testsuite/good/core027    ... OK
+[  4/172] testsuite/good/stack2     ... OK
+[  5/172] testsuite/good/core008    ... OK
+[  6/172] testsuite/good/shadowedfunction ... OK
+[  7/172] testsuite/good/core009    ... OK
+[  8/172] testsuite/good/core031    ... OK
+[  9/172] testsuite/good/registers1 ... OK
+[ 10/172] testsuite/good/intarith2  ... OK
+[ 11/172] testsuite/good/stack1     ... OK
+[ 12/172] testsuite/good/core024    ... OK
+[ 13/172] testsuite/good/order_fun  ... OK
+[ 14/172] testsuite/good/registers2 ... OK
+[ 15/172] testsuite/good/core032    ... OK
+[ 16/172] testsuite/good/intarith5  ... OK
+[ 17/172] testsuite/good/core019    ... OK
+[ 18/172] testsuite/good/intarith   ... OK
+[ 19/172] testsuite/good/core018    ... OK
+[ 20/172] testsuite/good/intarith4  ... OK
+[ 21/172] testsuite/good/core020    ... OK
+[ 22/172] testsuite/good/core022    ... OK
+[ 23/172] testsuite/good/order_binop ... OK
+[ 24/172] testsuite/good/core023    ... OK
+[ 25/172] testsuite/good/order_binop2 ... OK
+[ 26/172] testsuite/good/core012    ... OK
+[ 27/172] testsuite/good/core005    ... OK
+[ 28/172] testsuite/good/core004    ... OK
+[ 29/172] testsuite/good/core013    ... OK
+[ 30/172] testsuite/good/core011    ... OK
+[ 31/172] testsuite/good/core029    ... OK
+[ 32/172] testsuite/good/core006    ... OK
+[ 33/172] testsuite/good/core007    ... OK
+[ 34/172] testsuite/good/core028    ... OK
+[ 35/172] testsuite/good/core010    ... OK
+[ 36/172] testsuite/good/assignedargument ... OK
+[ 37/172] testsuite/good/core014    ... OK
+[ 38/172] testsuite/good/core015    ... OK
+[ 39/172] testsuite/good/core002    ... OK
+[ 40/172] testsuite/good/core017    ... OK
+[ 41/172] testsuite/good/core016    ... OK
+[ 42/172] testsuite/good/core001    ... OK
+[124/172] testsuite/extensions/objects1/linked ... OK
+[125/172] testsuite/extensions/objects1/points ... OK
+[126/172] testsuite/extensions/objects1/counter ... OK
+[127/172] testsuite/extensions/objects1/queue ... OK
+[128/172] testsuite/extensions/objects1/shadowedfunction ... OK
+[137/172] testsuite/extensions/arrays1_pointers/mixed001 ... OK
+[138/172] testsuite/extensions/arrays1_pointers/mixed002 ... OK
+[139/172] testsuite/extensions/arrays1_pointers/mixed003 ... OK
+[140/172] testsuite/extensions/arrays1/array_default ... OK
+[141/172] testsuite/extensions/arrays1/array009 ... OK
+[142/172] testsuite/extensions/arrays1/array008 ... OK
+[143/172] testsuite/extensions/arrays1/array002 ... OK
+[144/172] testsuite/extensions/arrays1/array003 ... OK
+[145/172] testsuite/extensions/arrays1/array001 ... OK
+[146/172] testsuite/extensions/arrays1/array004 ... OK
+[147/172] testsuite/extensions/arrays1/array005 ... OK
+[148/172] testsuite/extensions/arrays1/array006 ... OK
+[152/172] testsuite/extensions/objects2/shapes ... OK
+[154/172] testsuite/extensions/arrays2/array001 ... OK
+[155/172] testsuite/extensions/arrays2/array002 ... OK
+[159/172] testsuite/extensions/pointers/list ... OK
+[160/172] testsuite/extensions/pointers/tree ... OK
+[161/172] testsuite/extensions/pointers/big ... OK
+[162/172] testsuite/extensions/pointers/syntax ... OK
+[167/172] testsuite/extensions/arrays2_pointers/mixed001 ... OK
+[168/172] testsuite/extensions/advstructs/adv_structs004 ... OK
+[169/172] testsuite/extensions/advstructs/adv_structs005 ... OK
+[170/172] testsuite/extensions/advstructs/adv_structs001 ... OK
+[171/172] testsuite/extensions/advstructs/adv_structs002 ... OK
+[172/172] testsuite/extensions/advstructs/adv_structs003 ... OK
+
+Some tests failed:
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+
+- stderr expected:
+    ERROR
+- stderr actual:
+    OK
+- compiler return code info:
+    compiler return code: 0, nonzero expected
+
+/chalmers/users/chenhon/lab-group-22

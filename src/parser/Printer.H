@@ -80,6 +80,10 @@ class PrintAbsyn : public Visitor
   void visitSBlock(SBlock *p);
   void visitCBlk(CBlk *p); /* abstract class */
   void visitCBlock(CBlock *p);
+  void visitMemItem(MemItem *p); /* abstract class */
+  void visitMemberItem(MemberItem *p);
+  void visitListMemItem(ListMemItem *p);
+  void iterListMemItem(ListMemItem::const_iterator i, ListMemItem::const_iterator j);
   void visitMemdef(Memdef *p); /* abstract class */
   void visitMemberDef(MemberDef *p);
   void visitListMemdef(ListMemdef *p);
@@ -98,12 +102,21 @@ class PrintAbsyn : public Visitor
   void visitBStmt(BStmt *p);
   void visitDecl(Decl *p);
   void visitSExp(SExp *p);
+  void visitAss(Ass *p);
+  void visitRet(Ret *p);
+  void visitVRet(VRet *p);
+  void visitCond(Cond *p);
+  void visitCondElse(CondElse *p);
+  void visitWhile(While *p);
+  void visitForLoop(ForLoop *p);
   void visitItem(Item *p); /* abstract class */
   void visitNoInit(NoInit *p);
   void visitInit(Init *p);
   void visitListItem(ListItem *p);
   void iterListItem(ListItem::const_iterator i, ListItem::const_iterator j);
   void visitExpr(Expr *p); /* abstract class */
+  void visitEcast(Ecast *p);
+  void visitELitNull(ELitNull *p);
   void visitELitInt(ELitInt *p);
   void visitELitDoub(ELitDoub *p);
   void visitELitTrue(ELitTrue *p);
@@ -113,11 +126,19 @@ class PrintAbsyn : public Visitor
   void visitEApp(EApp *p);
   void visitENewObj(ENewObj *p);
   void visitEArrow(EArrow *p);
-  void visitELen(ELen *p);
+  void visitEpropety(Epropety *p);
   void visitEFunc(EFunc *p);
   void visitENewBArr(ENewBArr *p);
   void visitENewOArr(ENewOArr *p);
   void visitEAcc(EAcc *p);
+  void visitEInc(EInc *p);
+  void visitEDecr(EDecr *p);
+  void visitENeg(ENeg *p);
+  void visitENot(ENot *p);
+  void visitEMul(EMul *p);
+  void visitEAdd(EAdd *p);
+  void visitEAnd(EAnd *p);
+  void visitERel(ERel *p);
   void visitEOr(EOr *p);
   void visitDimExpr(DimExpr *p); /* abstract class */
   void visitDim(Dim *p);
@@ -125,6 +146,20 @@ class PrintAbsyn : public Visitor
   void iterListDimExpr(ListDimExpr::const_iterator i, ListDimExpr::const_iterator j);
   void visitListExpr(ListExpr *p);
   void iterListExpr(ListExpr::const_iterator i, ListExpr::const_iterator j);
+  void visitAddOp(AddOp *p); /* abstract class */
+  void visitPlus(Plus *p);
+  void visitMinus(Minus *p);
+  void visitMulOp(MulOp *p); /* abstract class */
+  void visitTimes(Times *p);
+  void visitDiv(Div *p);
+  void visitMod(Mod *p);
+  void visitRelOp(RelOp *p); /* abstract class */
+  void visitLTH(LTH *p);
+  void visitLE(LE *p);
+  void visitGTH(GTH *p);
+  void visitGE(GE *p);
+  void visitEQU(EQU *p);
+  void visitNE(NE *p);
 
   void visitInteger(Integer i);
   void visitDouble(Double d);
@@ -238,6 +273,10 @@ class ShowAbsyn : public Visitor
   void visitSBlock(SBlock *p);
   void visitCBlk(CBlk *p); /* abstract class */
   void visitCBlock(CBlock *p);
+  void visitMemItem(MemItem *p); /* abstract class */
+  void visitMemberItem(MemberItem *p);
+  void visitListMemItem(ListMemItem *p);
+  void iterListMemItem(ListMemItem::const_iterator i, ListMemItem::const_iterator j);
   void visitMemdef(Memdef *p); /* abstract class */
   void visitMemberDef(MemberDef *p);
   void visitListMemdef(ListMemdef *p);
@@ -256,12 +295,21 @@ class ShowAbsyn : public Visitor
   void visitBStmt(BStmt *p);
   void visitDecl(Decl *p);
   void visitSExp(SExp *p);
+  void visitAss(Ass *p);
+  void visitRet(Ret *p);
+  void visitVRet(VRet *p);
+  void visitCond(Cond *p);
+  void visitCondElse(CondElse *p);
+  void visitWhile(While *p);
+  void visitForLoop(ForLoop *p);
   void visitItem(Item *p); /* abstract class */
   void visitNoInit(NoInit *p);
   void visitInit(Init *p);
   void visitListItem(ListItem *p);
   void iterListItem(ListItem::const_iterator i, ListItem::const_iterator j);
   void visitExpr(Expr *p); /* abstract class */
+  void visitEcast(Ecast *p);
+  void visitELitNull(ELitNull *p);
   void visitELitInt(ELitInt *p);
   void visitELitDoub(ELitDoub *p);
   void visitELitTrue(ELitTrue *p);
@@ -271,11 +319,19 @@ class ShowAbsyn : public Visitor
   void visitEApp(EApp *p);
   void visitENewObj(ENewObj *p);
   void visitEArrow(EArrow *p);
-  void visitELen(ELen *p);
+  void visitEpropety(Epropety *p);
   void visitEFunc(EFunc *p);
   void visitENewBArr(ENewBArr *p);
   void visitENewOArr(ENewOArr *p);
   void visitEAcc(EAcc *p);
+  void visitEInc(EInc *p);
+  void visitEDecr(EDecr *p);
+  void visitENeg(ENeg *p);
+  void visitENot(ENot *p);
+  void visitEMul(EMul *p);
+  void visitEAdd(EAdd *p);
+  void visitEAnd(EAnd *p);
+  void visitERel(ERel *p);
   void visitEOr(EOr *p);
   void visitDimExpr(DimExpr *p); /* abstract class */
   void visitDim(Dim *p);
@@ -283,6 +339,20 @@ class ShowAbsyn : public Visitor
   void iterListDimExpr(ListDimExpr::const_iterator i, ListDimExpr::const_iterator j);
   void visitListExpr(ListExpr *p);
   void iterListExpr(ListExpr::const_iterator i, ListExpr::const_iterator j);
+  void visitAddOp(AddOp *p); /* abstract class */
+  void visitPlus(Plus *p);
+  void visitMinus(Minus *p);
+  void visitMulOp(MulOp *p); /* abstract class */
+  void visitTimes(Times *p);
+  void visitDiv(Div *p);
+  void visitMod(Mod *p);
+  void visitRelOp(RelOp *p); /* abstract class */
+  void visitLTH(LTH *p);
+  void visitLE(LE *p);
+  void visitGTH(GTH *p);
+  void visitGE(GE *p);
+  void visitEQU(EQU *p);
+  void visitNE(NE *p);
 
   void visitInteger(Integer i);
   void visitDouble(Double d);

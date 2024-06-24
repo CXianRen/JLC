@@ -77,24 +77,44 @@ IDENT [a-zA-Z0-9'_]
 <INITIAL>","      	 return _COMMA;
 <INITIAL>"[]"      	 return _EMPTYBRACK;
 <INITIAL>"="      	 return _EQ;
+<INITIAL>":"      	 return _COLON;
 <INITIAL>"->"      	 return _RARROW;
 <INITIAL>"."      	 return _DOT;
 <INITIAL>"["      	 return _LBRACK;
 <INITIAL>"]"      	 return _RBRACK;
+<INITIAL>"++"      	 return _DPLUS;
+<INITIAL>"--"      	 return _DMINUS;
+<INITIAL>"-"      	 return _MINUS;
+<INITIAL>"!"      	 return _BANG;
+<INITIAL>"&&"      	 return _DAMP;
 <INITIAL>"||"      	 return _DBAR;
+<INITIAL>"+"      	 return _PLUS;
+<INITIAL>"/"      	 return _SLASH;
+<INITIAL>"%"      	 return _PERCENT;
+<INITIAL>"<"      	 return _LT;
+<INITIAL>"<="      	 return _LDARROW;
+<INITIAL>">"      	 return _GT;
+<INITIAL>">="      	 return _GTEQ;
+<INITIAL>"=="      	 return _DEQ;
+<INITIAL>"!="      	 return _BANGEQ;
 <INITIAL>"boolean"      	 return _KW_boolean;
 <INITIAL>"class"      	 return _KW_class;
 <INITIAL>"double"      	 return _KW_double;
+<INITIAL>"else"      	 return _KW_else;
 <INITIAL>"enum"      	 return _KW_enum;
 <INITIAL>"extends"      	 return _KW_extends;
 <INITIAL>"false"      	 return _KW_false;
+<INITIAL>"for"      	 return _KW_for;
+<INITIAL>"if"      	 return _KW_if;
 <INITIAL>"int"      	 return _KW_int;
-<INITIAL>"length"      	 return _KW_length;
 <INITIAL>"new"      	 return _KW_new;
+<INITIAL>"null"      	 return _KW_null;
+<INITIAL>"return"      	 return _KW_return;
 <INITIAL>"struct"      	 return _KW_struct;
 <INITIAL>"true"      	 return _KW_true;
 <INITIAL>"typedef"      	 return _KW_typedef;
 <INITIAL>"void"      	 return _KW_void;
+<INITIAL>"while"      	 return _KW_while;
 
 <INITIAL>"#"[^\n]* /* skip */; /* BNFC: comment "#" */
 <INITIAL>"//"[^\n]* /* skip */; /* BNFC: comment "//" */
