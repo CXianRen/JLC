@@ -39,10 +39,14 @@ LLVM_DIR_H_FILES := $(wildcard $(SRC_DIR)/$(LLVM_DIR)/*.H)
 LLVM_DIR_CC_FILES := $(wildcard $(SRC_DIR)/$(LLVM_DIR)/*.C)
 LLVM_DIR_OBJS := $(patsubst $(SRC_DIR)/$(LLVM_DIR)/%.C, $(BUILD_DIR)/$(LLVM_DIR)/%.o, $(LLVM_DIR_CC_FILES))
 
-COMMON_DIR_H_FILES := $(wildcard $(SRC_DIR)/$(COMMON_DIR)/*.H)
-COMMON_DIR_CC_FILES := $(wildcard $(SRC_DIR)/$(COMMON_DIR)/*.C)
-COMMON_DIR_OBJS := $(patsubst $(SRC_DIR)/$(COMMON_DIR)/%.C, $(BUILD_DIR)/$(COMMON_DIR)/%.o, $(COMMON_DIR_CC_FILES))
+COMMON_DIR_H_FILES := $(wildcard $(SRC_DIR)/$(COMMON_DIR)/*.h)
+COMMON_DIR_CC_FILES := $(wildcard $(SRC_DIR)/$(COMMON_DIR)/*.cpp)
+COMMON_DIR_OBJS := $(patsubst $(SRC_DIR)/$(COMMON_DIR)/%.cpp, $(BUILD_DIR)/$(COMMON_DIR)/%.o, $(COMMON_DIR_CC_FILES))
 
+$(info "PARSER_DIR_OBJS:"$(PARSER_DIR_OBJS))
+$(info "TYPECHECKER_DIR_OBJS:"$(TYPECHECKER_DIR_OBJS))
+$(info "LLVM_DIR_OBJS:"$(LLVM_DIR_OBJS))
+$(info "COMMON_DIR_OBJS:"$(COMMON_DIR_OBJS))
 
 HEADERS := $(PARSER_DIR_H_FILES) \
 		   $(TYPECHECKER_DIR_H_FILES) \
@@ -53,16 +57,6 @@ OBJS := $(PARSER_DIR_OBJS) \
 		$(TYPECHECKER_DIR_OBJS) \
 		$(LLVM_DIR_OBJS) \
 		$(COMMON_DIR_OBJS)
-
-# debug 
-# run with DEBUG flag: make DEBUG=1
-ifdef DETAIL
-$(info "PARSER_DIR_OBJS:"$(PARSER_DIR_OBJS))
-$(info "TYPECHECKER_DIR_OBJS:"$(TYPECHECKER_DIR_OBJS))
-$(info "LLVM_DIR_OBJS:"$(LLVM_DIR_OBJS))
-$(info "COMMON_DIR_OBJS:"$(COMMON_DIR_OBJS))
-endif
-
 
 CC_INCLUDES := -I$(SRC_DIR) \
 			   -I$(SRC_DIR)/$(PARSER_DIR) \
@@ -85,7 +79,7 @@ clean:
 	mkdir -p $(BUILD_DIR)/$(TEST_DIR)
 
 # generate the object files
-$(BUILD_DIR)/$(COMMON_DIR)/%.o: $(SRC_DIR)/$(COMMON_DIR)/%.C $(HEADERS) 
+$(BUILD_DIR)/$(COMMON_DIR)/%.o: $(SRC_DIR)/$(COMMON_DIR)/%.cpp $(HEADERS) 
 	$(CC) $(CCFLAGS) $(CC_INCLUDES) -c $< -o $@;
 
 $(BUILD_DIR)/$(PARSER_DIR)/%.o: $(SRC_DIR)/$(PARSER_DIR)/%.C $(HEADERS)
@@ -95,10 +89,10 @@ $(BUILD_DIR)/$(PARSER_DIR)/%.o: $(SRC_DIR)/$(PARSER_DIR)/%.C $(HEADERS)
 $(BUILD_DIR)/$(PARSER_DIR)/Lexer.o : $(SRC_DIR)/$(PARSER_DIR)/Lexer.C $(SRC_DIR)/$(PARSER_DIR)/Bison.H 
 	$(CC) $(CCFLAGS) -Wno-sign-conversion $(CC_INCLUDES) -c $< -o $@;
 
-$(BUILD_DIR)/$(TYPECHECKER_DIR)/%.o: $(SRC_DIR)/$(TYPECHECKER_DIR)/%.C $(HEADERS)
+$(BUILD_DIR)/$(TYPECHECKER_DIR)/%.o: $(SRC_DIR)/$(TYPECHECKER_DIR)/%.c $(HEADERS)
 	$(CC) $(CCFLAGS) $(CC_INCLUDES) -c $< -o $@;
 
-$(BUILD_DIR)/$(LLVM_DIR)/%.o: $(SRC_DIR)/$(LLVM_DIR)/%.C $(HEADERS)
+$(BUILD_DIR)/$(LLVM_DIR)/%.o: $(SRC_DIR)/$(LLVM_DIR)/%.c $(HEADERS)
 	$(CC) $(CCFLAGS) $(CC_INCLUDES) $(LLVM_CC_CONFIG) -c $< -o $@;
 	
 
