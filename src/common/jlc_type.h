@@ -30,8 +30,10 @@ namespace JLC
         public:
             type_enum type;
 
+            // for array
             std::shared_ptr<JLCType> base_type;
 
+            // for custom type like a struct, class, enum
             std::string obj_name;
 
             // for basic type
@@ -50,7 +52,7 @@ namespace JLC
             std::string str();
 
             bool operator==(const JLCType &t) const;
-            bool operator!=(const JLCType &t) const; 
+            bool operator!=(const JLCType &t) const;
         }; // class JLCType
 
     } // namespace TYPE
