@@ -17,6 +17,9 @@ namespace JLC::VAR
                std::shared_ptr<JLC::TYPE::JLCType> type) : name(name),
                                                            type(type){};
 
+        // get type
+        std::shared_ptr<JLC::TYPE::JLCType> get_type() { return type; }
+
         std::string str();
     }; // class JLCVar
 }
