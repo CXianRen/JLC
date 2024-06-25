@@ -1,4 +1,6 @@
-#include "jlc_struct.h"
+#include "common/jlc_struct.h"
+
+#include "common/test.h"
 
 #include <cassert>
 #include <iostream>
@@ -66,5 +68,5 @@ int main(int argc, char **argv)
         assert(s->get_member_type("member2")->type == JLC::TYPE::DOUB);
         
     }
-    std::cout << "[TEST] test_jlcstruct.cpp passed" << std::endl;
+    TEST_PASS();
 }
