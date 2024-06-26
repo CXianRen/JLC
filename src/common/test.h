@@ -4,7 +4,10 @@
 #include <iostream>
 #include <assert.h>
 
-#define TEST_PASS() std::cout << "[TEST] " << __FILE__ << ": PASSED" << std::endl;
+#include <iomanip>
+
+#define TEST_PASS() std::cout << "[TEST] " \
+    << std::setw(40) << std::left << __FILE__ << ": PASSED" << std::endl;
 
 #define TEST_ASSERT(expr)                                        \
     if (!(expr))                                                 \

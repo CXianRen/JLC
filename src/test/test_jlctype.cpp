@@ -1,7 +1,9 @@
-#include "jlc_type.h"
+#include "common/jlc_type.h"
 
 #include <cassert>
 #include <iostream>
+
+#include "common/test.h"
 
 int main(int argc, char **argv)
 {
@@ -165,5 +167,5 @@ int main(int argc, char **argv)
         assert(t1.str() == "struct struct_name[][]");
     }
 
-    std::cout << "[TEST] test_jlctype.cpp: PASS\n";
+    TEST_PASS();
 }
