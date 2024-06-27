@@ -36,6 +36,9 @@ namespace JLC
             // for custom type like a struct, class, enum
             std::string obj_name;
 
+            //
+            JLCType() : type(UNDEFINED){};
+
             // for basic type
             JLCType(type_enum type) : type(type){};
 
@@ -49,7 +52,21 @@ namespace JLC
                     const std::string &obj_name) : type(type),
                                                    obj_name(obj_name){};
 
+            // copy constructor
+            JLCType(const JLCType &t) : type(t.type),
+                                        base_type(t.base_type),
+                                        obj_name(t.obj_name){};
+
             std::string str();
+
+            // copy operator
+            JLCType &operator=(const JLCType &t)
+            {
+                type = t.type;
+                base_type = t.base_type;
+                obj_name = t.obj_name;
+                return *this;
+            }
 
             bool operator==(const JLCType &t) const;
             bool operator!=(const JLCType &t) const;

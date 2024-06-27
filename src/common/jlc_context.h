@@ -26,6 +26,9 @@ namespace JLC::CONTEXT
         // defined struct
         std::map<std::string, std::shared_ptr<JLC::STRUCT::JLCStruct>> structs;
 
+        // defined typedef (alias for pointer type)
+        std::map<std::string, std::string> typedefs;
+
         // defined class
         std::map<std::string, std::shared_ptr<JLC::CLASS::JLCClass>> classes;
 
@@ -48,6 +51,23 @@ namespace JLC::CONTEXT
         get_enum(const std::string &name)
         {
             return enums[name];
+        }
+
+        // api for typedef
+        void add_typedef(const std::string &name,
+                         const std::string &type)
+        {
+            typedefs[name] = type;
+        }
+
+        bool is_exist_typedef(const std::string &name)
+        {
+            return typedefs.find(name) != typedefs.end();
+        }
+
+        std::string get_typedef(const std::string &name)
+        {
+            return typedefs[name];
         }
 
         // api for struct

@@ -15,6 +15,14 @@ int main(int argc, char **argv)
         TEST_ASSERT(ctx.get_enum("enum_name") == e1);
     }
     {
+        // add typedef
+        JLC::CONTEXT::JLCContext ctx;
+        ctx.add_typedef("typedef_struct_ptr_name", "struct_name");
+        TEST_ASSERT(ctx.is_exist_typedef("typedef_struct_ptr_name"));
+        TEST_ASSERT(!ctx.is_exist_typedef("typedef_struct_ptr_name2"));
+        TEST_ASSERT(ctx.get_typedef("typedef_struct_ptr_name") == "struct_name");
+    }
+    {
         // add struct
         JLC::CONTEXT::JLCContext ctx;
         std::shared_ptr<JLC::STRUCT::JLCStruct>

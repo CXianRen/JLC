@@ -121,3 +121,7 @@ printInt((new int[3])[2]);
 
 printInt((new int[3])[2]);
 ```
+
+
+# QA:
++ enum has a same name of a struct, class, function?
