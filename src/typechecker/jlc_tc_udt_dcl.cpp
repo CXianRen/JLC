@@ -1,11 +1,11 @@
-#include "jlc_tc_tdf_dcl.h"
+#include "jlc_tc_udt_dcl.h"
 #include "jlc_tc_error.h"
 
 #include "common/debug.h"
 
 namespace JLC::TC
 {
-    void JLCTopDefinitionChecker::visitProgram(Program *program)
+    void JLC_UDT_DC_Checker::visitProgram(Program *program)
     {
         if (program->listtopdef_)
             program->listtopdef_->accept(this);
@@ -30,7 +30,7 @@ namespace JLC::TC
         class_need_check_.clear();
     }
 
-    void JLCTopDefinitionChecker::visitEnum(Enum *enum_)
+    void JLC_UDT_DC_Checker::visitEnum(Enum *enum_)
     {
         // get the enum name
         std::string enum_name = enum_->ident_;
@@ -70,7 +70,7 @@ namespace JLC::TC
         context_->add_enum(enum_name, enum_obj);
     }
 
-    void JLCTopDefinitionChecker::visitStruct(Struct *struct_)
+    void JLC_UDT_DC_Checker::visitStruct(Struct *struct_)
     {
         // get the struct name
         std::string struct_name = struct_->ident_;
@@ -88,7 +88,7 @@ namespace JLC::TC
         context_->add_struct(struct_name, struct_obj);
     }
 
-    void JLCTopDefinitionChecker::visitTypeDef(TypeDef *type_def)
+    void JLC_UDT_DC_Checker::visitTypeDef(TypeDef *type_def)
     {
         /**
          * typedef StructName * TypeName;
@@ -111,7 +111,7 @@ namespace JLC::TC
         typedef_need_check_.push_back(type_name);
     }
 
-    void JLCTopDefinitionChecker::visitTypeDefWS(TypeDefWS *type_def_ws)
+    void JLC_UDT_DC_Checker::visitTypeDefWS(TypeDefWS *type_def_ws)
     {
         /**
          * typedef Struct StructName {} TypeName;
@@ -144,7 +144,7 @@ namespace JLC::TC
         context_->add_struct(struct_name, struct_obj);
     }
 
-    void JLCTopDefinitionChecker::visitClass(Class *class_)
+    void JLC_UDT_DC_Checker::visitClass(Class *class_)
     {
         // get the class name
         std::string class_name = class_->ident_;
@@ -163,7 +163,7 @@ namespace JLC::TC
         context_->add_class(class_name, class_obj);
     }
 
-    void JLCTopDefinitionChecker::visitClassWE(ClassWE *class_we)
+    void JLC_UDT_DC_Checker::visitClassWE(ClassWE *class_we)
     {
         // get the class name
         std::string class_name = class_we->ident_1;

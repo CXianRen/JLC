@@ -1,11 +1,11 @@
 /**
  *  TC - Type Checker
- *  TDF - TOP DEFINITION
- *  This checker is for checking top definitions'
- *  declarations including enums, structs, classes, functions.
+ *  UDT_DC - user defined type declaration
+ *  This checker is for checking top type
+ *  declarations including enums, structs, classes.
  */
-#ifndef __JLC_TC_TDF_H__
-#define __JLC_TC_TDF_H__
+#ifndef __JLC_TC_UDT_DC_H__
+#define __JLC_TC_UDT_DC_H__
 
 #include <vector>
 #include <string>
@@ -17,18 +17,18 @@
 
 namespace JLC::TC
 {
-    class JLCTopDefinitionChecker : public TypeVisitor
+    class JLC_UDT_DC_Checker : public TypeVisitor
     {
     public:
-        JLCTopDefinitionChecker(){};
+        JLC_UDT_DC_Checker(){};
 
-        JLCTopDefinitionChecker(
+        JLC_UDT_DC_Checker(
             std::shared_ptr<JLCContext> context)
         {
             context_ = context;
         };
 
-        ~JLCTopDefinitionChecker() = default;
+        ~JLC_UDT_DC_Checker() = default;
 
     public:
         // chekcer selfdefined functions
@@ -55,4 +55,4 @@ namespace JLC::TC
     };
 } // namespace JLC::TC
 
-#endif // __JLC_TC_TDF_H__
+#endif // __JLC_TC_UDT_DC_H__

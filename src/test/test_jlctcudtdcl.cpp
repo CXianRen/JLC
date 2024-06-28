@@ -1,4 +1,4 @@
-#include "typechecker/jlc_tc_tdf_dcl.h"
+#include "typechecker/jlc_tc_udt_dcl.h"
 #include "typechecker/jlc_tc_error.h"
 #include "common/test.h"
 
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
         auto context = std::make_shared<JLC::CONTEXT::JLCContext>();
 
         auto checker =
-            std::make_shared<JLC::TC::JLCTopDefinitionChecker>(context);
+            std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
 
         // check the parse tree
         try
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
         auto context = std::make_shared<JLC::CONTEXT::JLCContext>();
 
         auto checker =
-            std::make_shared<JLC::TC::JLCTopDefinitionChecker>(context);
+            std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
 
         TEST_EXPECT_EXCEPTION(
             parse_tree->accept(checker.get());)
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
         auto context = std::make_shared<JLC::CONTEXT::JLCContext>();
 
         auto checker =
-            std::make_shared<JLC::TC::JLCTopDefinitionChecker>(context);
+            std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
 
         // check the parse tree
         try
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
         auto context = std::make_shared<JLC::CONTEXT::JLCContext>();
 
         auto checker =
-            std::make_shared<JLC::TC::JLCTopDefinitionChecker>(context);
+            std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
 
         TEST_EXPECT_EXCEPTION(
             parse_tree->accept(checker.get());)
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
         auto context = std::make_shared<JLC::CONTEXT::JLCContext>();
 
         auto checker =
-            std::make_shared<JLC::TC::JLCTopDefinitionChecker>(context);
+            std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
 
         // check the parse tree
         try
@@ -158,7 +158,7 @@ int main(int argc, char **argv)
         auto context = std::make_shared<JLC::CONTEXT::JLCContext>();
 
         auto checker =
-            std::make_shared<JLC::TC::JLCTopDefinitionChecker>(context);
+            std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
 
         // check the parse tree
         try
@@ -183,7 +183,7 @@ int main(int argc, char **argv)
         auto context = std::make_shared<JLC::CONTEXT::JLCContext>();
 
         auto checker =
-            std::make_shared<JLC::TC::JLCTopDefinitionChecker>(context);
+            std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
 
         // expect an exception
         TEST_EXPECT_EXCEPTION(
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
         auto parse_tree = gen_ast(input_str);
         auto context = std::make_shared<JLC::CONTEXT::JLCContext>();
         auto checker =
-            std::make_shared<JLC::TC::JLCTopDefinitionChecker>(context);
+            std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
 
         parse_tree->accept(checker.get());
 
@@ -211,7 +211,7 @@ int main(int argc, char **argv)
         auto parse_tree = gen_ast(input_str);
         auto context = std::make_shared<JLC::CONTEXT::JLCContext>();
         auto checker =
-            std::make_shared<JLC::TC::JLCTopDefinitionChecker>(context);
+            std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
 
         parse_tree->accept(checker.get());
         TEST_ASSERT(context->is_exist_class("Foo") == true);
@@ -224,7 +224,7 @@ int main(int argc, char **argv)
         auto parse_tree = gen_ast(input_str);
         auto context = std::make_shared<JLC::CONTEXT::JLCContext>();
         auto checker =
-            std::make_shared<JLC::TC::JLCTopDefinitionChecker>(context);
+            std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
 
         TEST_EXPECT_EXCEPTION(
             parse_tree->accept(checker.get());)
@@ -236,7 +236,7 @@ int main(int argc, char **argv)
         auto parse_tree = gen_ast(input_str);
         auto context = std::make_shared<JLC::CONTEXT::JLCContext>();
         auto checker =
-            std::make_shared<JLC::TC::JLCTopDefinitionChecker>(context);
+            std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
 
         TEST_EXPECT_EXCEPTION(
             parse_tree->accept(checker.get());)
