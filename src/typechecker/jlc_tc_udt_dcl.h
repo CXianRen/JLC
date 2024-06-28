@@ -42,7 +42,16 @@ namespace JLC::TC
             context_;
 
     public:
+        /*
+         * make sure there is not name conflict
+         * between enum, class, and typedef.
+         * Why here is not necessary to check struct?
+         * Because struct type is not used directly in JLC,
+         * it is used in typedef.
+         */
+
         // chekcer selfdefined functions
+        void check_user_defined_type_conflict(std::string type_name);
 
     public:
         // override visitor functions

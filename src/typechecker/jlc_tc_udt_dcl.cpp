@@ -30,6 +30,18 @@ namespace JLC::TC
         class_need_check_.clear();
     }
 
+    void JLC_UDT_DC_Checker::check_user_defined_type_conflict(
+        std::string type_name)
+    {
+        if (context_->is_exist_enum(type_name) ||
+            context_->is_exist_class(type_name) ||
+            context_->is_exist_typedef(type_name))
+        {
+            // error: type already defined
+            throw JLCTCError("Type already defined: " + type_name);
+        }
+    }
+
     void JLC_UDT_DC_Checker::visitEnum(Enum *enum_)
     {
         // get the enum name
@@ -42,30 +54,11 @@ namespace JLC::TC
             throw JLCTCError("Enum already defined: " + enum_name);
         }
 
+        check_user_defined_type_conflict(enum_name);
+
         // create a new enum
         auto enum_obj = std::make_shared<JLCEnum>(enum_name);
 
-        // if (enum_->listeval_)
-        // {
-        //     auto &list_e_val = enum_->listeval_;
-        //     for (ListEVal::iterator i = list_e_val->begin();
-        //          i != list_e_val->end();
-        //          ++i)
-        //     {
-        //         std::string enum_val =
-        //             static_cast<EnumValue *>(*i)->ident_;
-
-        //         // check if the enum value is already defined
-        //         if (enum_obj->has_member(enum_val))
-        //         {
-        //             // error: enum value already defined
-        //             throw JLCTCError("Enum value already defined: " + enum_val);
-        //         }
-
-        //         // add the enum value to the enum object
-        //         enum_obj->add_member(enum_val);
-        //     }
-        // }
         // add the enum to the context
         context_->add_enum(enum_name, enum_obj);
     }
@@ -81,6 +74,8 @@ namespace JLC::TC
             // error: struct already defined
             throw JLCTCError("Struct already defined: " + struct_name);
         }
+
+        check_user_defined_type_conflict(struct_name);
 
         // create a new struct
         auto struct_obj = std::make_shared<JLCStruct>(struct_name);
@@ -103,6 +98,8 @@ namespace JLC::TC
             // error: type already defined
             throw JLCTCError("Type already defined: " + type_name);
         }
+
+        check_user_defined_type_conflict(type_name);
 
         // we will check if the struct is definied
         // in the context at the end of the type
@@ -128,6 +125,8 @@ namespace JLC::TC
             // error: type already defined
             throw JLCTCError("Type already defined: " + type_name);
         }
+
+        check_user_defined_type_conflict(type_name);
 
         context_->add_typedef(type_name, struct_name);
 
@@ -157,6 +156,8 @@ namespace JLC::TC
             throw JLCTCError("Class already defined: " + class_name);
         }
 
+        check_user_defined_type_conflict(class_name);
+
         // create a new class
         auto class_obj = std::make_shared<JLCClass>(class_name);
 
@@ -176,6 +177,8 @@ namespace JLC::TC
             // error: class cannot extend itself
             throw JLCTCError("Class cannot extend itself: " + class_name);
         }
+
+        check_user_defined_type_conflict(class_name);
 
         // check if the class has a list of class values
         if (context_->is_exist_class(class_name))
