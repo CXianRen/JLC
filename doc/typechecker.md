@@ -1,11 +1,11 @@
 # step:
-+ 1. scan all topdefines' (enum, struct, typedef, class, function)
-  decleration and save them into context
++ scan all user defined type declearation: (enum, struct, typedef, class)
 
-+ 2. scan all topdefines' definition.
++ scan all function declearation
 
-+ 3. the functions decleartion should be checked after other topdefinition because their return type and parameters's type might 
-depende on context.
++ scan all type definiction
+
++ scan all function definiction
 
 # how to handle class member and member function:
 + rename the function for different classes 

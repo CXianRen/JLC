@@ -37,8 +37,6 @@ namespace JLC::TC
 
         ~JLC_UDT_DC_Checker() = default;
 
-        JLCType g_type_;
-
         // context
         std::shared_ptr<JLC::CONTEXT::JLCContext>
             context_;

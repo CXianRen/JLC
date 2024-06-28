@@ -131,20 +131,20 @@ About to run tests with these settings:
 [123/172] testsuite/bad/bad032      ... FAILED
 [124/172] testsuite/extensions/objects1/linked ... OK
 [125/172] testsuite/extensions/objects1/points ... OK
-[126/172] testsuite/extensions/objects1/counter ... FAILED
+[126/172] testsuite/extensions/objects1/counter ... OK
 [127/172] testsuite/extensions/objects1/queue ... OK
 [128/172] testsuite/extensions/objects1/shadowedfunction ... OK
 [129/172] testsuite/extensions/objects1/bad/parentheses ... OK
 [130/172] testsuite/extensions/objects1/bad/cyclic ... FAILED
 [131/172] testsuite/extensions/objects1/bad/bad005 ... FAILED
-[132/172] testsuite/extensions/objects1/bad/bad004 ... FAILED
+[132/172] testsuite/extensions/objects1/bad/bad004 ... OK
 [133/172] testsuite/extensions/objects1/bad/order ... FAILED
 [134/172] testsuite/extensions/objects1/bad/bad001 ... OK
-[135/172] testsuite/extensions/objects1/bad/bad003 ... FAILED
+[135/172] testsuite/extensions/objects1/bad/bad003 ... OK
 [136/172] testsuite/extensions/objects1/bad/bad002 ... FAILED
-[137/172] testsuite/extensions/arrays1_pointers/mixed001 ... FAILED
-[138/172] testsuite/extensions/arrays1_pointers/mixed002 ... FAILED
-[139/172] testsuite/extensions/arrays1_pointers/mixed003 ... FAILED
+[137/172] testsuite/extensions/arrays1_pointers/mixed001 ... OK
+[138/172] testsuite/extensions/arrays1_pointers/mixed002 ... OK
+[139/172] testsuite/extensions/arrays1_pointers/mixed003 ... OK
 [140/172] testsuite/extensions/arrays1/array_default ... OK
 [141/172] testsuite/extensions/arrays1/array009 ... OK
 [142/172] testsuite/extensions/arrays1/array008 ... OK
@@ -164,15 +164,15 @@ About to run tests with these settings:
 [156/172] testsuite/extensions/arrays2/bad/array_nested_default ... OK
 [157/172] testsuite/extensions/arrays2/bad/bad002 ... FAILED
 [158/172] testsuite/extensions/arrays2/bad/bad001 ... FAILED
-[159/172] testsuite/extensions/pointers/list ... FAILED
-[160/172] testsuite/extensions/pointers/tree ... FAILED
-[161/172] testsuite/extensions/pointers/big ... FAILED
+[159/172] testsuite/extensions/pointers/list ... OK
+[160/172] testsuite/extensions/pointers/tree ... OK
+[161/172] testsuite/extensions/pointers/big ... OK
 [162/172] testsuite/extensions/pointers/syntax ... OK
-[163/172] testsuite/extensions/pointers/bad/bad002 ... FAILED
+[163/172] testsuite/extensions/pointers/bad/bad002 ... OK
 [164/172] testsuite/extensions/pointers/bad/bad003 ... FAILED
 [165/172] testsuite/extensions/pointers/bad/bad001 ... FAILED
 [166/172] testsuite/extensions/pointers/bad/parentheses ... OK
-[167/172] testsuite/extensions/arrays2_pointers/mixed001 ... FAILED
+[167/172] testsuite/extensions/arrays2_pointers/mixed001 ... OK
 [168/172] testsuite/extensions/advstructs/adv_structs004 ... OK
 [169/172] testsuite/extensions/advstructs/adv_structs005 ... OK
 [170/172] testsuite/extensions/advstructs/adv_structs001 ... OK
@@ -275,8 +275,6 @@ Some tests failed:
 - stderr expected:
     ERROR
 - stderr actual:
-    Type check error:
-     Type not defined: Bad
     OK
 - compiler return code info:
     compiler return code: 0, nonzero expected
@@ -403,8 +401,6 @@ Some tests failed:
 - stderr expected:
     ERROR
 - stderr actual:
-    Type check error:
-     Type not defined: String
     OK
 - compiler return code info:
     compiler return code: 0, nonzero expected
@@ -697,15 +693,6 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/extensions/objects1/counter.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    Type check error:
-     Type not defined: Counter
-    OK
-
 ---------- !!! testsuite/extensions/objects1/bad/cyclic.jl failed !!! ----------
 
 - stderr expected:
@@ -724,33 +711,11 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/extensions/objects1/bad/bad004.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    Type check error:
-     Class cannot extend itself: Vehicle
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/extensions/objects1/bad/order.jl failed !!! ----------
 
 - stderr expected:
     ERROR
 - stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/extensions/objects1/bad/bad003.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    Type check error:
-     Class not defined: Vehicle
     OK
 - compiler return code info:
     compiler return code: 0, nonzero expected
@@ -763,33 +728,6 @@ Some tests failed:
     OK
 - compiler return code info:
     compiler return code: 0, nonzero expected
-
----------- !!! testsuite/extensions/arrays1_pointers/mixed001.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    Type check error:
-     Struct not defined: Foo
-    OK
-
----------- !!! testsuite/extensions/arrays1_pointers/mixed002.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    Type check error:
-     Struct not defined: tree
-    OK
-
----------- !!! testsuite/extensions/arrays1_pointers/mixed003.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    Type check error:
-     Struct not defined: PTriangle
-    OK
 
 ---------- !!! testsuite/extensions/arrays1/bad/bad001.jl failed !!! ----------
 
@@ -836,51 +774,11 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/extensions/pointers/list.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    Type check error:
-     Struct not defined: list
-    OK
-
----------- !!! testsuite/extensions/pointers/tree.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    Type check error:
-     Struct not defined: tree
-    OK
-
----------- !!! testsuite/extensions/pointers/big.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    Type check error:
-     Struct not defined: big
-    OK
-
----------- !!! testsuite/extensions/pointers/bad/bad002.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    Type check error:
-     Type already defined: Point
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/extensions/pointers/bad/bad003.jl failed !!! ----------
 
 - stderr expected:
     ERROR
 - stderr actual:
-    Type check error:
-     Struct not defined: Point
     OK
 - compiler return code info:
     compiler return code: 0, nonzero expected
@@ -893,14 +791,5 @@ Some tests failed:
     OK
 - compiler return code info:
     compiler return code: 0, nonzero expected
-
----------- !!! testsuite/extensions/arrays2_pointers/mixed001.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    Type check error:
-     Struct not defined: Pixel
-    OK
 
 /chalmers/users/chenhon/lab-group-22
