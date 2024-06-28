@@ -45,7 +45,7 @@ namespace JLC::TC
                 "Function " +
                 func_name + " is already defined in scope " +
                 func_scope_;
-            throw std::runtime_error(error_msg);
+            throw JLCTCError(error_msg);
         }
 
         // add function to context
@@ -70,7 +70,7 @@ namespace JLC::TC
                     "Argument " +
                     arg_name + " is already defined in function " +
                     func_name_with_scope;
-                throw std::runtime_error(error_msg);
+                throw JLCTCError(error_msg);
             }
 
             argument->type_->accept(this);
@@ -85,7 +85,7 @@ namespace JLC::TC
                     arg_name + " in function " +
                     func_name_with_scope +
                     " cannot be of type void";
-                throw std::runtime_error(error_msg);
+                throw JLCTCError(error_msg);
             }
             // new arg
             JLC::VAR::JLCVar arg(arg_name, arg_type);

@@ -49,12 +49,12 @@ About to run tests with these settings:
 [ 41/172] testsuite/good/core016    ... OK
 [ 42/172] testsuite/good/core001    ... OK
 [ 43/172] testsuite/bad/bad073      ... FAILED
-[ 44/172] testsuite/bad/bad003      ... FAILED
-[ 45/172] testsuite/bad/bad064      ... FAILED
+[ 44/172] testsuite/bad/bad003      ... OK
+[ 45/172] testsuite/bad/bad064      ... OK
 [ 46/172] testsuite/bad/bad065      ... FAILED
 [ 47/172] testsuite/bad/bad015      ... FAILED
 [ 48/172] testsuite/bad/bad002      ... OK
-[ 49/172] testsuite/bad/bad072      ... FAILED
+[ 49/172] testsuite/bad/bad072      ... OK
 [ 50/172] testsuite/bad/bad070      ... FAILED
 [ 51/172] testsuite/bad/struct03    ... OK
 [ 52/172] testsuite/bad/bad038      ... OK
@@ -141,7 +141,7 @@ About to run tests with these settings:
 [133/172] testsuite/extensions/objects1/bad/order ... FAILED
 [134/172] testsuite/extensions/objects1/bad/bad001 ... OK
 [135/172] testsuite/extensions/objects1/bad/bad003 ... OK
-[136/172] testsuite/extensions/objects1/bad/bad002 ... FAILED
+[136/172] testsuite/extensions/objects1/bad/bad002 ... OK
 [137/172] testsuite/extensions/arrays1_pointers/mixed001 ... OK
 [138/172] testsuite/extensions/arrays1_pointers/mixed002 ... OK
 [139/172] testsuite/extensions/arrays1_pointers/mixed003 ... OK
@@ -189,24 +189,6 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/bad/bad003.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/bad/bad064.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/bad/bad065.jl failed !!! ----------
 
 - stderr expected:
@@ -217,15 +199,6 @@ Some tests failed:
     compiler return code: 0, nonzero expected
 
 ---------- !!! testsuite/bad/bad015.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/bad/bad072.jl failed !!! ----------
 
 - stderr expected:
     ERROR
@@ -712,15 +685,6 @@ Some tests failed:
     compiler return code: 0, nonzero expected
 
 ---------- !!! testsuite/extensions/objects1/bad/order.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/extensions/objects1/bad/bad002.jl failed !!! ----------
 
 - stderr expected:
     ERROR

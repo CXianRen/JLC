@@ -75,8 +75,6 @@ namespace JLC::TC
             throw JLCTCError("Struct already defined: " + struct_name);
         }
 
-        check_user_defined_type_conflict(struct_name);
-
         // create a new struct
         auto struct_obj = std::make_shared<JLCStruct>(struct_name);
 
@@ -96,7 +94,7 @@ namespace JLC::TC
         if (context_->is_exist_typedef(type_name))
         {
             // error: type already defined
-            throw JLCTCError("Type already defined: " + type_name);
+            throw JLCTCError("Typedef defines a type already defined: " + type_name);
         }
 
         check_user_defined_type_conflict(type_name);

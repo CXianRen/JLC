@@ -9,6 +9,7 @@
 #include "common/jlc_context.h"
 #include "typechecker/jlc_tc_error.h"
 #include "typechecker/jlc_tc_udt_dcl.h"
+#include "typechecker/jlc_tc_func_dcl.h"
 
 void usage()
 {
@@ -87,9 +88,14 @@ int main(int argc, char **argv)
     auto udt_dc_checker =
         std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
 
+    // new jlc tc func dcl
+    auto func_dc_checker =
+        std::make_shared<JLC::TC::JLC_FUNC_CD_Checker>(context);
+
     try
     {
       parse_tree->accept(udt_dc_checker.get());
+      parse_tree->accept(func_dc_checker.get());
     }
     catch (JLC::TC::JLCTCError &e)
     {
