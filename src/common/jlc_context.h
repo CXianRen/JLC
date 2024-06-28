@@ -108,6 +108,12 @@ namespace JLC::CONTEXT
         }
 
         // api for function
+        std::string get_scope_name(
+            std::string func_name, std::string scope)
+        {
+            return func_name + "::" + scope;
+        }
+
         void add_func(const std::string &name,
                       std::shared_ptr<JLC::FUNC::JLCFunc> f)
         {
