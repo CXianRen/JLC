@@ -43,11 +43,11 @@ namespace JLC::TC
         // override visitor functions
 
         /* function */
-        void visitGFuncDef(GFuncDef *p);
-        void visitClass(Class *p);
-        void visitClassWE(ClassWE *p);
+        void visitGFuncDef(GFuncDef *p) override;
+        void visitClass(Class *p) override;
+        void visitClassWE(ClassWE *p) override;
 
-        void visitFuncDef(FuncDef *p);
+        void visitFuncDef(FuncDef *p) override;
     };
 
 } // namespace JLC::TC

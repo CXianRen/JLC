@@ -14,6 +14,7 @@ namespace JLC::TC
         set_scope(p->ident_);
         TypeVisitor::visitClass(p);
     }
+
     void JLC_FUNC_CD_Checker::visitClassWE(ClassWE *p)
     {
         set_scope(p->ident_1);
@@ -35,6 +36,8 @@ namespace JLC::TC
             context_->get_scope_name(func_name,
                                      func_scope_);
 
+        // DEBUG_PRINT("Function name: " + func_name_with_scope);
+
         // check if function is already defined
         if (context_->is_exist_func(func_name_with_scope))
         {
@@ -48,6 +51,8 @@ namespace JLC::TC
         // add function to context
         auto func = std::make_shared<JLC::FUNC::JLCFunc>(
             func_name_with_scope, return_type);
+
+        context_->add_func(func_name_with_scope, func);
 
         // add arguments to function
         auto list_arg = func_def->listarg_;

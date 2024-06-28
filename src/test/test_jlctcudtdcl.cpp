@@ -245,7 +245,6 @@ int main(int argc, char **argv)
         TEST_EXPECT_EXCEPTION(
             parse_tree->accept(checker.get());)
     }
-
     // same name class and struct or enum, type name conflict
     {
         std::string input_str = "class Foo { } \n "
