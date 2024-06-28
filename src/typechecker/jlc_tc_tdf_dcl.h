@@ -17,7 +17,6 @@
 
 namespace JLC::TC
 {
-
     class JLCTopDefinitionChecker : public TypeVisitor
     {
     public:
@@ -36,6 +35,7 @@ namespace JLC::TC
 
     public:
         // override visitor functions
+        void visitProgram(Program *p);
 
         /* enum */
         void visitEnum(Enum *p) override;
@@ -52,14 +52,6 @@ namespace JLC::TC
         void visitClass(Class *p) override;
         void visitClassWE(ClassWE *p) override;
         std::vector<std::string> class_need_check_;
-
-        /* function */
-        /* at this stage, we just handle global functions.
-         * a member function will be added into the context
-         * at the definition stage.
-         */
-        // void visitFuncDef(FuncDef *p);
-        // void visitArgument(Argument *p);
     };
 } // namespace JLC::TC
 

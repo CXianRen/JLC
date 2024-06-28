@@ -1,8 +1,35 @@
 #include "jlc_tc_tdf_dcl.h"
 #include "jlc_tc_error.h"
 
+#include "common/debug.h"
+
 namespace JLC::TC
 {
+    void JLCTopDefinitionChecker::visitProgram(Program *program)
+    {
+        if (program->listtopdef_)
+            program->listtopdef_->accept(this);
+        // check waiting list
+        for (auto &struct_name : typedef_need_check_)
+        {
+            if (!context_->is_exist_struct(struct_name))
+            {
+                // error: struct not defined
+                throw JLCTCError("Struct not defined: " + struct_name);
+            }
+        }
+        typedef_need_check_.clear();
+        for (auto &class_name : class_need_check_)
+        {
+            if (!context_->is_exist_class(class_name))
+            {
+                // error: class not defined
+                throw JLCTCError("Class not defined: " + class_name);
+            }
+        }
+        class_need_check_.clear();
+    }
+
     void JLCTopDefinitionChecker::visitEnum(Enum *enum_)
     {
         // get the enum name
@@ -132,6 +159,7 @@ namespace JLC::TC
         // create a new class
         auto class_obj = std::make_shared<JLCClass>(class_name);
 
+        // add the class to the context
         context_->add_class(class_name, class_obj);
     }
 
@@ -161,8 +189,8 @@ namespace JLC::TC
         context_->add_class(class_name, class_obj);
 
         // will check if the extends class is defined at the end
-        class_need_check_.push_back(class_name);
+        // DEBUG_PRINT("class need check: " + extends_class_name);
+        class_need_check_.push_back(extends_class_name);
     }
-
 
 } // namespace JLC::TC
