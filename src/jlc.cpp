@@ -5,12 +5,13 @@
 #include "Printer.H"
 #include "Absyn.H"
 #include "ParserError.H"
-// #include "JLCTypeChecker.H"
-// #include "JLCLLVMGenerator.H"
-// #include "JLCTC_TopDef.H"
-// #include "JLCTC_StructDef.H"
 
-void usage() {
+#include "common/jlc_context.h"
+#include "typechecker/jlc_tc_error.h"
+#include "typechecker/jlc_tc_udt_dcl.h"
+
+void usage()
+{
   printf("usage: Call with one of the following argument combinations:\n");
   printf("\t--help\t\tDisplay this help message.\n");
   printf("\t(no arguments)\tParse stdin verbosely.\n");
@@ -18,75 +19,88 @@ void usage() {
   printf("\t-s (files)\tSilent mode. Parse content of files silently.\n");
 }
 
-int main(int argc, char ** argv)
+int main(int argc, char **argv)
 {
   FILE *input;
   int quiet = 0;
   char *filename = NULL;
 
-  if (argc > 1) {
-    if (strcmp(argv[1], "-s") == 0) {
+  if (argc > 1)
+  {
+    if (strcmp(argv[1], "-s") == 0)
+    {
       quiet = 1;
-      if (argc > 2) {
+      if (argc > 2)
+      {
         filename = argv[2];
-      } else {
+      }
+      else
+      {
         input = stdin;
       }
-    } else {
+    }
+    else
+    {
       filename = argv[1];
     }
   }
 
-  if (filename) {
+  if (filename)
+  {
     input = fopen(filename, "r");
-    if (!input) {
+    if (!input)
+    {
       usage();
       exit(1);
     }
-  } else input = stdin;
+  }
+  else
+    input = stdin;
   /* The default entry point is used. For other options see Parser.H */
   Prog *parse_tree = NULL;
-  try {
-  parse_tree = pProg(input);
-  } catch( parse_error &e) {
-     std::cerr << "Parse error on line " << e.getLine() << "\n";
+  try
+  {
+    parse_tree = pProg(input);
+  }
+  catch (parse_error &e)
+  {
+    std::cerr << "Parse error on line " << e.getLine() << "\n";
   }
   if (parse_tree)
   {
-    if (!quiet) {
-      #if DEBUG
-        printf("\nParse Successful!\n");
-        printf("\n[Abstract Syntax]\n");
-        ShowAbsyn *s = new ShowAbsyn();
-        printf("%s\n\n", s->show(parse_tree));
-        printf("[Linearized Tree]\n");
-        PrintAbsyn *p = new PrintAbsyn();
-        printf("%s\n\n", p->print(parse_tree));
-      #endif
+    if (!quiet)
+    {
+      printf("\nParse Successful!\n");
+      printf("\n[Abstract Syntax]\n");
+      ShowAbsyn *s = new ShowAbsyn();
+      printf("%s\n\n", s->show(parse_tree));
+      printf("[Linearized Tree]\n");
+      PrintAbsyn *p = new PrintAbsyn();
+      printf("%s\n\n", p->print(parse_tree));
     }
-    // JLCTC_TopDef *jlctc_td = new JLCTC_TopDef();
-    // parse_tree->accept(jlctc_td);
 
-    // JLCTC_StructDef *jlctc_sd = 
-    //   new JLCTC_StructDef(jlctc_td->getContext());
-    // parse_tree->accept(jlctc_sd);
+    // new context
+    auto context =
+        std::make_shared<JLC::CONTEXT::JLCContext>();
 
-    // JLCTypeChecker *jlcvc = 
-    //   new JLCTypeChecker(jlctc_sd->getContext());
-    // parse_tree->accept(jlcvc);
-    
-    // JLCLLVMGenerator *jlcg = new JLCLLVMGenerator();
-    //parse_tree->accept(jlcg);
+    // new jlc tc udt dcl
+    auto udt_dc_checker =
+        std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
 
-    // delete(jlctc_td);
-    // delete(jlctc_sd);
-    // delete(jlcvc);
-    // delete(jlcg);
-    delete(parse_tree);
+    try
+    {
+      parse_tree->accept(udt_dc_checker.get());
+    }
+    catch (JLC::TC::JLCTCError &e)
+    {
+      std::cerr << "ERROR, Type check error:\n " << e.what() << "\n";
+      return 1;
+    }
+
+    delete (parse_tree);
     std::cerr << "OK" << std::endl;
     return 0;
   }
   std::cerr << "ERROR" << std::endl;
   return 1;
 }
-

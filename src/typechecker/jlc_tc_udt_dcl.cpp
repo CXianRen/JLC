@@ -108,7 +108,7 @@ namespace JLC::TC
         // in the context at the end of the type
         // declaration checking
         context_->add_typedef(type_name, struct_name);
-        typedef_need_check_.push_back(type_name);
+        typedef_need_check_.push_back(struct_name);
     }
 
     void JLC_UDT_DC_Checker::visitTypeDefWS(TypeDefWS *type_def_ws)
@@ -141,6 +141,7 @@ namespace JLC::TC
 
         // create a new struct
         auto struct_obj = std::make_shared<JLCStruct>(struct_name);
+
         context_->add_struct(struct_name, struct_obj);
     }
 

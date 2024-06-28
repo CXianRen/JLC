@@ -13,11 +13,18 @@
 #include "common/jlc_context.h"
 #include "common/debug.h"
 
-#include "typechecker/jlc_tc_tvistor.h"
+#include "parser/Skeleton.H"
 
 namespace JLC::TC
 {
-    class JLC_UDT_DC_Checker : public TypeVisitor
+    using namespace JLC::TYPE;
+    using namespace JLC::ENUM;
+    using namespace JLC::STRUCT;
+    using namespace JLC::CLASS;
+    using namespace JLC::FUNC;
+    using namespace JLC::CONTEXT;
+
+    class JLC_UDT_DC_Checker : public Skeleton
     {
     public:
         JLC_UDT_DC_Checker(){};
@@ -29,6 +36,12 @@ namespace JLC::TC
         };
 
         ~JLC_UDT_DC_Checker() = default;
+
+        JLCType g_type_;
+
+        // context
+        std::shared_ptr<JLC::CONTEXT::JLCContext>
+            context_;
 
     public:
         // chekcer selfdefined functions
