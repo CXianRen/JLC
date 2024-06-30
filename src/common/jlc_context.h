@@ -50,6 +50,10 @@ namespace JLC::CONTEXT
         std::shared_ptr<JLC::ENUM::JLCEnum>
         get_enum(const std::string &name)
         {
+            if (!has_enum(name))
+            {
+                return nullptr;
+            }
             return enums[name];
         }
 
@@ -67,6 +71,10 @@ namespace JLC::CONTEXT
 
         std::string get_typedef(const std::string &name)
         {
+            if (!has_typedef(name))
+            {
+                return "";
+            }
             return typedefs[name];
         }
 
@@ -85,6 +93,10 @@ namespace JLC::CONTEXT
         std::shared_ptr<JLC::STRUCT::JLCStruct>
         get_struct(const std::string &name)
         {
+            if (!has_struct(name))
+            {
+                return nullptr;
+            }
             return structs[name];
         }
 
@@ -104,6 +116,10 @@ namespace JLC::CONTEXT
         std::shared_ptr<JLC::CLASS::JLCClass>
         get_class(const std::string &name)
         {
+            if (!has_class(name))
+            {
+                return nullptr;
+            }
             return classes[name];
         }
 
@@ -128,6 +144,10 @@ namespace JLC::CONTEXT
         std::shared_ptr<JLC::FUNC::JLCFunc>
         get_func(const std::string &name)
         {
+            if (!has_func(name))
+            {
+                return nullptr;
+            }
             return funcs[name];
         }
 
