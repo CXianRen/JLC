@@ -39,7 +39,7 @@ namespace JLC::TC
         // DEBUG_PRINT("Function name: " + func_name_with_scope);
 
         // check if function is already defined
-        if (context_->is_exist_func(func_name_with_scope))
+        if (context_->has_func(func_name_with_scope))
         {
             std::string error_msg =
                 "Function " +
@@ -64,7 +64,7 @@ namespace JLC::TC
             std::string arg_name = argument->ident_;
 
             // check if argument is already defined
-            if (func->is_exist_arg(arg_name))
+            if (func->has_arg(arg_name))
             {
                 std::string error_msg =
                     "Argument " +

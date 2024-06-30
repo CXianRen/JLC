@@ -42,7 +42,7 @@ namespace JLC::CONTEXT
             enums[name] = e;
         }
 
-        bool is_exist_enum(const std::string &name)
+        bool has_enum(const std::string &name)
         {
             return enums.find(name) != enums.end();
         }
@@ -60,7 +60,7 @@ namespace JLC::CONTEXT
             typedefs[name] = type;
         }
 
-        bool is_exist_typedef(const std::string &name)
+        bool has_typedef(const std::string &name)
         {
             return typedefs.find(name) != typedefs.end();
         }
@@ -77,7 +77,7 @@ namespace JLC::CONTEXT
             structs[name] = s;
         }
 
-        bool is_exist_struct(const std::string &name)
+        bool has_struct(const std::string &name)
         {
             return structs.find(name) != structs.end();
         }
@@ -96,7 +96,7 @@ namespace JLC::CONTEXT
             classes[name] = c;
         }
 
-        bool is_exist_class(const std::string &name)
+        bool has_class(const std::string &name)
         {
             return classes.find(name) != classes.end();
         }
@@ -120,7 +120,7 @@ namespace JLC::CONTEXT
             funcs[name] = f;
         }
 
-        bool is_exist_func(const std::string &name)
+        bool has_func(const std::string &name)
         {
             return funcs.find(name) != funcs.end();
         }

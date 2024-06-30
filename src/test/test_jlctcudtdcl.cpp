@@ -62,7 +62,7 @@ int main(int argc, char **argv)
         }
 
         // check if the enum is added to the context
-        TEST_ASSERT(context->is_exist_enum("Color") == true);
+        TEST_ASSERT(context->has_enum("Color") == true);
     }
     // redefined enum
     {
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
         }
 
         // check if the struct is added to the context
-        TEST_ASSERT(context->is_exist_struct("Point") == true);
+        TEST_ASSERT(context->has_struct("Point") == true);
     }
     // redefined struct
     {
@@ -148,8 +148,8 @@ int main(int argc, char **argv)
         }
 
         // check if the struct is added to the context
-        TEST_ASSERT(context->is_exist_struct("Point_t") == true);
-        TEST_ASSERT(context->is_exist_typedef("Point") == true);
+        TEST_ASSERT(context->has_struct("Point_t") == true);
+        TEST_ASSERT(context->has_typedef("Point") == true);
     }
     // typedef without struct
     {
@@ -171,8 +171,8 @@ int main(int argc, char **argv)
         {
             std::cerr << e.what() << std::endl;
         }
-        TEST_ASSERT(context->is_exist_struct("Foo_t") == true);
-        TEST_ASSERT(context->is_exist_typedef("Foo") == true);
+        TEST_ASSERT(context->has_struct("Foo_t") == true);
+        TEST_ASSERT(context->has_typedef("Foo") == true);
     }
     // only typedef
     {
@@ -203,8 +203,8 @@ int main(int argc, char **argv)
 
         parse_tree->accept(checker.get());
 
-        TEST_ASSERT(context->is_exist_class("Foo") == true);
-        TEST_ASSERT(context->is_exist_class("Bar") == false);
+        TEST_ASSERT(context->has_class("Foo") == true);
+        TEST_ASSERT(context->has_class("Bar") == false);
     }
     // a class with extends
     {
@@ -218,8 +218,8 @@ int main(int argc, char **argv)
             std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
 
         parse_tree->accept(checker.get());
-        TEST_ASSERT(context->is_exist_class("Foo") == true);
-        TEST_ASSERT(context->is_exist_class("Bar") == true);
+        TEST_ASSERT(context->has_class("Foo") == true);
+        TEST_ASSERT(context->has_class("Bar") == true);
     }
     // a class with extends but not defined
     {

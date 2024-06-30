@@ -21,7 +21,7 @@ namespace JLC::BLK
         }
 
         // check if the variable is declared
-        bool is_exist_var(const std::string &name);
+        bool has_var(const std::string &name);
 
         // get variable by name
         JLC::VAR::JLCVar &get_var(const std::string &name);

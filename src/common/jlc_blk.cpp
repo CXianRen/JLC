@@ -4,7 +4,7 @@
 
 namespace JLC::BLK
 {
-    bool JLCBlk::is_exist_var(const std::string &name)
+    bool JLCBlk::has_var(const std::string &name)
     {
         for (auto &v : vars)
         {

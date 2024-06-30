@@ -57,15 +57,15 @@ namespace JLC::TC
             std::string type_name = obj_t->ident_;
 
             // check the type of the objectT
-            if (context_->is_exist_enum(type_name))
+            if (context_->has_enum(type_name))
             {
                 g_type_ = JLCType(type_enum::ENUM, type_name);
             }
-            else if (context_->is_exist_class(type_name))
+            else if (context_->has_class(type_name))
             {
                 g_type_ = JLCType(type_enum::CLASS, type_name);
             }
-            else if (context_->is_exist_typedef(type_name))
+            else if (context_->has_typedef(type_name))
             {
                 g_type_ = JLCType(type_enum::STRUCT, type_name);
             }

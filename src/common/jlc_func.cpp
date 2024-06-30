@@ -5,7 +5,7 @@
 namespace JLC::FUNC
 {
 
-    bool JLCFunc::is_exist_arg(const std::string &name)
+    bool JLCFunc::has_arg(const std::string &name)
     {
         for (auto &a : args)
         {
@@ -29,17 +29,17 @@ namespace JLC::FUNC
         throw std::runtime_error("Argument " + name + " not found");
     }
 
-    bool JLCFunc::is_exist_var(const std::string &name)
+    bool JLCFunc::has_var(const std::string &name)
     {
         for (auto &b : blks)
         {
-            if (b.is_exist_var(name))
+            if (b.has_var(name))
             {
                 return true;
             }
         }
         // check if the variable is an argument
-        if (is_exist_arg(name))
+        if (has_arg(name))
         {
             return true;
         }
@@ -50,13 +50,13 @@ namespace JLC::FUNC
     {
         for (auto &b : blks)
         {
-            if (b.is_exist_var(name))
+            if (b.has_var(name))
             {
                 return b.get_var(name);
             }
         }
         // check if the variable is an argument
-        if (is_exist_arg(name))
+        if (has_arg(name))
         {
             return get_arg(name);
         }

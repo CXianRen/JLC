@@ -12,7 +12,7 @@ namespace JLC::TC
         // check waiting list
         for (auto &struct_name : typedef_need_check_)
         {
-            if (!context_->is_exist_struct(struct_name))
+            if (!context_->has_struct(struct_name))
             {
                 // error: struct not defined
                 throw JLCTCError("Struct not defined: " + struct_name);
@@ -21,7 +21,7 @@ namespace JLC::TC
         typedef_need_check_.clear();
         for (auto &class_name : class_need_check_)
         {
-            if (!context_->is_exist_class(class_name))
+            if (!context_->has_class(class_name))
             {
                 // error: class not defined
                 throw JLCTCError("Class not defined: " + class_name);
@@ -33,9 +33,9 @@ namespace JLC::TC
     void JLC_UDT_DC_Checker::check_user_defined_type_conflict(
         std::string type_name)
     {
-        if (context_->is_exist_enum(type_name) ||
-            context_->is_exist_class(type_name) ||
-            context_->is_exist_typedef(type_name))
+        if (context_->has_enum(type_name) ||
+            context_->has_class(type_name) ||
+            context_->has_typedef(type_name))
         {
             // error: type already defined
             throw JLCTCError("Type already defined: " + type_name);
@@ -48,7 +48,7 @@ namespace JLC::TC
         std::string enum_name = enum_->ident_;
 
         // check if the enum has a list of enum values
-        if (context_->is_exist_enum(enum_name))
+        if (context_->has_enum(enum_name))
         {
             // error: enum already defined
             throw JLCTCError("Enum already defined: " + enum_name);
@@ -69,7 +69,7 @@ namespace JLC::TC
         std::string struct_name = struct_->ident_;
 
         // check if the struct has a list of struct values
-        if (context_->is_exist_struct(struct_name))
+        if (context_->has_struct(struct_name))
         {
             // error: struct already defined
             throw JLCTCError("Struct already defined: " + struct_name);
@@ -91,7 +91,7 @@ namespace JLC::TC
         std::string struct_name = type_def->ident_1;
         std::string type_name = type_def->ident_2;
         // check if the type has a list of type values
-        if (context_->is_exist_typedef(type_name))
+        if (context_->has_typedef(type_name))
         {
             // error: type already defined
             throw JLCTCError("Typedef defines a type already defined: " + type_name);
@@ -118,7 +118,7 @@ namespace JLC::TC
         std::string type_name = type_def_ws->ident_2;
 
         // check if the type has a list of type values
-        if (context_->is_exist_typedef(type_name))
+        if (context_->has_typedef(type_name))
         {
             // error: type already defined
             throw JLCTCError("Type already defined: " + type_name);
@@ -130,7 +130,7 @@ namespace JLC::TC
 
         // we also to add the struct to the context
         // check if the struct has a list of struct values
-        if (context_->is_exist_struct(struct_name))
+        if (context_->has_struct(struct_name))
         {
             // error: struct already defined
             throw JLCTCError("Struct already defined: " + struct_name);
@@ -148,7 +148,7 @@ namespace JLC::TC
         std::string class_name = class_->ident_;
 
         // check if the class has a list of class values
-        if (context_->is_exist_class(class_name))
+        if (context_->has_class(class_name))
         {
             // error: class already defined
             throw JLCTCError("Class already defined: " + class_name);
@@ -179,7 +179,7 @@ namespace JLC::TC
         check_user_defined_type_conflict(class_name);
 
         // check if the class has a list of class values
-        if (context_->is_exist_class(class_name))
+        if (context_->has_class(class_name))
         {
             // error: class already defined
             throw JLCTCError("Class already defined: " + class_name);

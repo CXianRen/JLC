@@ -22,10 +22,10 @@ int main()
                 "b",
                 std::make_shared<JLC::TYPE::JLCType>(
                     JLC::TYPE::type_enum::DOUB)));
-        // is_exist_arg
-        TEST_ASSERT(f.is_exist_arg("a"));
-        TEST_ASSERT(f.is_exist_arg("b"));
-        TEST_ASSERT(!f.is_exist_arg("c"));
+        // has_arg
+        TEST_ASSERT(f.has_arg("a"));
+        TEST_ASSERT(f.has_arg("b"));
+        TEST_ASSERT(!f.has_arg("c"));
         // get_arg
         TEST_ASSERT(f.get_arg("a").name == "a");
         TEST_ASSERT(f.get_arg("b").name == "b");
@@ -42,12 +42,12 @@ int main()
                 "y",
                 std::make_shared<JLC::TYPE::JLCType>(
                     JLC::TYPE::type_enum::DOUB)));
-        // is_exist_var
-        TEST_ASSERT(f.is_exist_var("x"));
-        TEST_ASSERT(f.is_exist_var("y"));
-        TEST_ASSERT(!f.is_exist_var("z"));
-        TEST_ASSERT(f.is_exist_var("a"));
-        TEST_ASSERT(f.is_exist_var("b"));
+        // has_var
+        TEST_ASSERT(f.has_var("x"));
+        TEST_ASSERT(f.has_var("y"));
+        TEST_ASSERT(!f.has_var("z"));
+        TEST_ASSERT(f.has_var("a"));
+        TEST_ASSERT(f.has_var("b"));
         // get_var
         TEST_ASSERT(f.get_var("x").name == "x");
         TEST_ASSERT(f.get_var("y").name == "y");
@@ -61,12 +61,12 @@ int main()
                 "z",
                 std::make_shared<JLC::TYPE::JLCType>(
                     JLC::TYPE::type_enum::BOOL)));
-        // is_exist_var
-        TEST_ASSERT(f.is_exist_var("z"));
-        TEST_ASSERT(f.is_exist_var("x"));
-        TEST_ASSERT(f.is_exist_var("y"));
-        TEST_ASSERT(f.is_exist_var("a"));
-        TEST_ASSERT(f.is_exist_var("b"));
+        // has_var
+        TEST_ASSERT(f.has_var("z"));
+        TEST_ASSERT(f.has_var("x"));
+        TEST_ASSERT(f.has_var("y"));
+        TEST_ASSERT(f.has_var("a"));
+        TEST_ASSERT(f.has_var("b"));
         // get_var
         TEST_ASSERT(f.get_var("z").name == "z");
         TEST_ASSERT(f.get_var("x").name == "x");
@@ -91,14 +91,14 @@ int main()
         TEST_ASSERT(s == expected);
         // pop block
         f.pop_blk();
-        // is_exist_var
-        TEST_ASSERT(!f.is_exist_var("z"));
-        TEST_ASSERT(f.is_exist_var("x"));
+        // has_var
+        TEST_ASSERT(!f.has_var("z"));
+        TEST_ASSERT(f.has_var("x"));
 
         // pop block
         f.pop_blk();
-        // is_exist_var
-        TEST_ASSERT(!f.is_exist_var("x"));
+        // has_var
+        TEST_ASSERT(!f.has_var("x"));
     }
     TEST_PASS();
 }

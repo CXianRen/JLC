@@ -58,7 +58,7 @@ int main(int argc, char **argv)
         // check the result
         auto name = context->get_scope_name("foo", "global");
         TEST_ASSERT(name == "global::foo");
-        TEST_ASSERT(context->is_exist_func(name) == true);
+        TEST_ASSERT(context->has_func(name) == true);
         TEST_ASSERT(context->get_func(name)->name == name);
 
         // check return type
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
         // check the result
         auto name = context->get_scope_name("foo", "A");
         TEST_ASSERT(name == "A::foo");
-        TEST_ASSERT(context->is_exist_func(name) == true);
+        TEST_ASSERT(context->has_func(name) == true);
         TEST_ASSERT(context->get_func(name)->name == name);
 
         // check return type
@@ -140,9 +140,9 @@ int main(int argc, char **argv)
 
         // check the parse tree
         TEST_ASSERT(
-            context->is_exist_func("global::foo") == true);
+            context->has_func("global::foo") == true);
         TEST_ASSERT(
-            context->is_exist_func("A::foo") == true);
+            context->has_func("A::foo") == true);
     }
     // different class's method has same name
     {
@@ -164,9 +164,9 @@ int main(int argc, char **argv)
 
         // check the parse tree
         TEST_ASSERT(
-            context->is_exist_func("A::foo") == true);
+            context->has_func("A::foo") == true);
         TEST_ASSERT(
-            context->is_exist_func("B::foo") == true);
+            context->has_func("B::foo") == true);
     }
     // void parameter is not allowed
     {

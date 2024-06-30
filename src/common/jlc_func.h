@@ -26,7 +26,7 @@ namespace JLC::FUNC
             args.push_back(arg);
         }
 
-        bool is_exist_arg(const std::string &name);
+        bool has_arg(const std::string &name);
 
         JLC::VAR::JLCVar &get_arg(const std::string &name);
 
@@ -50,7 +50,7 @@ namespace JLC::FUNC
             blks.back().add_var(var);
         }
 
-        bool is_exist_var(const std::string &name);
+        bool has_var(const std::string &name);
 
         JLC::VAR::JLCVar &get_var(const std::string &name);
 
