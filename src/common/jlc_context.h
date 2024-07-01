@@ -69,7 +69,7 @@ namespace JLC::CONTEXT
             return typedefs.find(name) != typedefs.end();
         }
 
-        std::string get_typedef(const std::string &name)
+        std::string get_typedef_type(const std::string &name)
         {
             if (!has_typedef(name))
             {

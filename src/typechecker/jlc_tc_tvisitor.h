@@ -67,6 +67,11 @@ namespace JLC::TC
             }
             else if (context_->has_typedef(type_name))
             {
+                auto real_type_name = context_->get_typedef_type(type_name);
+                g_type_ = JLCType(type_enum::STRUCT, real_type_name);
+            }
+            else if (context_->has_struct(type_name))
+            {
                 g_type_ = JLCType(type_enum::STRUCT, type_name);
             }
             else

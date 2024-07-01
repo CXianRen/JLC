@@ -10,6 +10,12 @@ namespace JLC::TC
         // get enum object
         auto enum_obj = context_->get_enum(enum_name);
 
+        if (enum_obj == nullptr)
+        {
+            // throw error
+            throw JLCTCError("Enum object not found: " + enum_name);
+        }
+
         // add the enum object to the context
         if (enum_->listeval_)
         {
@@ -32,6 +38,79 @@ namespace JLC::TC
                 // add the enum value to the enum object
                 enum_obj->add_member(enum_val);
             }
+        }
+    }
+
+    void JLC_TC_UDT_DEF_Checker::visitStruct(Struct *struct_)
+    {
+        // struct name
+        std::string struct_name = struct_->ident_;
+        // DEBUG_PRINT("Struct: " << struct_name);
+        // get struct object
+        current_struct_obj_ = context_->get_struct(struct_name);
+
+        if (current_struct_obj_ == nullptr)
+        {
+            // throw error
+            throw JLCTCError("Struct object not found: " + struct_name);
+        }
+
+        // call parent class
+        TypeVisitor::visitStruct(struct_);
+    }
+
+    void JLC_TC_UDT_DEF_Checker::visitTypeDefWS(TypeDefWS *type_def_ws)
+    {
+        // struct name
+        std::string struct_name = type_def_ws->ident_1;
+
+        // get struct object
+        current_struct_obj_ = context_->get_struct(struct_name);
+
+        if (current_struct_obj_ == nullptr)
+        {
+            // throw error
+            throw JLCTCError("Struct object not found: " + struct_name);
+        }
+
+        // call parent class
+        TypeVisitor::visitTypeDefWS(type_def_ws);
+    }
+
+    void JLC_TC_UDT_DEF_Checker::visitMemberDef(MemberDef *member_def)
+    {
+        /* Code For MemberDef Goes Here */
+
+        if (member_def->type_)
+            member_def->type_->accept(this);
+        // get type
+        auto member_type =
+            std::make_shared<JLC::TYPE::JLCType>(g_type_);
+
+        // void type member is not allowed
+        if (member_type->type == JLC::TYPE::type_enum::VOID)
+        {
+            // throw error
+            throw JLCTCError("void type member is not allowed");
+        }
+
+        auto list_mem_item = member_def->listmemitem_;
+        for (ListMemItem::iterator i = list_mem_item->begin(); i != list_mem_item->end(); ++i)
+        {
+            // DEBUG_PRINT("Member: " << ((MemberItem *)(*i))->ident_);
+            std::string member_name =
+                ((MemberItem *)(*i))->ident_;
+        
+            // check if the member is already defined
+            if (current_struct_obj_->has_member(member_name))
+            {
+                // error: member already defined
+                throw JLCTCError("Member already defined: " + member_name);
+            }
+
+            // add the member to the struct object
+            // DEBUG_PRINT("Member type: " << member_type->str());
+            current_struct_obj_->add_member(member_name, member_type);
         }
     }
 } // namespace JLC::TC

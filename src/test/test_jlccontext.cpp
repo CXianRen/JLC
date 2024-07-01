@@ -20,7 +20,7 @@ int main(int argc, char **argv)
         ctx.add_typedef("typedef_struct_ptr_name", "struct_name");
         TEST_ASSERT(ctx.has_typedef("typedef_struct_ptr_name"));
         TEST_ASSERT(!ctx.has_typedef("typedef_struct_ptr_name2"));
-        TEST_ASSERT(ctx.get_typedef("typedef_struct_ptr_name") == "struct_name");
+        TEST_ASSERT(ctx.get_typedef_type("typedef_struct_ptr_name") == "struct_name");
     }
     {
         // add struct

@@ -2,7 +2,7 @@
 #define __JLC_TC_UDT_DEF_H__
 
 #include <vector>
-#include <string> 
+#include <string>
 
 #include "common/jlc_context.h"
 #include "common/debug.h"
@@ -23,14 +23,21 @@ namespace JLC::TC
         };
 
         ~JLC_TC_UDT_DEF_Checker() = default;
-    public:
 
+    public:
         /* enum */
         void visitEnum(Enum *p) override;
+
         /* struct */
-        // void visitStruct(Struct *p) override;
-        // void visitTypeDefWS(TypeDefWS *p) override;
+        std::shared_ptr<JLC::STRUCT::JLCStruct>
+            current_struct_obj_;
+        void visitStruct(Struct *p) override;
+        void visitTypeDefWS(TypeDefWS *p) override;
+
+        void visitMemberDef(MemberDef *p) override;
+        
         // /* class */
+
         // void visitClass(Class *p);
         // void visitClassWE(ClassWE *p);
         // /* function */

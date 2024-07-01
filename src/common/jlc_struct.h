@@ -21,6 +21,18 @@ namespace JLC::STRUCT
 
         JLCStruct(const std::string &name) : obj_name(name){};
 
+        bool has_member(const std::string &name)
+        {
+            for (auto &member : members)
+            {
+                if (member.first == name)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         void add_member(const std::string &name,
                         std::shared_ptr<TYPE::JLCType> type);
 
