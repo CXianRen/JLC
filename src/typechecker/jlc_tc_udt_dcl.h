@@ -72,6 +72,7 @@ namespace JLC::TC
         void visitClass(Class *p) override;
         void visitClassWE(ClassWE *p) override;
         std::vector<std::string> class_need_check_;
+        std::map<std::string, std::string> inherit_map_;
     };
 } // namespace JLC::TC
 

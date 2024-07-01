@@ -28,6 +28,16 @@ namespace JLC::TC
             }
         }
         class_need_check_.clear();
+
+        // update class inheritance
+        for (auto &inherit : inherit_map_)
+        {
+            auto class_name = inherit.first;
+            auto extends_class_name = inherit.second;
+            auto class_obj = context_->get_class(class_name);
+            auto extends_class_obj = context_->get_class(extends_class_name);
+            class_obj->parent_class = extends_class_obj;
+        }
     }
 
     void JLC_UDT_DC_Checker::check_user_defined_type_conflict(
@@ -193,6 +203,7 @@ namespace JLC::TC
         // will check if the extends class is defined at the end
         // DEBUG_PRINT("class need check: " + extends_class_name);
         class_need_check_.push_back(extends_class_name);
+        inherit_map_[class_name] = extends_class_name;
     }
 
 } // namespace JLC::TC

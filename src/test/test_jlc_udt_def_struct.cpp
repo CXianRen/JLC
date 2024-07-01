@@ -178,8 +178,34 @@ int main(int argc, char **argv)
         TEST_ASSERT(*person_obj->get_member_type("color") ==
                     JLC::TYPE::JLCType(JLC::TYPE::type_enum::ENUM, "Color"));
     }
-    // class member @todo
+    // class member
     {
+        std::string input_str = "class Color { int r; }\n"
+                                "struct Person { Color color; };\n";
+
+        auto parse_tree = gen_ast(input_str);
+
+        // create a type checker
+        // new context
+        auto context = std::make_shared<JLC::CONTEXT::JLCContext>();
+
+        auto decl_checker =
+            std::make_shared<JLC::TC::JLC_UDT_DC_Checker>(context);
+
+        auto def_checker =
+            std::make_shared<JLC::TC::JLC_TC_UDT_DEF_Checker>(context);
+
+        parse_tree->accept(decl_checker.get());
+        parse_tree->accept(def_checker.get());
+
+        // check the result
+        TEST_ASSERT(context->has_class("Color") == true);
+        TEST_ASSERT(context->has_struct("Person") == true);
+        // check the member type
+        auto person_obj = context->get_struct("Person");
+        TEST_ASSERT(person_obj->has_member("color") == true);
+        TEST_ASSERT(*person_obj->get_member_type("color") ==
+                    JLC::TYPE::JLCType(JLC::TYPE::type_enum::CLASS, "Color"));
     }
     // typedef struct {} *
     {

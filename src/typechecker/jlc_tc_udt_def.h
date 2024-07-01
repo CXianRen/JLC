@@ -28,18 +28,20 @@ namespace JLC::TC
         /* enum */
         void visitEnum(Enum *p) override;
 
-        /* struct */
+        // for struct and class,
+        // because class is inherited from struct
         std::shared_ptr<JLC::STRUCT::JLCStruct>
             current_struct_obj_;
+        void visitMemberDef(MemberDef *p) override;
+
+        /* struct */
         void visitStruct(Struct *p) override;
         void visitTypeDefWS(TypeDefWS *p) override;
 
-        void visitMemberDef(MemberDef *p) override;
-        
-        // /* class */
+        /* class */
+        void visitClass(Class *p);
+        void visitClassWE(ClassWE *p);
 
-        // void visitClass(Class *p);
-        // void visitClassWE(ClassWE *p);
         // /* function */
         // void visitFuncDef(FuncDef *p) override;
     };

@@ -76,6 +76,43 @@ namespace JLC::TC
         // call parent class
         TypeVisitor::visitTypeDefWS(type_def_ws);
     }
+    
+    // class
+    void JLC_TC_UDT_DEF_Checker::visitClass(Class *class_)
+    {
+        // class name
+        std::string class_name = class_->ident_;
+        // DEBUG_PRINT("Class: " << class_name);
+        // get class object
+        current_struct_obj_ = context_->get_class(class_name);
+
+        if (current_struct_obj_ == nullptr)
+        {
+            // throw error
+            throw JLCTCError("Class object not found: " + class_name);
+        }
+
+        // call parent class
+        TypeVisitor::visitClass(class_);
+    }
+
+    void JLC_TC_UDT_DEF_Checker::visitClassWE(ClassWE *class_we)
+    {
+        // class name
+        std::string class_name = class_we->ident_1;
+
+        // get class object
+        current_struct_obj_ = context_->get_class(class_name);
+
+        if (current_struct_obj_ == nullptr)
+        {
+            // throw error
+            throw JLCTCError("Class object not found: " + class_name);
+        }
+
+        // call parent class
+        TypeVisitor::visitClassWE(class_we);
+    }
 
     void JLC_TC_UDT_DEF_Checker::visitMemberDef(MemberDef *member_def)
     {
@@ -100,7 +137,7 @@ namespace JLC::TC
             // DEBUG_PRINT("Member: " << ((MemberItem *)(*i))->ident_);
             std::string member_name =
                 ((MemberItem *)(*i))->ident_;
-        
+
             // check if the member is already defined
             if (current_struct_obj_->has_member(member_name))
             {
