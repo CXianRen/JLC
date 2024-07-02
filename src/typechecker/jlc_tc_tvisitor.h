@@ -96,8 +96,44 @@ namespace JLC::TC
 
             g_type_ = JLCType(ARRAY, base_type);
         }
-    }; // class TypeVisitor
+        // visit immediate value
+        void visitELitNull(ELitNull *p) override
+        {
+            // null can be any type if
+            // it is assigned to a pointer type object
+        }
 
+        void visitELitInt(ELitInt *e_lit_int)
+        {
+            /* Code For ELitInt Goes Here */
+
+            visitInteger(e_lit_int->integer_);
+            g_type_ = JLCType(type_enum::INT);
+        }
+
+        void visitELitDoub(ELitDoub *e_lit_doub)
+        {
+            /* Code For ELitDoub Goes Here */
+
+            g_type_ = JLCType(type_enum::DOUB);
+        }
+
+        void visitELitTrue(ELitTrue *e_lit_true)
+        {
+            g_type_ = JLCType(type_enum::BOOL);
+        }
+
+        void visitELitFalse(ELitFalse *e_lit_false)
+        {
+            g_type_ = JLCType(type_enum::BOOL);
+        }
+        
+        void visitEString(EString *e_string)
+        {
+            g_type_ = JLCType(type_enum::STRING);
+        }
+
+    }; // class TypeVisitor
 } // JLC::TC
 
 #endif // __JLC_TC_TVISTOR_H__
