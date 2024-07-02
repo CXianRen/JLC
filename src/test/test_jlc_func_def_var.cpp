@@ -49,6 +49,12 @@ Prog *gen_ast(std::string input_str)
     auto func_def_checker =                                         \
         std::make_shared<JLC::TC::JLC_FUNC_DEF_Checker>(context);
 
+#define run_checker()                            \
+    parse_tree->accept(type_decl_checker.get()); \
+    parse_tree->accept(func_decl_checker.get()); \
+    parse_tree->accept(type_def_checker.get());  \
+    parse_tree->accept(func_def_checker.get());
+
 int main(int argc, char **argv)
 {
 
@@ -59,10 +65,7 @@ int main(int argc, char **argv)
         init_checker();
 
         // check the parse tree
-        parse_tree->accept(type_decl_checker.get());
-        parse_tree->accept(func_decl_checker.get());
-        parse_tree->accept(type_def_checker.get());
-        parse_tree->accept(func_def_checker.get());
+        run_checker();
 
         // @need a better way to check the result, currently vars will be released after the function is done
         // check the result
@@ -97,10 +100,7 @@ int main(int argc, char **argv)
 
         init_checker();
         // check the parse tree
-        parse_tree->accept(type_decl_checker.get());
-        parse_tree->accept(func_decl_checker.get());
-        parse_tree->accept(type_def_checker.get());
-        parse_tree->accept(func_def_checker.get());
+        run_checker();
     }
     // shadow outer variable
     {
@@ -109,10 +109,7 @@ int main(int argc, char **argv)
         init_checker();
 
         // check the parse tree
-        parse_tree->accept(type_decl_checker.get());
-        parse_tree->accept(func_decl_checker.get());
-        parse_tree->accept(type_def_checker.get());
-        parse_tree->accept(func_def_checker.get());
+        run_checker();
     }
     // with initialization
     {
@@ -120,10 +117,7 @@ int main(int argc, char **argv)
         init_checker();
 
         // check the parse tree
-        parse_tree->accept(type_decl_checker.get());
-        parse_tree->accept(func_decl_checker.get());
-        parse_tree->accept(type_def_checker.get());
-        parse_tree->accept(func_def_checker.get());
+        run_checker();
     }
     // void type
     {
@@ -136,6 +130,41 @@ int main(int argc, char **argv)
         parse_tree->accept(type_def_checker.get());
         TEST_EXPECT_EXCEPTION(
             parse_tree->accept(func_def_checker.get()));
+    }
+    // array
+    {
+        std::string input_str = "int f(){int[] a; int[][]b;}";
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // struct
+    {
+        std::string input_str = "typedef struct a_t{int a;}  * A; \n"
+                                "int f(){A a;}";
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // enum
+    {
+        std::string input_str = "enum A {a,b,c}; \n"
+                                "int f(){A a;}";
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // class
+    {
+        std::string input_str = "class A {int a;} \n"
+                                "int f(){A a;}";
+        init_checker();
+
+        // check the parse tree
+        run_checker();
     }
 
     TEST_PASS();
