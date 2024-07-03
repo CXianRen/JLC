@@ -42,7 +42,8 @@ namespace JLC::TC
 
         /* variable access */
         void visitEVar(EVar *p);
-        
+        void visitEpropety(Epropety *p);
+
     }; // class JLC_FUNC_DEF_Checker
 
 } // namespace JLC::TC

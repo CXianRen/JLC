@@ -201,5 +201,50 @@ int main(int argc, char **argv)
         // check the parse tree
         run_checker();
     }
+    // array . length
+    {
+        std::string input_str = "int f(){int[] a; int b=a.length;}";
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // enum variable
+    {
+        std::string input_str = "enum A {a,b,c}; \n"
+                                "int f(){A a= A.b;}";
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // struct variable
+    {
+        std::string input_str = "typedef struct a_t{int a;}  * A; \n"
+                                "int f(){A a; int b = a.a;}";
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // class variable
+    {
+        std::string input_str = "class A {int a;} \n"
+                                "int f(){A a; int b = a.a;}";
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // class variable not the same type
+    {
+        std::string input_str = "class A {int a;} \n"
+                                "int f(){A a; double b = a.a;}";
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
     TEST_PASS();
 }

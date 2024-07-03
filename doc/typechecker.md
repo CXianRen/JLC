@@ -15,3 +15,6 @@
   passing to a member function
 
 + using virtual table to implement runtime polymorphism!
+
+# how to handle enum.member operation?
++ take it as a global variable.
