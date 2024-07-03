@@ -48,11 +48,12 @@ namespace JLC::FUNC
 
     JLC::VAR::JLCVar &JLCFunc::get_var(const std::string &name)
     {
-        for (auto &b : blks)
+        // from back to front
+        for (auto it = blks.rbegin(); it != blks.rend(); ++it)
         {
-            if (b.has_var(name))
+            if (it->has_var(name))
             {
-                return b.get_var(name);
+                return it->get_var(name);
             }
         }
         // check if the variable is an argument

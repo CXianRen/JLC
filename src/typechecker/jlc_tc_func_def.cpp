@@ -121,4 +121,24 @@ namespace JLC::TC
             JLC::VAR::JLCVar(var_name, var_type));
     }
 
+    void JLC_FUNC_DEF_Checker::
+        visitEVar(EVar *e_var)
+    {
+        auto var_name = e_var->ident_;
+        // check if variable is defined
+
+        if (!current_func_->has_var(var_name))
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Variable " + var_name +
+                " not defined in function " + current_func_->name);
+        }
+
+        auto var = current_func_->get_var(var_name);
+
+        // set the type of the variable
+        g_type_ = *var.type;
+    }
+
 } // namespace JLC::TC

@@ -26,13 +26,12 @@ namespace JLC::TC
         };
 
         ~JLC_FUNC_DEF_Checker() = default;
-    
+
     public:
         // current function object
         std::shared_ptr<JLC::FUNC::JLCFunc> current_func_;
 
         void visitFuncDef(FuncDef *p) override;
-
 
         // block scope
         void visitBStmt(BStmt *p);
@@ -41,7 +40,9 @@ namespace JLC::TC
         void visitNoInit(NoInit *p) override;
         void visitInit(Init *p) override;
 
-
+        /* variable access */
+        void visitEVar(EVar *p);
+        
     }; // class JLC_FUNC_DEF_Checker
 
 } // namespace JLC::TC

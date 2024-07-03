@@ -166,6 +166,40 @@ int main(int argc, char **argv)
         // check the parse tree
         run_checker();
     }
+    // init with other variable
+    {
+        std::string input_str = "int f(){int a=1; int b=a;}";
+        init_checker();
 
+        // check the parse tree
+        run_checker();
+    }
+    // init with other variable but not defined
+    {
+        std::string input_str = "int f(){int b=a;}";
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+    // init with other variable but not the same type
+    {
+        std::string input_str = "int f(){int a=1; double b=a;}";
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+    // shadow outer variable with init
+    {
+        std::string input_str = "int f(int a){ double a; double b; {int b=1;{int a=b;}}}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
     TEST_PASS();
 }
