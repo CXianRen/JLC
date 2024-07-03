@@ -148,18 +148,50 @@ namespace JLC::TC
             return;
         }
 
-        if (!current_func_->has_var(var_name))
+        if (current_func_->has_var(var_name))
         {
-            // error
-            throw JLC::TC::JLCTCError(
-                "Variable " + var_name +
-                " not defined in function " + current_func_->name);
+            auto var = current_func_->get_var(var_name);
+
+            // set the type of the variable
+            g_type_ = *var.type;
+            return;
         }
 
-        auto var = current_func_->get_var(var_name);
+        // if it is a class member function
 
-        // set the type of the variable
-        g_type_ = *var.type;
+        if (func_scope_ != GLOBAL_SCOPE)
+        {
+            // check if the variable is a class member
+            auto class_obj = context_->get_class(func_scope_);
+            if (class_obj == nullptr)
+            {
+                DEBUG_PRINT("context:\n"
+                            << context_->str());
+
+                // throw error: cannot find the function
+                throw JLC::TC::JLCTCError(
+                    "Undefined class:" + func_scope_ + ".");
+            }
+
+            if (class_obj->has_member(var_name))
+            {
+                auto member = class_obj->get_member_type(var_name);
+                if (member == nullptr)
+                {
+                    // error
+                    throw JLC::TC::JLCTCError(
+                        "Variable " + var_name +
+                        " not defined in class " + class_obj->obj_name);
+                }
+                g_type_ = *member;
+                return;
+            }
+        }
+
+        // should not reach here
+        throw JLC::TC::JLCTCError(
+            "Variable " + var_name +
+            " not defined in function " + current_func_->name);
     }
 
     void JLC_FUNC_DEF_Checker::
@@ -277,6 +309,103 @@ namespace JLC::TC
         throw JLC::TC::JLCTCError(
             "Property " + prop_name +
             " is not defined for type " + obj_type.str());
+    }
+
+    void JLC_FUNC_DEF_Checker::
+        checkFuncParams(
+            std::shared_ptr<JLC::FUNC::JLCFunc> &func_obj,
+            ListExpr *list_expr)
+    {
+        auto func_name = func_obj->name;
+        int idx = 0;
+        for (; idx < list_expr->size(); idx++)
+        {
+            auto arg_expr = list_expr->at(idx);
+            arg_expr->accept(this);
+            auto arg_type = g_type_;
+
+            if (idx >= func_obj->args.size())
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Function " + func_name + " has more arguments than expected");
+            }
+
+            auto arg = func_obj->args.at(idx);
+            if ((*arg.type) != arg_type)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Function " + func_name + " argument " + arg.name +
+                    " type is not the same as the expected type " + arg.type->str());
+            }
+        }
+        if (idx < func_obj->args.size())
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Function " + func_name + " has less arguments than expected");
+        }
+
+        // return type is the function type
+        g_type_ = *func_obj->return_type;
+    }
+
+    void JLC_FUNC_DEF_Checker::
+        visitEApp(EApp *e_app)
+    {
+        visitIdent(e_app->ident_);
+        auto func_name = e_app->ident_;
+        auto func_name_with_scope =
+            context_->get_scope_name(func_name,
+                                     GLOBAL_SCOPE);
+        auto func_obj = context_->get_func(func_name_with_scope);
+
+        if (func_obj == nullptr)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Function " + func_name + " not found in the context");
+        }
+
+        // check parameters
+        checkFuncParams(func_obj, e_app->listexpr_);
+    }
+
+    void JLC_FUNC_DEF_Checker::
+        visitEFunc(EFunc *e_func)
+    {
+        if (e_func->expr_)
+            e_func->expr_->accept(this);
+        auto type = g_type_;
+
+        // check if the type is a class
+        if (type.type != JLC::TYPE::type_enum::CLASS)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Type " + type.str() +
+                " does not have a member function " +
+                e_func->ident_);
+        }
+
+        auto scope = type.obj_name;
+        auto func_name = e_func->ident_;
+        auto func_name_with_scope =
+            context_->get_scope_name(func_name,
+                                     scope);
+        // check if the function is defined
+        auto func_obj = context_->get_func(func_name_with_scope);
+
+        if (func_obj == nullptr)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Function " + func_name +
+                " not found in the context");
+        }
+
+        checkFuncParams(func_obj, e_func->listexpr_);
     }
 
 } // namespace JLC::TC

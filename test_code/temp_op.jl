@@ -1,11 +1,11 @@
 
-struct Bad {
-  int x;
+enum Color {
+  RED,
+  GREEN,
+  BLUE
 };
 
 int main() {
-  Bad b = new Bad;
-  b->x = true;
+  Color c = Color.RED;
   return 0;
 }
-

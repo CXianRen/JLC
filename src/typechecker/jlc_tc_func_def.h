@@ -44,6 +44,15 @@ namespace JLC::TC
         void visitEVar(EVar *p);
         void visitEpropety(Epropety *p);
 
+        /* function */
+        void visitEApp(EApp *p);
+        void visitEFunc(EFunc *p);
+
+    private:
+        void checkFuncParams(
+            std::shared_ptr<JLC::FUNC::JLCFunc> &func,
+            ListExpr *p);
+
     }; // class JLC_FUNC_DEF_Checker
 
 } // namespace JLC::TC
