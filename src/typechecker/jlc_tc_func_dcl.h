@@ -21,6 +21,7 @@ namespace JLC::TC
             std::shared_ptr<JLCContext> context)
         {
             context_ = context;
+            add_inner_func();
         };
 
         ~JLC_FUNC_CD_Checker() = default;
@@ -38,6 +39,8 @@ namespace JLC::TC
         {
             return func_scope_;
         }
+
+        void add_inner_func();
 
     public:
         // override visitor functions

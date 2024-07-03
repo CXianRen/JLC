@@ -3,6 +3,47 @@
 namespace JLC::TC
 {
 
+    void JLC_FUNC_CD_Checker::add_inner_func()
+    {
+        // printInt
+        auto func_name = context_->get_scope_name("printInt", GLOBAL_SCOPE);
+        auto func = std::make_shared<JLC::FUNC::JLCFunc>(
+            func_name, std::make_shared<JLC::TYPE::JLCType>(VOID));
+        func->add_arg(JLC::VAR::JLCVar("x", std::make_shared<JLC::TYPE::JLCType>(INT)));
+
+        context_->add_func(func_name, func);
+
+        // printString
+        func_name = context_->get_scope_name("printString", GLOBAL_SCOPE);
+        func = std::make_shared<JLC::FUNC::JLCFunc>(
+            func_name, std::make_shared<JLC::TYPE::JLCType>(VOID));
+        func->add_arg(JLC::VAR::JLCVar("x", std::make_shared<JLC::TYPE::JLCType>(STRING)));
+
+        context_->add_func(func_name, func);
+
+        // printDouble
+        func_name = context_->get_scope_name("printDouble", GLOBAL_SCOPE);
+        func = std::make_shared<JLC::FUNC::JLCFunc>(
+            func_name, std::make_shared<JLC::TYPE::JLCType>(VOID));
+        func->add_arg(JLC::VAR::JLCVar("x", std::make_shared<JLC::TYPE::JLCType>(DOUB)));
+
+        context_->add_func(func_name, func);
+
+        // readInt
+        func_name = context_->get_scope_name("readInt", GLOBAL_SCOPE);
+        func = std::make_shared<JLC::FUNC::JLCFunc>(
+            func_name, std::make_shared<JLC::TYPE::JLCType>(INT));
+
+        context_->add_func(func_name, func);
+
+        // readDouble
+        func_name = context_->get_scope_name("readDouble", GLOBAL_SCOPE);
+        func = std::make_shared<JLC::FUNC::JLCFunc>(
+            func_name, std::make_shared<JLC::TYPE::JLCType>(DOUB));
+
+        context_->add_func(func_name, func);
+    }
+
     void JLC_FUNC_CD_Checker::visitGFuncDef(GFuncDef *p)
     {
         set_scope(GLOBAL_SCOPE);

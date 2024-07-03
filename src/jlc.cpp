@@ -11,6 +11,7 @@
 #include "typechecker/jlc_tc_udt_dcl.h"
 #include "typechecker/jlc_tc_func_dcl.h"
 #include "typechecker/jlc_tc_udt_def.h"
+#include "typechecker/jlc_tc_func_def.h"
 
 void usage()
 {
@@ -96,12 +97,17 @@ int main(int argc, char **argv)
     // new jlc tc udt def
     auto udt_def_checker =
         std::make_shared<JLC::TC::JLC_TC_UDT_DEF_Checker>(context);
+      
+    // new jlc tc func def
+    auto func_def_checker =
+        std::make_shared<JLC::TC::JLC_FUNC_DEF_Checker>(context);
 
     try
     {
       parse_tree->accept(udt_dc_checker.get());
       parse_tree->accept(func_dc_checker.get());
       parse_tree->accept(udt_def_checker.get());
+      parse_tree->accept(func_def_checker.get());
     }
     catch (JLC::TC::JLCTCError &e)
     {
