@@ -44,6 +44,7 @@ namespace JLC::TC
         /* variable access */
         void visitEVar(EVar *p);
         void visitEpropety(Epropety *p);
+        void visitEArrow(EArrow *p);
 
         /* function */
         void visitEApp(EApp *p);

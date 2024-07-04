@@ -322,6 +322,52 @@ namespace JLC::TC
     }
 
     void JLC_FUNC_DEF_Checker::
+        visitEArrow(EArrow *e_arrow)
+    {
+        /* Code For EArrow Goes Here */
+
+        if (e_arrow->expr_)
+            e_arrow->expr_->accept(this);
+
+        auto obj_type = g_type_;
+        auto prop_name = e_arrow->ident_;
+
+        if (obj_type.type == JLC::TYPE::type_enum::STRUCT)
+        {
+            auto type_name = obj_type.obj_name;
+            auto struct_obj = context_->get_struct(type_name);
+            if (struct_obj == nullptr)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Struct " + type_name + " not found in the context");
+            }
+
+            if (!struct_obj->has_member(prop_name))
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Property " + prop_name +
+                    " is not defined for struct " + type_name);
+            }
+
+            auto member = struct_obj->get_member_type(prop_name);
+            if (member == nullptr)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Property " + prop_name +
+                    " is not defined for struct " + type_name);
+            }
+            g_type_ = *member;
+            return;
+        }
+        // error
+        throw JLC::TC::JLCTCError(
+            "Type " + obj_type.str() + " does not support -> operator.");
+    }
+
+    void JLC_FUNC_DEF_Checker::
         checkFuncParams(
             std::shared_ptr<JLC::FUNC::JLCFunc> &func_obj,
             ListExpr *list_expr)

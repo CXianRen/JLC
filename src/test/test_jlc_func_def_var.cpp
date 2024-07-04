@@ -228,6 +228,33 @@ int main(int argc, char **argv)
         TEST_EXPECT_EXCEPTION(
             run_checker());
     }
+    // -> operator
+    {
+        std::string input_str = "typedef struct a_t{int a;}  * A; \n"
+                                "int f(){A a; int b = a->a;}";
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // -> op on non struct
+    {
+        std::string input_str = "int f(){int a; int b = a->a;}";
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+    // -> on class
+    {
+        std::string input_str = "class A {int a;} \n"
+                                "int f(){A a; int b = a->a;}";
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(run_checker());
+    }
     // class variable
     {
         std::string input_str = "class A {int a;} \n"
