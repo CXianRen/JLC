@@ -31,7 +31,7 @@ About to run tests with these settings:
 [ 23/172] testsuite/good/order_binop ... OK
 [ 24/172] testsuite/good/core023    ... OK
 [ 25/172] testsuite/good/order_binop2 ... OK
-[ 26/172] testsuite/good/core012    ... FAILED
+[ 26/172] testsuite/good/core012    ... OK
 [ 27/172] testsuite/good/core005    ... OK
 [ 28/172] testsuite/good/core004    ... OK
 [ 29/172] testsuite/good/core013    ... OK
@@ -48,14 +48,14 @@ About to run tests with these settings:
 [ 40/172] testsuite/good/core017    ... OK
 [ 41/172] testsuite/good/core016    ... OK
 [ 42/172] testsuite/good/core001    ... OK
-[ 43/172] testsuite/bad/bad073      ... FAILED
+[ 43/172] testsuite/bad/bad073      ... OK
 [ 44/172] testsuite/bad/bad003      ... OK
 [ 45/172] testsuite/bad/bad064      ... OK
 [ 46/172] testsuite/bad/bad065      ... FAILED
 [ 47/172] testsuite/bad/bad015      ... OK
 [ 48/172] testsuite/bad/bad002      ... OK
 [ 49/172] testsuite/bad/bad072      ... OK
-[ 50/172] testsuite/bad/bad070      ... FAILED
+[ 50/172] testsuite/bad/bad070      ... OK
 [ 51/172] testsuite/bad/struct03    ... OK
 [ 52/172] testsuite/bad/bad038      ... OK
 [ 53/172] testsuite/bad/bad067      ... FAILED
@@ -68,16 +68,16 @@ About to run tests with these settings:
 [ 60/172] testsuite/bad/bad039      ... OK
 [ 61/172] testsuite/bad/bad071      ... FAILED
 [ 62/172] testsuite/bad/bad001      ... OK
-[ 63/172] testsuite/bad/bad062      ... FAILED
+[ 63/172] testsuite/bad/bad062      ... OK
 [ 64/172] testsuite/bad/bad012      ... FAILED
 [ 65/172] testsuite/bad/bad005      ... OK
 [ 66/172] testsuite/bad/bad074      ... OK
 [ 67/172] testsuite/bad/bad004      ... OK
-[ 68/172] testsuite/bad/bad013      ... FAILED
+[ 68/172] testsuite/bad/bad013      ... OK
 [ 69/172] testsuite/bad/bad063      ... FAILED
 [ 70/172] testsuite/bad/bad011      ... FAILED
 [ 71/172] testsuite/bad/struct05    ... OK
-[ 72/172] testsuite/bad/bad061      ... FAILED
+[ 72/172] testsuite/bad/bad061      ... OK
 [ 73/172] testsuite/bad/bad029      ... FAILED
 [ 74/172] testsuite/bad/bad006      ... OK
 [ 75/172] testsuite/bad/bad059      ... OK
@@ -87,7 +87,7 @@ About to run tests with these settings:
 [ 79/172] testsuite/bad/struct04    ... OK
 [ 80/172] testsuite/bad/bad060      ... OK
 [ 81/172] testsuite/bad/bad010      ... FAILED
-[ 82/172] testsuite/bad/bad051      ... FAILED
+[ 82/172] testsuite/bad/bad051      ... OK
 [ 83/172] testsuite/bad/bad021      ... FAILED
 [ 84/172] testsuite/bad/bad036      ... OK
 [ 85/172] testsuite/bad/bad069      ... FAILED
@@ -99,23 +99,23 @@ About to run tests with these settings:
 [ 91/172] testsuite/bad/array06     ... OK
 [ 92/172] testsuite/bad/bad068      ... FAILED
 [ 93/172] testsuite/bad/bad037      ... OK
-[ 94/172] testsuite/bad/bad020      ... FAILED
+[ 94/172] testsuite/bad/bad020      ... OK
 [ 95/172] testsuite/bad/bad050      ... OK
 [ 96/172] testsuite/bad/bad022      ... OK
-[ 97/172] testsuite/bad/bad052      ... FAILED
+[ 97/172] testsuite/bad/bad052      ... OK
 [ 98/172] testsuite/bad/bad045      ... OK
 [ 99/172] testsuite/bad/bad035      ... FAILED
 [100/172] testsuite/bad/array04     ... OK
 [101/172] testsuite/bad/array05     ... OK
 [102/172] testsuite/bad/bad034      ... FAILED
 [103/172] testsuite/bad/bad044      ... OK
-[104/172] testsuite/bad/bad053      ... FAILED
+[104/172] testsuite/bad/bad053      ... OK
 [105/172] testsuite/bad/bad023      ... OK
 [106/172] testsuite/bad/bad040      ... OK
 [107/172] testsuite/bad/array01     ... OK
 [108/172] testsuite/bad/bad027      ... OK
 [109/172] testsuite/bad/bad008      ... FAILED
-[110/172] testsuite/bad/bad056      ... FAILED
+[110/172] testsuite/bad/bad056      ... OK
 [111/172] testsuite/bad/bad009      ... OK
 [112/172] testsuite/bad/bad026      ... OK
 [113/172] testsuite/bad/bad031      ... FAILED
@@ -123,9 +123,9 @@ About to run tests with these settings:
 [115/172] testsuite/bad/bad033      ... FAILED
 [116/172] testsuite/bad/bad043      ... OK
 [117/172] testsuite/bad/assignedfunction ... OK
-[118/172] testsuite/bad/bad054      ... FAILED
+[118/172] testsuite/bad/bad054      ... OK
 [119/172] testsuite/bad/bad025      ... FAILED
-[120/172] testsuite/bad/bad055      ... FAILED
+[120/172] testsuite/bad/bad055      ... OK
 [121/172] testsuite/bad/bad042      ... OK
 [122/172] testsuite/bad/array03     ... OK
 [123/172] testsuite/bad/bad032      ... FAILED
@@ -142,16 +142,16 @@ About to run tests with these settings:
 [134/172] testsuite/extensions/objects1/bad/bad001 ... OK
 [135/172] testsuite/extensions/objects1/bad/bad003 ... OK
 [136/172] testsuite/extensions/objects1/bad/bad002 ... OK
-[137/172] testsuite/extensions/arrays1_pointers/mixed001 ... FAILED
-[138/172] testsuite/extensions/arrays1_pointers/mixed002 ... FAILED
-[139/172] testsuite/extensions/arrays1_pointers/mixed003 ... FAILED
+[137/172] testsuite/extensions/arrays1_pointers/mixed001 ... OK
+[138/172] testsuite/extensions/arrays1_pointers/mixed002 ... OK
+[139/172] testsuite/extensions/arrays1_pointers/mixed003 ... OK
 [140/172] testsuite/extensions/arrays1/array_default ... OK
 [141/172] testsuite/extensions/arrays1/array009 ... OK
 [142/172] testsuite/extensions/arrays1/array008 ... OK
-[143/172] testsuite/extensions/arrays1/array002 ... FAILED
-[144/172] testsuite/extensions/arrays1/array003 ... FAILED
-[145/172] testsuite/extensions/arrays1/array001 ... FAILED
-[146/172] testsuite/extensions/arrays1/array004 ... FAILED
+[143/172] testsuite/extensions/arrays1/array002 ... OK
+[144/172] testsuite/extensions/arrays1/array003 ... OK
+[145/172] testsuite/extensions/arrays1/array001 ... OK
+[146/172] testsuite/extensions/arrays1/array004 ... OK
 [147/172] testsuite/extensions/arrays1/array005 ... OK
 [148/172] testsuite/extensions/arrays1/array006 ... OK
 [149/172] testsuite/extensions/arrays1/bad/bad001 ... OK
@@ -159,8 +159,8 @@ About to run tests with these settings:
 [151/172] testsuite/extensions/arrays1/bad/parentheses ... OK
 [152/172] testsuite/extensions/objects2/shapes ... FAILED
 [153/172] testsuite/extensions/objects2/bad/bad001 ... FAILED
-[154/172] testsuite/extensions/arrays2/array001 ... FAILED
-[155/172] testsuite/extensions/arrays2/array002 ... FAILED
+[154/172] testsuite/extensions/arrays2/array001 ... OK
+[155/172] testsuite/extensions/arrays2/array002 ... OK
 [156/172] testsuite/extensions/arrays2/bad/array_nested_default ... OK
 [157/172] testsuite/extensions/arrays2/bad/bad002 ... OK
 [158/172] testsuite/extensions/arrays2/bad/bad001 ... OK
@@ -175,40 +175,12 @@ About to run tests with these settings:
 [167/172] testsuite/extensions/arrays2_pointers/mixed001 ... OK
 [168/172] testsuite/extensions/advstructs/adv_structs004 ... FAILED
 [169/172] testsuite/extensions/advstructs/adv_structs005 ... OK
-[170/172] testsuite/extensions/advstructs/adv_structs001 ... FAILED
+[170/172] testsuite/extensions/advstructs/adv_structs001 ... OK
 [171/172] testsuite/extensions/advstructs/adv_structs002 ... OK
 [172/172] testsuite/extensions/advstructs/adv_structs003 ... OK
 
 Some tests failed:
----------- !!! testsuite/good/core012.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Function global::printBool argument b type is not the same as the expected type bool
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/bad/bad073.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/bad/bad065.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/bad/bad070.jl failed !!! ----------
 
 - stderr expected:
     ERROR
@@ -235,25 +207,7 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/bad/bad062.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/bad/bad012.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/bad/bad013.jl failed !!! ----------
 
 - stderr expected:
     ERROR
@@ -280,15 +234,6 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/bad/bad061.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/bad/bad029.jl failed !!! ----------
 
 - stderr expected:
@@ -299,15 +244,6 @@ Some tests failed:
     compiler return code: 0, nonzero expected
 
 ---------- !!! testsuite/bad/bad010.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/bad/bad051.jl failed !!! ----------
 
 - stderr expected:
     ERROR
@@ -343,24 +279,6 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/bad/bad020.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/bad/bad052.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/bad/bad035.jl failed !!! ----------
 
 - stderr expected:
@@ -379,25 +297,7 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/bad/bad053.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/bad/bad008.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/bad/bad056.jl failed !!! ----------
 
 - stderr expected:
     ERROR
@@ -424,25 +324,7 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/bad/bad054.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/bad/bad025.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/bad/bad055.jl failed !!! ----------
 
 - stderr expected:
     ERROR
@@ -498,76 +380,6 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/extensions/arrays1_pointers/mixed001.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Variable foo not defined in function global::main
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/arrays1_pointers/mixed002.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Variable elem not defined in function global::main
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/arrays1_pointers/mixed003.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Variable pt not defined in function global::main
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/arrays1/array002.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Variable n not defined in function global::doubleArray
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/arrays1/array003.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Can not assign var type: double to var :bool
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/arrays1/array001.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Variable x not defined in function global::main
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/arrays1/array004.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Variable x not defined in function global::main
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
 ---------- !!! testsuite/extensions/objects2/shapes.jl failed !!! ----------
 
 - stderr expected:
@@ -587,26 +399,6 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/extensions/arrays2/array001.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Variable x not defined in function global::main
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/arrays2/array002.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Variable x not defined in function global::main
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
 ---------- !!! testsuite/extensions/advstructs/adv_structs004.jl failed !!! ----------
 
 - stderr expected:
@@ -614,16 +406,6 @@ Some tests failed:
 - stderr actual:
     ERROR, Type check error:
      Type enum Square is not supported for oarray.
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/advstructs/adv_structs001.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Variable foo not defined in function global::main
 - compiler return code info:
     compiler return code: 1, 0 expected
 

@@ -826,14 +826,22 @@ namespace JLC::TC
             e_rel->expr_2->accept(this);
         auto type_right = g_type_;
 
-        // check if type is INT or DOUBLE
-        if (type_left.type != JLC::TYPE::type_enum::INT &&
-            type_left.type != JLC::TYPE::type_enum::DOUB)
+        // check if rel op is == or !=
+        if (g_rel_op_ == JLC::OP::EQU || g_rel_op_ == JLC::OP::NE)
         {
-            // error
-            throw JLC::TC::JLCTCError(
-                "Can not perform " + JLC::OP::str(g_rel_op_) +
-                " operation on type: " + type_left.str());
+            // @todo, we now allow all types to compare by == and !=
+        }
+        else
+        {
+            // check if type is INT or DOUBLE
+            if (type_left.type != JLC::TYPE::type_enum::INT &&
+                type_left.type != JLC::TYPE::type_enum::DOUB)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Can not perform " + JLC::OP::str(g_rel_op_) +
+                    " operation on type: " + type_left.str());
+            }
         }
 
         // check if type_left == type_right

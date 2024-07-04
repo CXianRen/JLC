@@ -370,8 +370,7 @@ int main(int argc, char **argv)
         std::string input_str = "void f(){ boolean x; boolean y; y = x==x;}";
 
         init_checker();
-        TEST_EXPECT_EXCEPTION(
-            run_checker());
+        run_checker();
     }
 
     // && op
