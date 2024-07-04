@@ -186,7 +186,9 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Variable p type is class Point2 type is not the same as the init type class Point3
+     
+    In Function main:
+    Variable p type is class Point2 type is not the same as the init type class Point3
 - compiler return code info:
     compiler return code: 1, 0 expected
 
@@ -196,7 +198,9 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Variable self not defined in function IntQueue::insert
+     
+    In Function insert:
+    Variable self not defined in function IntQueue::insert
 - compiler return code info:
     compiler return code: 1, 0 expected
 
@@ -224,7 +228,9 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Can not assign var type: class Rectangle to var :class Shape
+     
+    In Function main:
+    Can not assign var type: class Rectangle to var :class Shape
 - compiler return code info:
     compiler return code: 1, 0 expected
 
@@ -243,7 +249,9 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Type enum Square is not supported for oarray.
+     
+    In Function initRow:
+    Type enum Square is not supported for oarray.
 - compiler return code info:
     compiler return code: 1, 0 expected
 

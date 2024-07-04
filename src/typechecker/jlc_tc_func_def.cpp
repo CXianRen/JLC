@@ -1,8 +1,12 @@
 #include "typechecker/jlc_tc_func_def.h"
 #include "typechecker/jlc_tc_error.h"
+#include "Printer.H"
 
 namespace JLC::TC
 {
+
+    static PrintAbsyn *p = new PrintAbsyn();
+
     void JLC_FUNC_DEF_Checker::
         visitFuncDef(FuncDef *func_def)
     {
@@ -24,7 +28,19 @@ namespace JLC::TC
         is_returned_ = false;
         // function body scope start
         current_func_->push_blk();
-        JLC::TC::TypeVisitor::visitFuncDef(func_def);
+
+        try
+        {
+            // check the function body
+            JLC::TC::TypeVisitor::visitFuncDef(func_def);
+        }
+        catch (JLC::TC::JLCTCError &e)
+        {
+
+            throw JLC::TC::JLCTCError(
+                "\nIn Function " + func_name + ":\n" + e.what());
+        }
+
         // function body scope end
         current_func_->pop_blk();
 
@@ -448,7 +464,7 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitEApp(EApp *e_app)
     {
-        legal_expr_ = true; 
+        legal_expr_ = true;
 
         visitIdent(e_app->ident_);
         auto func_name = e_app->ident_;
@@ -1124,15 +1140,26 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitSExp(SExp *s_exp)
     {
-        legal_expr_ = false;
-        if (s_exp->expr_)
-            s_exp->expr_->accept(this);
 
-        if (!legal_expr_)
+        try
+        {
+            legal_expr_ = false;
+            if (s_exp->expr_)
+                s_exp->expr_->accept(this);
+
+            if (!legal_expr_)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Illegal expression.");
+            }
+        }
+        catch (const JLC::TC::JLCTCError &e)
         {
             // error
             throw JLC::TC::JLCTCError(
-                "Illegal expression.");
+                std::string(e.what()) +
+                ": \n\t" + std::string(p->print(s_exp)));
         }
     }
 
