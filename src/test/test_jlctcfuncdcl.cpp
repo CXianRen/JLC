@@ -204,6 +204,41 @@ int main(int argc, char **argv)
         TEST_EXPECT_EXCEPTION(
             parse_tree->accept(checker.get()));
     }
+    // main function must have return type INT
+    {
+        std::string input_str = "void main() { return; }";
+
+        auto parse_tree = gen_ast(input_str);
+
+        // create a type checker
+        // new context
+        auto context =
+            std::make_shared<JLC::CONTEXT::JLCContext>();
+
+        auto checker =
+            std::make_shared<JLC::TC::JLC_FUNC_CD_Checker>(context);
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(
+            parse_tree->accept(checker.get()));
+    }
+    // main function must have return type INT
+    {
+        std::string input_str = "int main() { return 0; }";
+
+        auto parse_tree = gen_ast(input_str);
+
+        // create a type checker
+        // new context
+        auto context =
+            std::make_shared<JLC::CONTEXT::JLCContext>();
+
+        auto checker =
+            std::make_shared<JLC::TC::JLC_FUNC_CD_Checker>(context);
+
+        // check the parse tree
+        parse_tree->accept(checker.get());
+    }
 
     TEST_PASS();
 }

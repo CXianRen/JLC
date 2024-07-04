@@ -981,7 +981,8 @@ namespace JLC::TC
         current_func_->pop_blk();
     }
 
-    void JLC_FUNC_DEF_Checker::visitWhile(While *while_)
+    void JLC_FUNC_DEF_Checker::
+        visitWhile(While *while_)
     {
         if (while_->expr_)
             while_->expr_->accept(this);
@@ -1003,7 +1004,8 @@ namespace JLC::TC
         current_func_->pop_blk();
     }
 
-    void JLC_FUNC_DEF_Checker::visitForLoop(ForLoop *for_loop)
+    void JLC_FUNC_DEF_Checker::
+        visitForLoop(ForLoop *for_loop)
     {
         // new block scope
         current_func_->push_blk();
@@ -1051,6 +1053,36 @@ namespace JLC::TC
 
         // pop block scope
         current_func_->pop_blk();
+    }
+
+    /************** Return ***************/
+    void JLC_FUNC_DEF_Checker::
+        visitRet(Ret *ret)
+    {
+        if (ret->expr_)
+            ret->expr_->accept(this);
+        auto type = g_type_;
+
+        // check if the return type is the same as the function return type
+        if ((*current_func_->return_type) != type)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Function " + current_func_->name + " return type " + type.str() +
+                " is not the same as the expected return type " + current_func_->return_type->str());
+        }
+    }
+
+    void JLC_FUNC_DEF_Checker::
+        visitVRet(VRet *v_ret)
+    {
+        // check if the return type is void
+        if (current_func_->return_type->type != JLC::TYPE::type_enum::VOID)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Function " + current_func_->name + " return type is not void");
+        }
     }
 
 } // namespace JLC::TC

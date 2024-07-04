@@ -89,6 +89,14 @@ namespace JLC::TC
             throw JLCTCError(error_msg);
         }
 
+        // if main function, check if return type is INT
+        if (func_name == "main" && *return_type != JLC::TYPE::JLCType(INT))
+        {
+            std::string error_msg =
+                "Main function must have return type INT";
+            throw JLCTCError(error_msg);
+        }
+
         // add function to context
         auto func = std::make_shared<JLC::FUNC::JLCFunc>(
             func_name_with_scope, return_type);

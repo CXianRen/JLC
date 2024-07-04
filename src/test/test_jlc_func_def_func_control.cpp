@@ -151,5 +151,64 @@ int main(int argc, char **argv)
         run_checker();
     }
 
+    // return void
+    {
+        std::string input_str = "void f(){ return;}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+
+    // return int
+    {
+        std::string input_str = "int f(){ return 1;}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+
+    // return double
+    {
+        std::string input_str = "double f(){ return 1.0;}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+
+    // return boolean
+    {
+        std::string input_str = "boolean f(){ return true;}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+
+    // return array
+    {
+        std::string input_str = "int[] f(){ int[] a = new int[10]; return a;}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+
+    // return array
+    {
+        std::string input_str = "int[][] f(){ int[][] a = new int[10][10]; return a;}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
     TEST_PASS();
 }

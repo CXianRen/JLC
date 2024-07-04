@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 
     // assign double to double
     {
-        std::string input_str = "int f(){ double x = 1.0; x = 2.0; return x;}";
+        std::string input_str = "int f(){ double x = 1.0; x = 2.0; return 0;}";
 
         init_checker();
 
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
     }
     // assign int to double
     {
-        std::string input_str = "int f(){ double x; x = 2; return x;}";
+        std::string input_str = "void f(){ double x; x = 2;}";
 
         init_checker();
 

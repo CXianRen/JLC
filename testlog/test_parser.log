@@ -66,7 +66,7 @@ About to run tests with these settings:
 [ 58/172] testsuite/bad/struct02    ... OK
 [ 59/172] testsuite/bad/bad066      ... OK
 [ 60/172] testsuite/bad/bad039      ... OK
-[ 61/172] testsuite/bad/bad071      ... FAILED
+[ 61/172] testsuite/bad/bad071      ... OK
 [ 62/172] testsuite/bad/bad001      ... OK
 [ 63/172] testsuite/bad/bad062      ... OK
 [ 64/172] testsuite/bad/bad012      ... FAILED
@@ -75,7 +75,7 @@ About to run tests with these settings:
 [ 67/172] testsuite/bad/bad004      ... OK
 [ 68/172] testsuite/bad/bad013      ... OK
 [ 69/172] testsuite/bad/bad063      ... FAILED
-[ 70/172] testsuite/bad/bad011      ... FAILED
+[ 70/172] testsuite/bad/bad011      ... OK
 [ 71/172] testsuite/bad/struct05    ... OK
 [ 72/172] testsuite/bad/bad061      ... OK
 [ 73/172] testsuite/bad/bad029      ... FAILED
@@ -86,7 +86,7 @@ About to run tests with these settings:
 [ 78/172] testsuite/bad/bad028      ... OK
 [ 79/172] testsuite/bad/struct04    ... OK
 [ 80/172] testsuite/bad/bad060      ... OK
-[ 81/172] testsuite/bad/bad010      ... FAILED
+[ 81/172] testsuite/bad/bad010      ... OK
 [ 82/172] testsuite/bad/bad051      ... OK
 [ 83/172] testsuite/bad/bad021      ... FAILED
 [ 84/172] testsuite/bad/bad036      ... OK
@@ -198,15 +198,6 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/bad/bad071.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/bad/bad012.jl failed !!! ----------
 
 - stderr expected:
@@ -225,25 +216,7 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/bad/bad011.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/bad/bad029.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/bad/bad010.jl failed !!! ----------
 
 - stderr expected:
     ERROR

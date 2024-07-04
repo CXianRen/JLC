@@ -1,5 +1,5 @@
 
-make test
+make test -j12
 
 # get all test_xxx binaries under the build directory
 
