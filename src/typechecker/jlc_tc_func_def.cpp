@@ -725,4 +725,58 @@ namespace JLC::TC
         }
     }
 
+    void JLC_FUNC_DEF_Checker::
+        visitEMul(EMul *e_mul)
+    {
+        /* Code For EMul Goes Here */
+
+        if (e_mul->expr_1)
+            e_mul->expr_1->accept(this);
+        auto type_left = g_type_;
+
+        if (e_mul->mulop_)
+            e_mul->mulop_->accept(this);
+        auto mul_op = g_mul_op_;
+
+        if (e_mul->expr_2)
+            e_mul->expr_2->accept(this);
+        auto type_right = g_type_;
+
+        // DEBUG_PRINT(
+        //     "type_left: " << type_left.str()
+        //                   << " " << JLC::OP::str(mul_op)
+        //                   << " type_right: " << type_right.str());
+
+        // check if type is INT or DOUBLE
+        if (type_left.type != JLC::TYPE::type_enum::INT &&
+            type_left.type != JLC::TYPE::type_enum::DOUB)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Can not perform " + JLC::OP::str(mul_op) +
+                " operation on type: " + type_left.str());
+        }
+
+        // check if type_left == type_right
+        if (type_left != type_right)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Can not perform " + JLC::OP::str(mul_op) +
+                " operation on type: " + type_right.str() + " and type: " + type_left.str());
+        }
+
+        // if op is MOD, then the type should be INT
+        if (mul_op == JLC::OP::MOD)
+        {
+            if (type_left.type != JLC::TYPE::type_enum::INT)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Can not perform " + JLC::OP::str(mul_op) +
+                    " operation on type: " + type_left.str());
+            }
+        }
+    }
+
 } // namespace JLC::TC

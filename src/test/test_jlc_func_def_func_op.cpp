@@ -90,7 +90,7 @@ int main(int argc, char **argv)
     // - op
     {
         std::string input_str = "void f(){ int x; x = -x;}";
-        
+
         init_checker();
         run_checker();
     }
@@ -127,6 +127,73 @@ int main(int argc, char **argv)
     // ! op on double
     {
         std::string input_str = "void f(){ double x; x = !x;}";
+
+        init_checker();
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+    // * op
+    {
+        std::string input_str = "void f(){ int x; x = x*x;}";
+
+        init_checker();
+        run_checker();
+    }
+    // * op on double
+    {
+        std::string input_str = "void f(){ double x; x = x*x;}";
+
+        init_checker();
+        run_checker();
+    }
+    // * op on boolean
+    {
+        std::string input_str = "void f(){ boolean x; x = x*x;}";
+
+        init_checker();
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+    // / op
+    {
+        std::string input_str = "void f(){ int x; x = x/x;}";
+
+        init_checker();
+        run_checker();
+    }
+    // / op on double
+    {
+        std::string input_str = "void f(){ double x; x = x/x;}";
+
+        init_checker();
+        run_checker();
+    }
+    // / op on boolean
+    {
+        std::string input_str = "void f(){ boolean x; x = x/x;}";
+
+        init_checker();
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+    // mod op
+    {
+        std::string input_str = "void f(){ int x; x = x\%x;}";
+
+        init_checker();
+        run_checker();
+    }
+    // mod op on double
+    {
+        std::string input_str = "void f(){ double x; x = x\%x;}";
+
+        init_checker();
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+    // type not equal
+    {
+        std::string input_str = "void f(){ int x; double y; x = x+y;}";
 
         init_checker();
         TEST_EXPECT_EXCEPTION(

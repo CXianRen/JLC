@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 
+#include "common/jlc_operator.h"
 #include "common/jlc_context.h"
 #include "common/debug.h"
 
@@ -57,10 +58,32 @@ namespace JLC::TC
         void visitEFunc(EFunc *p) override;
 
         /* operator */
+        JLC::OP::AddOp g_add_op_;
+        JLC::OP::MulOp g_mul_op_;
+        JLC::OP::RelOp g_rel_op_;
+
+        void visitPlus(Plus *p) override { g_add_op_ = JLC::OP::AddOp::ADD; }
+        void visitMinus(Minus *p) override { g_add_op_ = JLC::OP::AddOp::SUB; }
+        void visitTimes(Times *p) override { g_mul_op_ = JLC::OP::MulOp::MUL; }
+        void visitDiv(Div *p) override { g_mul_op_ = JLC::OP::MulOp::DIV; }
+        void visitMod(Mod *p) override { g_mul_op_ = JLC::OP::MulOp::MOD; }
+        void visitLTH(LTH *p) override { g_rel_op_ = JLC::OP::RelOp::LTH; }
+        void visitLE(LE *p) override { g_rel_op_ = JLC::OP::RelOp::LE; }
+        void visitGTH(GTH *p) override { g_rel_op_ = JLC::OP::RelOp::GTH; }
+        void visitGE(GE *p) override { g_rel_op_ = JLC::OP::RelOp::GE; }
+        void visitEQU(EQU *p) override { g_rel_op_ = JLC::OP::RelOp::EQU; }
+        void visitNE(NE *p) override { g_rel_op_ = JLC::OP::RelOp::NE; }
+
         void visitEInc(EInc *p) override;   // ++
         void visitEDecr(EDecr *p) override; // --
         void visitENeg(ENeg *p) override;   // -
         void visitENot(ENot *p) override;   // !
+        void visitEMul(EMul *p) override;   // x / mod
+
+        // void visitEAdd(EAdd *p) override;   // + -
+        // void visitERel(ERel *p) override;   // > < <= == >= !=
+        // void visitEAnd(EAnd *p) override;   // &&
+        // void visitEOr(EOr *p) override;     // ||
 
     private:
         void checkFuncParams(
