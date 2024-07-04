@@ -54,6 +54,8 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitNoInit(NoInit *no_init)
     {
+        legal_expr_ = true;
+
         auto var_type =
             std::make_shared<JLC::TYPE::JLCType>(g_type_);
 
@@ -90,7 +92,7 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitInit(Init *init)
     {
-        /* Code For Init Goes Here */
+        legal_expr_ = true;
 
         auto var_type =
             std::make_shared<JLC::TYPE::JLCType>(g_type_);
@@ -139,6 +141,8 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitAss(Ass *ass)
     {
+        legal_expr_ = true;
+
         if (ass->expr_1)
             ass->expr_1->accept(this);
         auto type_left = g_type_;
@@ -444,6 +448,8 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitEApp(EApp *e_app)
     {
+        legal_expr_ = true; 
+
         visitIdent(e_app->ident_);
         auto func_name = e_app->ident_;
         auto func_name_with_scope =
@@ -465,6 +471,8 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitEFunc(EFunc *e_func)
     {
+        legal_expr_ = true;
+
         if (e_func->expr_)
             e_func->expr_->accept(this);
         auto type = g_type_;
@@ -680,6 +688,8 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitEInc(EInc *e_inc)
     {
+        legal_expr_ = true;
+
         if (e_inc->expr_)
             e_inc->expr_->accept(this);
         auto type = g_type_;
@@ -695,6 +705,8 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitEDecr(EDecr *e_decr)
     {
+        legal_expr_ = true;
+
         if (e_decr->expr_)
             e_decr->expr_->accept(this);
         auto type = g_type_;
@@ -1107,6 +1119,21 @@ namespace JLC::TC
                 "Function " + current_func_->name + " return type is not void");
         }
         is_returned_ = true;
+    }
+
+    void JLC_FUNC_DEF_Checker::
+        visitSExp(SExp *s_exp)
+    {
+        legal_expr_ = false;
+        if (s_exp->expr_)
+            s_exp->expr_->accept(this);
+
+        if (!legal_expr_)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Illegal expression.");
+        }
     }
 
 } // namespace JLC::TC

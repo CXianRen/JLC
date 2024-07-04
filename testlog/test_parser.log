@@ -74,7 +74,7 @@ About to run tests with these settings:
 [ 66/172] testsuite/bad/bad074      ... OK
 [ 67/172] testsuite/bad/bad004      ... OK
 [ 68/172] testsuite/bad/bad013      ... OK
-[ 69/172] testsuite/bad/bad063      ... FAILED
+[ 69/172] testsuite/bad/bad063      ... OK
 [ 70/172] testsuite/bad/bad011      ... OK
 [ 71/172] testsuite/bad/struct05    ... OK
 [ 72/172] testsuite/bad/bad061      ... OK
@@ -180,15 +180,6 @@ About to run tests with these settings:
 [172/172] testsuite/extensions/advstructs/adv_structs003 ... OK
 
 Some tests failed:
----------- !!! testsuite/bad/bad063.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/extensions/objects1/points.jl failed !!! ----------
 
 - stderr expected:

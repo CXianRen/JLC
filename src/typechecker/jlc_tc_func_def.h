@@ -97,6 +97,10 @@ namespace JLC::TC
         void visitRet(Ret *p) override;
         void visitVRet(VRet *p) override;
 
+        /* expression */
+        bool legal_expr_ = false;
+        void visitSExp(SExp *p);
+
     private:
         void checkFuncParams(
             std::shared_ptr<JLC::FUNC::JLCFunc> &func,

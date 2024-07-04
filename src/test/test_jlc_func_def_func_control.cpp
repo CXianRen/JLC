@@ -306,6 +306,46 @@ int main(int argc, char **argv)
         // check the parse tree
         run_checker();
     }
+    // legal expression
+    {
+        std::string input_str = "void f(){}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // illegal expression
+    {
+        std::string input_str = "void f(){1;}";
+
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+
+    // illegal expression
+    {
+        std::string input_str = "void f(){int a; a;}";
+
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+
+    // illegal expression class member
+    {
+        std::string input_str = "class A{int a; void f(){} } void f(){A a; a.f();}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
 
     TEST_PASS();
 }
