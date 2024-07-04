@@ -41,10 +41,13 @@ namespace JLC::TC
         void visitInit(Init *p) override;
         void visitENewObj(ENewObj *p);
 
+        void visitENewBArr(ENewBArr *p);
+
         /* variable access */
         void visitEVar(EVar *p);
         void visitEpropety(Epropety *p);
         void visitEArrow(EArrow *p);
+        void visitENewOArr(ENewOArr *p);
 
         /* function */
         void visitEApp(EApp *p);

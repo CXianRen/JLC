@@ -485,4 +485,90 @@ namespace JLC::TC
             "Type " + type_name + " not found.");
     }
 
+    void JLC_FUNC_DEF_Checker::
+        visitENewBArr(ENewBArr *e_new_b_arr)
+    {
+        if (e_new_b_arr->btype_)
+            e_new_b_arr->btype_->accept(this);
+
+        auto type = g_type_;
+        // check if the type is INT, DOUBLE, BOOL
+        if (type.type != JLC::TYPE::type_enum::INT &&
+            type.type != JLC::TYPE::type_enum::DOUB &&
+            type.type != JLC::TYPE::type_enum::BOOL)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Type " + type.str() + " is not supported for barray.");
+        }
+
+        auto list_dim_expr = e_new_b_arr->listdimexpr_;
+        for (ListDimExpr::iterator i = list_dim_expr->begin(); i != list_dim_expr->end(); ++i)
+        {
+            (*i)->accept(this);
+            auto type = g_type_;
+            // check if the type is INT
+            if (type.type != JLC::TYPE::type_enum::INT)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "[] operator only supports INT type, but got " + type.str());
+            }
+        }
+
+        int dim = list_dim_expr->size();
+
+        // generate N dim array type
+        auto base_type = std::make_shared<JLC::TYPE::JLCType>(type);
+        for (int i = 0; i < dim; i++)
+        {
+            base_type = std::make_shared<JLC::TYPE::JLCType>(
+                JLC::TYPE::type_enum::ARRAY, base_type);
+        }
+        g_type_ = *base_type;
+    }
+
+    void JLC_FUNC_DEF_Checker::
+        visitENewOArr(ENewOArr *e_new_o_arr)
+    {
+
+        if (e_new_o_arr->otype_)
+            e_new_o_arr->otype_->accept(this);
+
+        auto type = g_type_;
+        // check if the type is struct or class
+        if (type.type != JLC::TYPE::type_enum::STRUCT &&
+            type.type != JLC::TYPE::type_enum::CLASS)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Type " + type.str() + " is not supported for oarray.");
+        }
+
+        auto list_dim_expr = e_new_o_arr->listdimexpr_;
+        for (ListDimExpr::iterator i = list_dim_expr->begin(); i != list_dim_expr->end(); ++i)
+        {
+            (*i)->accept(this);
+            auto type = g_type_;
+            // check if the type is INT
+            if (type.type != JLC::TYPE::type_enum::INT)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "[] operator only supports INT type, but got " + type.str());
+            }
+        }
+
+        int dim = list_dim_expr->size();
+
+        // generate N dim array type
+        auto base_type = std::make_shared<JLC::TYPE::JLCType>(type);
+        for (int i = 0; i < dim; i++)
+        {
+            base_type = std::make_shared<JLC::TYPE::JLCType>(
+                JLC::TYPE::type_enum::ARRAY, base_type);
+        }
+        g_type_ = *base_type;
+    }
+
 } // namespace JLC::TC

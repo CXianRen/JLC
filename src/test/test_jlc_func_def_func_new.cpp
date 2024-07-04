@@ -86,10 +86,100 @@ int main(int argc, char **argv)
 
         // check the parse tree
         run_checker();
-    }   
+    }
     // new a undefined class type
     {
         std::string input_str = "int f(){ A a = new A;}";
+
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+    // new basic type array
+    {
+        std::string input_str = "int f(){ int[] a = new int[10];}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // new basic two dimension array
+    {
+        std::string input_str = "int f(){ int[][] a = new int[10][10];}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // invalid array size
+    {
+        std::string input_str = "int f(){ int[] a = new int[1.0];}";
+
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+    // invalid array size
+    {
+        std::string input_str = "double f2(){return 0.0;} \n"
+                                "int f(){ int[][] a = new int[1][f2()];}";
+
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+    // new struct array
+    {
+        std::string input_str = "typedef struct A_t { int x; }* A;\n"
+                                "int f(){ A[] a = new A[10];}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // new class array
+    {
+        std::string input_str = "class A { int x; }\n"
+                                "int f(){ A[] a = new A[10];}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // new struct two dimension array
+    {
+        std::string input_str = "typedef struct A_t { int x; }* A;\n"
+                                "int f(){ A[][] a = new A[10][10];}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // new class two dimension array
+    {
+        std::string input_str = "class A { int x; }\n"
+                                "int f(){ A[][] a = new A[10][10];}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // new struct array with invalid size
+    {
+        std::string input_str = "typedef struct A_t { int x; }* A;\n"
+                                "int f(){ A[] a = new A[1.0];}";
 
         init_checker();
 
