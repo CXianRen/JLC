@@ -44,10 +44,13 @@ namespace JLC::TC
         void visitENewBArr(ENewBArr *p);
 
         /* variable access */
+        void visitAss(Ass *p);
+
         void visitEVar(EVar *p);
         void visitEpropety(Epropety *p);
         void visitEArrow(EArrow *p);
         void visitENewOArr(ENewOArr *p);
+        void visitEAcc(EAcc *p); 
 
         /* function */
         void visitEApp(EApp *p);

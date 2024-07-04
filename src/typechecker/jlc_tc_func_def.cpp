@@ -124,6 +124,27 @@ namespace JLC::TC
     }
 
     void JLC_FUNC_DEF_Checker::
+        visitAss(Ass *ass)
+    {
+        if (ass->expr_1)
+            ass->expr_1->accept(this);
+        auto type_left = g_type_;
+
+        if (ass->expr_2)
+            ass->expr_2->accept(this);
+        auto type_right = g_type_;
+
+        // check if type_left == type_right
+        if (type_left != type_right)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Can not assign var type: " + type_right.str() + " to var :" +
+                type_left.str());
+        }
+    }
+
+    void JLC_FUNC_DEF_Checker::
         visitEVar(EVar *e_var)
     {
         auto var_name = e_var->ident_;
@@ -517,6 +538,13 @@ namespace JLC::TC
         }
 
         int dim = list_dim_expr->size();
+        // dim should be at least 1
+        if (dim == 0)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "[] operator should have at least one dimension.");
+        }
 
         // generate N dim array type
         auto base_type = std::make_shared<JLC::TYPE::JLCType>(type);
@@ -560,6 +588,13 @@ namespace JLC::TC
         }
 
         int dim = list_dim_expr->size();
+        // dim should be at least 1
+        if (dim == 0)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "[] operator should have at least one dimension.");
+        }
 
         // generate N dim array type
         auto base_type = std::make_shared<JLC::TYPE::JLCType>(type);
@@ -569,6 +604,63 @@ namespace JLC::TC
                 JLC::TYPE::type_enum::ARRAY, base_type);
         }
         g_type_ = *base_type;
+    }
+
+    void JLC_FUNC_DEF_Checker::
+        visitEAcc(EAcc *e_acc)
+    {
+        if (e_acc->expr_)
+            e_acc->expr_->accept(this);
+        auto obj_type = g_type_;
+        // check if the type is an array
+        if (obj_type.type != JLC::TYPE::type_enum::ARRAY)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Type " + obj_type.str() + " does not support [] operator.");
+        }
+
+        // get the max dimension of the array
+        int max_dim = 0;
+        auto base_type = obj_type;
+        while (base_type.type == JLC::TYPE::type_enum::ARRAY)
+        {
+            max_dim++;
+            base_type = *base_type.base_type;
+        }
+
+        auto list_dim_expr = e_acc->listdimexpr_;
+        int accessed_dim = list_dim_expr->size();
+
+        // if the accessed dimension is larger than the max dimension
+        if (accessed_dim > max_dim)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Array accessed dimension " + std::to_string(accessed_dim) +
+                " is larger than the max dimension " + std::to_string(max_dim));
+        }
+
+        for (ListDimExpr::iterator i = list_dim_expr->begin(); i != list_dim_expr->end(); ++i)
+        {
+            (*i)->accept(this);
+            auto type = g_type_;
+            // check if the type is INT
+            if (type.type != JLC::TYPE::type_enum::INT)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "[] operator only supports INT type, but got " + type.str());
+            }
+        }
+
+        // get the type of N - accessed_dim dimension array
+        base_type = obj_type;
+        for (int i = 0; i < accessed_dim; i++)
+        {
+            base_type = *base_type.base_type;
+        }
+        g_type_ = base_type;
     }
 
 } // namespace JLC::TC
