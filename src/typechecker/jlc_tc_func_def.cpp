@@ -902,4 +902,18 @@ namespace JLC::TC
         }
     }
 
+    void JLC_FUNC_DEF_Checker::visitEcast(Ecast *ecast)
+    {
+
+        if (ecast->type_)
+            ecast->type_->accept(this);
+        auto cast_type = g_type_;
+
+        if (ecast->expr_)
+            ecast->expr_->accept(this);
+        auto type = g_type_;
+
+        g_type_ = cast_type;
+    }
+
 } // namespace JLC::TC

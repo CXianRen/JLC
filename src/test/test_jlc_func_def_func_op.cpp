@@ -407,6 +407,21 @@ int main(int argc, char **argv)
         TEST_EXPECT_EXCEPTION(
             run_checker());
     }
+    
+    // cast ()
+    {
+        std::string input_str = "void f(){ int x; double y; y = (double)x;}";
+
+        init_checker();
+        run_checker();
+    }
+    // case null
+    {
+        std::string input_str = "void f(){ int x; double y; y = (double)null;}";
+
+        init_checker();
+        run_checker();
+    }
 
     TEST_PASS();
 }

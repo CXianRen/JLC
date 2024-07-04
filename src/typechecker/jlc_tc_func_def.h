@@ -84,6 +84,8 @@ namespace JLC::TC
         void visitEAnd(EAnd *p) override;   // &&
         void visitEOr(EOr *p) override;     // ||
 
+        void visitEcast(Ecast *p) override; // ()
+
     private:
         void checkFuncParams(
             std::shared_ptr<JLC::FUNC::JLCFunc> &func,
