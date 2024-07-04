@@ -812,7 +812,8 @@ namespace JLC::TC
         }
     }
 
-    void JLC_FUNC_DEF_Checker::visitERel(ERel *e_rel)
+    void JLC_FUNC_DEF_Checker::
+        visitERel(ERel *e_rel)
     {
         if (e_rel->expr_1)
             e_rel->expr_1->accept(this);
@@ -848,7 +849,8 @@ namespace JLC::TC
         g_type_ = JLC::TYPE::JLCType(JLC::TYPE::type_enum::BOOL);
     }
 
-    void JLC_FUNC_DEF_Checker::visitEAnd(EAnd *e_and)
+    void JLC_FUNC_DEF_Checker::
+        visitEAnd(EAnd *e_and)
     {
         if (e_and->expr_1)
             e_and->expr_1->accept(this);
@@ -874,7 +876,8 @@ namespace JLC::TC
         }
     }
 
-    void JLC_FUNC_DEF_Checker::visitEOr(EOr *e_or)
+    void JLC_FUNC_DEF_Checker::
+        visitEOr(EOr *e_or)
     {
 
         if (e_or->expr_1)
@@ -902,7 +905,8 @@ namespace JLC::TC
         }
     }
 
-    void JLC_FUNC_DEF_Checker::visitEcast(Ecast *ecast)
+    void JLC_FUNC_DEF_Checker::
+        visitEcast(Ecast *ecast)
     {
 
         if (ecast->type_)
@@ -914,6 +918,45 @@ namespace JLC::TC
         auto type = g_type_;
 
         g_type_ = cast_type;
+    }
+
+    void JLC_FUNC_DEF_Checker::
+        visitCond(Cond *cond)
+    {
+        if (cond->expr_)
+            cond->expr_->accept(this);
+        auto type = g_type_;
+
+        // check if type is BOOL
+        if (type.type != JLC::TYPE::type_enum::BOOL)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Condition expression should be BOOL type, but got " + type.str());
+        }
+
+        if (cond->stmt_)
+            cond->stmt_->accept(this);
+    }
+
+    void JLC_FUNC_DEF_Checker::
+        visitCondElse(CondElse *cond_else)
+    {
+        if (cond_else->expr_)
+            cond_else->expr_->accept(this);
+        auto type = g_type_;
+
+        // check if type is BOOL
+        if (type.type != JLC::TYPE::type_enum::BOOL)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Condition expression should be BOOL type, but got " + type.str());
+        }
+        if (cond_else->stmt_1)
+            cond_else->stmt_1->accept(this);
+        if (cond_else->stmt_2)
+            cond_else->stmt_2->accept(this);
     }
 
 } // namespace JLC::TC
