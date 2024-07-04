@@ -63,7 +63,7 @@ About to run tests with these settings:
 [ 55/172] testsuite/bad/bad017      ... OK
 [ 56/172] testsuite/bad/bad016      ... OK
 [ 57/172] testsuite/bad/bad049      ... OK
-[ 58/172] testsuite/bad/struct02    ... FAILED
+[ 58/172] testsuite/bad/struct02    ... OK
 [ 59/172] testsuite/bad/bad066      ... OK
 [ 60/172] testsuite/bad/bad039      ... OK
 [ 61/172] testsuite/bad/bad071      ... FAILED
@@ -113,11 +113,11 @@ About to run tests with these settings:
 [105/172] testsuite/bad/bad023      ... OK
 [106/172] testsuite/bad/bad040      ... OK
 [107/172] testsuite/bad/array01     ... OK
-[108/172] testsuite/bad/bad027      ... FAILED
+[108/172] testsuite/bad/bad027      ... OK
 [109/172] testsuite/bad/bad008      ... FAILED
 [110/172] testsuite/bad/bad056      ... FAILED
-[111/172] testsuite/bad/bad009      ... FAILED
-[112/172] testsuite/bad/bad026      ... FAILED
+[111/172] testsuite/bad/bad009      ... OK
+[112/172] testsuite/bad/bad026      ... OK
 [113/172] testsuite/bad/bad031      ... FAILED
 [114/172] testsuite/bad/bad041      ... OK
 [115/172] testsuite/bad/bad033      ... FAILED
@@ -127,7 +127,7 @@ About to run tests with these settings:
 [119/172] testsuite/bad/bad025      ... FAILED
 [120/172] testsuite/bad/bad055      ... FAILED
 [121/172] testsuite/bad/bad042      ... OK
-[122/172] testsuite/bad/array03     ... FAILED
+[122/172] testsuite/bad/array03     ... OK
 [123/172] testsuite/bad/bad032      ... FAILED
 [124/172] testsuite/extensions/objects1/linked ... OK
 [125/172] testsuite/extensions/objects1/points ... FAILED
@@ -136,7 +136,7 @@ About to run tests with these settings:
 [128/172] testsuite/extensions/objects1/shadowedfunction ... OK
 [129/172] testsuite/extensions/objects1/bad/parentheses ... OK
 [130/172] testsuite/extensions/objects1/bad/cyclic ... FAILED
-[131/172] testsuite/extensions/objects1/bad/bad005 ... FAILED
+[131/172] testsuite/extensions/objects1/bad/bad005 ... OK
 [132/172] testsuite/extensions/objects1/bad/bad004 ... OK
 [133/172] testsuite/extensions/objects1/bad/order ... FAILED
 [134/172] testsuite/extensions/objects1/bad/bad001 ... OK
@@ -152,12 +152,12 @@ About to run tests with these settings:
 [144/172] testsuite/extensions/arrays1/array003 ... FAILED
 [145/172] testsuite/extensions/arrays1/array001 ... FAILED
 [146/172] testsuite/extensions/arrays1/array004 ... FAILED
-[147/172] testsuite/extensions/arrays1/array005 ... FAILED
-[148/172] testsuite/extensions/arrays1/array006 ... FAILED
+[147/172] testsuite/extensions/arrays1/array005 ... OK
+[148/172] testsuite/extensions/arrays1/array006 ... OK
 [149/172] testsuite/extensions/arrays1/bad/bad001 ... OK
 [150/172] testsuite/extensions/arrays1/bad/bad002 ... OK
 [151/172] testsuite/extensions/arrays1/bad/parentheses ... OK
-[152/172] testsuite/extensions/objects2/shapes ... OK
+[152/172] testsuite/extensions/objects2/shapes ... FAILED
 [153/172] testsuite/extensions/objects2/bad/bad001 ... FAILED
 [154/172] testsuite/extensions/arrays2/array001 ... FAILED
 [155/172] testsuite/extensions/arrays2/array002 ... FAILED
@@ -165,18 +165,18 @@ About to run tests with these settings:
 [157/172] testsuite/extensions/arrays2/bad/bad002 ... OK
 [158/172] testsuite/extensions/arrays2/bad/bad001 ... OK
 [159/172] testsuite/extensions/pointers/list ... OK
-[160/172] testsuite/extensions/pointers/tree ... FAILED
-[161/172] testsuite/extensions/pointers/big ... FAILED
+[160/172] testsuite/extensions/pointers/tree ... OK
+[161/172] testsuite/extensions/pointers/big ... OK
 [162/172] testsuite/extensions/pointers/syntax ... OK
 [163/172] testsuite/extensions/pointers/bad/bad002 ... OK
-[164/172] testsuite/extensions/pointers/bad/bad003 ... FAILED
+[164/172] testsuite/extensions/pointers/bad/bad003 ... OK
 [165/172] testsuite/extensions/pointers/bad/bad001 ... OK
 [166/172] testsuite/extensions/pointers/bad/parentheses ... OK
-[167/172] testsuite/extensions/arrays2_pointers/mixed001 ... FAILED
+[167/172] testsuite/extensions/arrays2_pointers/mixed001 ... OK
 [168/172] testsuite/extensions/advstructs/adv_structs004 ... FAILED
 [169/172] testsuite/extensions/advstructs/adv_structs005 ... OK
 [170/172] testsuite/extensions/advstructs/adv_structs001 ... FAILED
-[171/172] testsuite/extensions/advstructs/adv_structs002 ... FAILED
+[171/172] testsuite/extensions/advstructs/adv_structs002 ... OK
 [172/172] testsuite/extensions/advstructs/adv_structs003 ... OK
 
 Some tests failed:
@@ -218,15 +218,6 @@ Some tests failed:
     compiler return code: 0, nonzero expected
 
 ---------- !!! testsuite/bad/bad067.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/bad/struct02.jl failed !!! ----------
 
 - stderr expected:
     ERROR
@@ -397,15 +388,6 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/bad/bad027.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/bad/bad008.jl failed !!! ----------
 
 - stderr expected:
@@ -416,24 +398,6 @@ Some tests failed:
     compiler return code: 0, nonzero expected
 
 ---------- !!! testsuite/bad/bad056.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/bad/bad009.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/bad/bad026.jl failed !!! ----------
 
 - stderr expected:
     ERROR
@@ -487,15 +451,6 @@ Some tests failed:
 - compiler return code info:
     compiler return code: 0, nonzero expected
 
----------- !!! testsuite/bad/array03.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/bad/bad032.jl failed !!! ----------
 
 - stderr expected:
@@ -511,7 +466,7 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Function move not found in the context
+     Variable p type is class Point2 type is not the same as the init type class Point3
 - compiler return code info:
     compiler return code: 1, 0 expected
 
@@ -526,15 +481,6 @@ Some tests failed:
     compiler return code: 1, 0 expected
 
 ---------- !!! testsuite/extensions/objects1/bad/cyclic.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/extensions/objects1/bad/bad005.jl failed !!! ----------
 
 - stderr expected:
     ERROR
@@ -558,7 +504,7 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Variable foos type is struct Foo_t[] type is not the same as the init type int
+     Variable foo not defined in function global::main
 - compiler return code info:
     compiler return code: 1, 0 expected
 
@@ -578,7 +524,7 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Variable a type is int type is not the same as the init type struct Triangle
+     Variable pt not defined in function global::main
 - compiler return code info:
     compiler return code: 1, 0 expected
 
@@ -588,7 +534,7 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Variable res type is int[] type is not the same as the init type int
+     Variable n not defined in function global::doubleArray
 - compiler return code info:
     compiler return code: 1, 0 expected
 
@@ -598,7 +544,7 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Variable bools type is bool[] type is not the same as the init type int
+     Can not assign var type: double to var :bool
 - compiler return code info:
     compiler return code: 1, 0 expected
 
@@ -608,7 +554,7 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Variable a type is int[] type is not the same as the init type int
+     Variable x not defined in function global::main
 - compiler return code info:
     compiler return code: 1, 0 expected
 
@@ -618,27 +564,17 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Variable a type is int[] type is not the same as the init type int
+     Variable x not defined in function global::main
 - compiler return code info:
     compiler return code: 1, 0 expected
 
----------- !!! testsuite/extensions/arrays1/array005.jl failed !!! ----------
+---------- !!! testsuite/extensions/objects2/shapes.jl failed !!! ----------
 
 - stderr expected:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Property length is not defined for type int
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/arrays1/array006.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Variable x type is int[] type is not the same as the init type int
+     Can not assign var type: class Rectangle to var :class Shape
 - compiler return code info:
     compiler return code: 1, 0 expected
 
@@ -657,7 +593,7 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Variable a3 type is int[][][] type is not the same as the init type int
+     Variable x not defined in function global::main
 - compiler return code info:
     compiler return code: 1, 0 expected
 
@@ -667,46 +603,7 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Variable vector type is double[] type is not the same as the init type int
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/pointers/tree.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Function global::insertTree argument t type is not the same as the expected type struct Node
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/pointers/big.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Function global::printInt argument x type is not the same as the expected type int
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/pointers/bad/bad003.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
----------- !!! testsuite/extensions/arrays2_pointers/mixed001.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Property length is not defined for type int
+     Variable x not defined in function global::main
 - compiler return code info:
     compiler return code: 1, 0 expected
 
@@ -716,7 +613,7 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Variable row type is enum Square[] type is not the same as the init type int
+     Type enum Square is not supported for oarray.
 - compiler return code info:
     compiler return code: 1, 0 expected
 
@@ -726,17 +623,7 @@ Some tests failed:
     OK
 - stderr actual:
     ERROR, Type check error:
-     Variable foos type is struct Foo_t[] type is not the same as the init type int
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/advstructs/adv_structs002.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Property length is not defined for type int
+     Variable foo not defined in function global::main
 - compiler return code info:
     compiler return code: 1, 0 expected
 
