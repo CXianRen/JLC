@@ -663,4 +663,66 @@ namespace JLC::TC
         g_type_ = base_type;
     }
 
+    /************* operator ***************/
+    void JLC_FUNC_DEF_Checker::
+        visitEInc(EInc *e_inc)
+    {
+        if (e_inc->expr_)
+            e_inc->expr_->accept(this);
+        auto type = g_type_;
+        // check if the type is INT
+        if (type.type != JLC::TYPE::type_enum::INT)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "++ operator only supports INT type, but got " + type.str());
+        }
+    }
+
+    void JLC_FUNC_DEF_Checker::
+        visitEDecr(EDecr *e_decr)
+    {
+        if (e_decr->expr_)
+            e_decr->expr_->accept(this);
+        auto type = g_type_;
+        // check if the type is INT
+        if (type.type != JLC::TYPE::type_enum::INT)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "-- operator only supports INT type, but got " + type.str());
+        }
+    }
+
+    void JLC_FUNC_DEF_Checker::
+        visitENeg(ENeg *e_neg)
+    {
+        if (e_neg->expr_)
+            e_neg->expr_->accept(this);
+        auto type = g_type_;
+        // check if the type is INT or DOUBLE
+        if (type.type != JLC::TYPE::type_enum::INT &&
+            type.type != JLC::TYPE::type_enum::DOUB)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "- operator only supports INT or DOUBLE type, but got " + type.str());
+        }
+    }
+
+    void JLC_FUNC_DEF_Checker::
+        visitENot(ENot *e_not)
+    {
+        if (e_not->expr_)
+            e_not->expr_->accept(this);
+        auto type = g_type_;
+        // check if the type is BOOL
+        if (type.type != JLC::TYPE::type_enum::BOOL)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "! operator only supports BOOL type, but got " + type.str());
+        }
+    }
+
 } // namespace JLC::TC

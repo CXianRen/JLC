@@ -39,22 +39,28 @@ namespace JLC::TC
         // declaration variables
         void visitNoInit(NoInit *p) override;
         void visitInit(Init *p) override;
-        void visitENewObj(ENewObj *p);
+        void visitENewObj(ENewObj *p) override;
 
-        void visitENewBArr(ENewBArr *p);
+        void visitENewBArr(ENewBArr *p) override;
 
         /* variable access */
-        void visitAss(Ass *p);
+        void visitAss(Ass *p) override;
 
-        void visitEVar(EVar *p);
-        void visitEpropety(Epropety *p);
-        void visitEArrow(EArrow *p);
-        void visitENewOArr(ENewOArr *p);
-        void visitEAcc(EAcc *p); 
+        void visitEVar(EVar *p) override;
+        void visitEpropety(Epropety *p) override;
+        void visitEArrow(EArrow *p) override;
+        void visitENewOArr(ENewOArr *p) override;
+        void visitEAcc(EAcc *p) override;
 
         /* function */
-        void visitEApp(EApp *p);
-        void visitEFunc(EFunc *p);
+        void visitEApp(EApp *p) override;
+        void visitEFunc(EFunc *p) override;
+
+        /* operator */
+        void visitEInc(EInc *p) override;   // ++
+        void visitEDecr(EDecr *p) override; // --
+        void visitENeg(ENeg *p) override;   // -
+        void visitENot(ENot *p) override;   // !
 
     private:
         void checkFuncParams(
