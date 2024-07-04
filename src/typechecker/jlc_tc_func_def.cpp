@@ -779,4 +779,39 @@ namespace JLC::TC
         }
     }
 
+    void JLC_FUNC_DEF_Checker::
+        visitEAdd(EAdd *e_add)
+    {
+        /* Code For EAdd Goes Here */
+
+        if (e_add->expr_1)
+            e_add->expr_1->accept(this);
+        auto type_left = g_type_;
+
+        if (e_add->addop_)
+            e_add->addop_->accept(this);
+        if (e_add->expr_2)
+            e_add->expr_2->accept(this);
+        auto type_right = g_type_;
+
+        // check if type is INT or DOUBLE
+        if (type_left.type != JLC::TYPE::type_enum::INT &&
+            type_left.type != JLC::TYPE::type_enum::DOUB)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Can not perform " + JLC::OP::str(g_add_op_) +
+                " operation on type: " + type_left.str());
+        }
+
+        // check if type_left == type_right
+        if (type_left != type_right)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Can not perform " + JLC::OP::str(g_add_op_) +
+                " operation on type: " + type_right.str() + " and type: " + type_left.str());
+        }
+    }
+
 } // namespace JLC::TC

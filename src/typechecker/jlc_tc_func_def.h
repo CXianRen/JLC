@@ -79,8 +79,7 @@ namespace JLC::TC
         void visitENeg(ENeg *p) override;   // -
         void visitENot(ENot *p) override;   // !
         void visitEMul(EMul *p) override;   // x / mod
-
-        // void visitEAdd(EAdd *p) override;   // + -
+        void visitEAdd(EAdd *p) override;   // + -
         // void visitERel(ERel *p) override;   // > < <= == >= !=
         // void visitEAnd(EAnd *p) override;   // &&
         // void visitEOr(EOr *p) override;     // ||
