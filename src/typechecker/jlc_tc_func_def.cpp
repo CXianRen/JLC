@@ -21,11 +21,24 @@ namespace JLC::TC
                 "Function " + func_name + " not found in the context");
         }
 
+        is_returned_ = false;
         // function body scope start
         current_func_->push_blk();
         JLC::TC::TypeVisitor::visitFuncDef(func_def);
         // function body scope end
         current_func_->pop_blk();
+
+        // if the function is not void type
+        if (*current_func_->return_type != JLC::TYPE::JLCType(JLC::TYPE::type_enum::VOID))
+        {
+            // check if the function is returned
+            if (!is_returned_)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Function " + func_name + " is not returned");
+            }
+        }
     }
 
     void JLC_FUNC_DEF_Checker::
@@ -950,6 +963,8 @@ namespace JLC::TC
             cond->stmt_->accept(this);
         // pop block scope
         current_func_->pop_blk();
+
+        is_returned_ = false;
     }
 
     void JLC_FUNC_DEF_Checker::
@@ -972,13 +987,17 @@ namespace JLC::TC
             cond_else->stmt_1->accept(this);
         // pop block scope
         current_func_->pop_blk();
+        auto if_returned = is_returned_;
+        is_returned_ = false;
 
         // new block scope
         current_func_->push_blk();
         if (cond_else->stmt_2)
             cond_else->stmt_2->accept(this);
+        auto else_returned = is_returned_;
         // pop block scope
         current_func_->pop_blk();
+        is_returned_ = if_returned && else_returned;
     }
 
     void JLC_FUNC_DEF_Checker::
@@ -1002,6 +1021,7 @@ namespace JLC::TC
             while_->stmt_->accept(this);
         // pop block scope
         current_func_->pop_blk();
+        is_returned_ = false;
     }
 
     void JLC_FUNC_DEF_Checker::
@@ -1053,6 +1073,8 @@ namespace JLC::TC
 
         // pop block scope
         current_func_->pop_blk();
+
+        is_returned_ = false;
     }
 
     /************** Return ***************/
@@ -1071,6 +1093,7 @@ namespace JLC::TC
                 "Function " + current_func_->name + " return type " + type.str() +
                 " is not the same as the expected return type " + current_func_->return_type->str());
         }
+        is_returned_ = true;
     }
 
     void JLC_FUNC_DEF_Checker::
@@ -1083,6 +1106,7 @@ namespace JLC::TC
             throw JLC::TC::JLCTCError(
                 "Function " + current_func_->name + " return type is not void");
         }
+        is_returned_ = true;
     }
 
 } // namespace JLC::TC

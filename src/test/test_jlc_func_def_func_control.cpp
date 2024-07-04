@@ -210,5 +210,102 @@ int main(int argc, char **argv)
         // check the parse tree
         run_checker();
     }
+
+    // void return without return
+    {
+        std::string input_str = "void f(){}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+
+    // not void return without return
+    {
+        std::string input_str = "int f(){}";
+
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(run_checker());
+    }
+
+    // all branches must have return
+    {
+        std::string input_str = "int f(){ if (true) return 1;}";
+
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(run_checker());
+        // run_checker();
+    }
+    // if else
+    {
+        std::string input_str = "int f(){ if (true) return 1; else {};}";
+
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(run_checker());
+    }
+    // if else
+    {
+        std::string input_str = "int f(){ if (true) return 1; else return 0;}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // if nested
+    {
+        std::string input_str = "int f(){ if (true) {if (true) return 1;} return 0;}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // if nested
+    {
+        std::string input_str = "int f(){ if (true) {if (true) return 1; else {}}}";
+
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(run_checker());
+    }
+    // while loop with return
+    {
+        std::string input_str = "int f(){ while (true) {return 1;}}";
+
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+    // for each loop with return
+    {
+        std::string input_str = "int f(){ int[] a = new int[10]; for (int x : a) {return 1;}}";
+
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+    // for each loop without return
+    {
+        std::string input_str = "int f(){ int[] a = new int[10]; for (int x : a) {} return 0;}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+
     TEST_PASS();
 }

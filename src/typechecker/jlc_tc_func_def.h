@@ -93,6 +93,7 @@ namespace JLC::TC
         void visitForLoop(ForLoop *p) override;
 
         /* return */
+        bool is_returned_ = false;
         void visitRet(Ret *p) override;
         void visitVRet(VRet *p) override;
 
