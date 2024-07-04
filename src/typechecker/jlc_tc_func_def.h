@@ -39,6 +39,7 @@ namespace JLC::TC
         // declaration variables
         void visitNoInit(NoInit *p) override;
         void visitInit(Init *p) override;
+        void visitENewObj(ENewObj *p);
 
         /* variable access */
         void visitEVar(EVar *p);

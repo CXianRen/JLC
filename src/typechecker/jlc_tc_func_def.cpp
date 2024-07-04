@@ -408,4 +408,25 @@ namespace JLC::TC
         checkFuncParams(func_obj, e_func->listexpr_);
     }
 
+    void JLC_FUNC_DEF_Checker::
+        visitENewObj(ENewObj *e_new_obj)
+    {
+        auto type_name = e_new_obj->ident_;
+        // check if the type is a class or struct
+        if (context_->has_class(type_name))
+        {
+            g_type_ = JLC::TYPE::JLCType(JLC::TYPE::type_enum::CLASS, type_name);
+            return;
+        }
+        if (context_->has_struct(type_name))
+        {
+            g_type_ = JLC::TYPE::JLCType(JLC::TYPE::type_enum::STRUCT, type_name);
+            return;
+        }
+
+        // error
+        throw JLC::TC::JLCTCError(
+            "Type " + type_name + " not found.");
+    }
+
 } // namespace JLC::TC
