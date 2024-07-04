@@ -81,8 +81,8 @@ namespace JLC::TC
         void visitEMul(EMul *p) override;   // x / mod
         void visitEAdd(EAdd *p) override;   // + -
         void visitERel(ERel *p) override;   // > < <= == >= !=
-        // void visitEAnd(EAnd *p) override;   // &&
-        // void visitEOr(EOr *p) override;     // ||
+        void visitEAnd(EAnd *p) override;   // &&
+        void visitEOr(EOr *p) override;     // ||
 
     private:
         void checkFuncParams(

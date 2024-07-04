@@ -848,4 +848,58 @@ namespace JLC::TC
         g_type_ = JLC::TYPE::JLCType(JLC::TYPE::type_enum::BOOL);
     }
 
+    void JLC_FUNC_DEF_Checker::visitEAnd(EAnd *e_and)
+    {
+        if (e_and->expr_1)
+            e_and->expr_1->accept(this);
+        auto type_left = g_type_;
+        if (e_and->expr_2)
+            e_and->expr_2->accept(this);
+        auto type_right = g_type_;
+
+        // check if type is BOOL
+        if (type_left.type != JLC::TYPE::type_enum::BOOL)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Can not perform && operation on type: " + type_left.str());
+        }
+
+        // check if type_left == type_right
+        if (type_left != type_right)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Can not perform && operation on type: " + type_right.str() + " and type: " + type_left.str());
+        }
+    }
+
+    void JLC_FUNC_DEF_Checker::visitEOr(EOr *e_or)
+    {
+
+        if (e_or->expr_1)
+            e_or->expr_1->accept(this);
+        auto type_left = g_type_;
+        if (e_or->expr_2)
+            e_or->expr_2->accept(this);
+        auto type_right = g_type_;
+
+        // check if type is BOOL
+        if (type_left.type != JLC::TYPE::type_enum::BOOL)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Can not perform || operation on type: " + type_left.str());
+        }
+
+        // check if type_left == type_right
+
+        if (type_left != type_right)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Can not perform || operation on type: " + type_right.str() + " and type: " + type_left.str());
+        }
+    }
+
 } // namespace JLC::TC

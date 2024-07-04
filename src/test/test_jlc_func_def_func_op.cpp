@@ -374,5 +374,39 @@ int main(int argc, char **argv)
             run_checker());
     }
 
+    // && op
+    {
+        std::string input_str = "void f(){ boolean x; boolean y; y = x&&x;}";
+
+        init_checker();
+        run_checker();
+    }
+
+    // && op on int
+    {
+        std::string input_str = "void f(){ int x; boolean y; y = x&&x;}";
+
+        init_checker();
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+
+    // || op
+    {
+        std::string input_str = "void f(){ boolean x; boolean y; y = x||x;}";
+
+        init_checker();
+        run_checker();
+    }
+
+    // || op on int
+    {
+        std::string input_str = "void f(){ int x; boolean y; y = x||x;}";
+
+        init_checker();
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
+    }
+
     TEST_PASS();
 }
