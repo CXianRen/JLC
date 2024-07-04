@@ -920,6 +920,7 @@ namespace JLC::TC
         g_type_ = cast_type;
     }
 
+    /*************** control ***************/
     void JLC_FUNC_DEF_Checker::
         visitCond(Cond *cond)
     {
@@ -935,8 +936,12 @@ namespace JLC::TC
                 "Condition expression should be BOOL type, but got " + type.str());
         }
 
+        // new block scope
+        current_func_->push_blk();
         if (cond->stmt_)
             cond->stmt_->accept(this);
+        // pop block scope
+        current_func_->pop_blk();
     }
 
     void JLC_FUNC_DEF_Checker::
@@ -953,10 +958,91 @@ namespace JLC::TC
             throw JLC::TC::JLCTCError(
                 "Condition expression should be BOOL type, but got " + type.str());
         }
+        // new block scope
+        current_func_->push_blk();
         if (cond_else->stmt_1)
             cond_else->stmt_1->accept(this);
+        // pop block scope
+        current_func_->pop_blk();
+
+        // new block scope
+        current_func_->push_blk();
         if (cond_else->stmt_2)
             cond_else->stmt_2->accept(this);
+        // pop block scope
+        current_func_->pop_blk();
+    }
+
+    void JLC_FUNC_DEF_Checker::visitWhile(While *while_)
+    {
+        if (while_->expr_)
+            while_->expr_->accept(this);
+        auto type = g_type_;
+
+        // check if type is BOOL
+        if (type.type != JLC::TYPE::type_enum::BOOL)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Condition expression should be BOOL type, but got " + type.str());
+        }
+
+        // new block scope
+        current_func_->push_blk();
+        if (while_->stmt_)
+            while_->stmt_->accept(this);
+        // pop block scope
+        current_func_->pop_blk();
+    }
+
+    void JLC_FUNC_DEF_Checker::visitForLoop(ForLoop *for_loop)
+    {
+        // new block scope
+        current_func_->push_blk();
+
+        if (for_loop->type_)
+            for_loop->type_->accept(this);
+        auto elem_type = g_type_;
+
+        visitIdent(for_loop->ident_);
+        auto var_name = for_loop->ident_;
+
+        // add the variable to the current scope
+        current_func_->add_var(
+            JLC::VAR::JLCVar(var_name, std::make_shared<JLC::TYPE::JLCType>(elem_type)));
+
+        if (for_loop->expr_)
+            for_loop->expr_->accept(this);
+        auto array_type = g_type_;
+
+        // check if the type is an array
+        if (array_type.type != JLC::TYPE::type_enum::ARRAY)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Type " + array_type.str() + " is not supported for for loop.");
+        }
+
+        // get the base type of the array
+        auto base_type = array_type.base_type;
+        // check if the base type is the same as the element type
+        if ((*base_type) != elem_type)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Array base type " + base_type->str() +
+                " is not the same as the element type " + elem_type.str());
+        }
+
+        // new block scope
+        current_func_->push_blk();
+        if (for_loop->stmt_)
+            for_loop->stmt_->accept(this);
+        // pop block scope
+        current_func_->pop_blk();
+
+        // pop block scope
+        current_func_->pop_blk();
     }
 
 } // namespace JLC::TC

@@ -94,5 +94,62 @@ int main(int argc, char **argv)
         TEST_EXPECT_EXCEPTION(run_checker());
     }
 
+    // while
+    {
+        std::string input_str = "void f(){ while (true) {int x;}}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+
+    // while
+    {
+        std::string input_str = "void f(){ while (1) {int x;}}";
+
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(run_checker());
+    }
+
+    // for each statement
+    {
+        std::string input_str = "void f(){ int[] a = new int[10]; for (int x : a) {}}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+    // for each statement
+    {
+        std::string input_str = "void f(){ int[] a = new int[10]; int b; for (int x : b) {}}";
+
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(run_checker());
+    }
+    // for each statement
+    {
+        std::string input_str = "void f(){ int[][] a = new int[10][10]; for (int x : a) {}}";
+
+        init_checker();
+
+        // check the parse tree
+        TEST_EXPECT_EXCEPTION(run_checker());
+    }
+    // variable shadowing in for each statement
+    {
+        std::string input_str = "void f(){ double b; int[] a = new int[10]; for (int b : a) {int c =b;}}";
+
+        init_checker();
+
+        // check the parse tree
+        run_checker();
+    }
+
     TEST_PASS();
 }

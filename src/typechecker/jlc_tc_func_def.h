@@ -87,10 +87,10 @@ namespace JLC::TC
         void visitEcast(Ecast *p) override; // ()
 
         /* condition */
-        void visitCond(Cond *p);
-        void visitCondElse(CondElse *p);
-        // void visitWhile(While *p);
-        // void visitForLoop(ForLoop *p);
+        void visitCond(Cond *p) override;
+        void visitCondElse(CondElse *p) override;
+        void visitWhile(While *p) override;
+        void visitForLoop(ForLoop *p);
 
     private:
         void checkFuncParams(
