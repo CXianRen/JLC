@@ -242,6 +242,11 @@ namespace JLC::TC
             return;
         }
 
+        /*
+         * struct does not support dot operator
+         * instead, we use -> operator to access the member
+         */
+
         // struct
         if (obj_type.type == JLC::TYPE::type_enum::STRUCT)
         {
@@ -254,24 +259,28 @@ namespace JLC::TC
                     "Struct " + type_name + " not found in the context");
             }
 
-            if (!struct_obj->has_member(prop_name))
-            {
-                // error
-                throw JLC::TC::JLCTCError(
-                    "Property " + prop_name +
-                    " is not defined for struct " + type_name);
-            }
+            // if (!struct_obj->has_member(prop_name))
+            // {
+            //     // error
+            //     throw JLC::TC::JLCTCError(
+            //         "Property " + prop_name +
+            //         " is not defined for struct " + type_name);
+            // }
 
-            auto member = struct_obj->get_member_type(prop_name);
-            if (member == nullptr)
-            {
-                // error
-                throw JLC::TC::JLCTCError(
-                    "Property " + prop_name +
-                    " is not defined for struct " + type_name);
-            }
-            g_type_ = *member;
-            return;
+            // auto member = struct_obj->get_member_type(prop_name);
+            // if (member == nullptr)
+            // {
+            //     // error
+            //     throw JLC::TC::JLCTCError(
+            //         "Property " + prop_name +
+            //         " is not defined for struct " + type_name);
+            // }
+            // g_type_ = *member;
+            // return;
+
+            // error
+            throw JLC::TC::JLCTCError(
+                "Struct pointer does not support dot operator, use -> operator instead.");
         }
 
         // class
@@ -305,6 +314,7 @@ namespace JLC::TC
             g_type_ = *member;
             return;
         }
+
         // show not reach here
         throw JLC::TC::JLCTCError(
             "Property " + prop_name +

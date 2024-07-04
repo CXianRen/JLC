@@ -225,7 +225,8 @@ int main(int argc, char **argv)
         init_checker();
 
         // check the parse tree
-        run_checker();
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
     }
     // class variable
     {
