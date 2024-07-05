@@ -37,6 +37,16 @@ namespace JLC::TC
             auto class_obj = context_->get_class(class_name);
             auto extends_class_obj = context_->get_class(extends_class_name);
             class_obj->parent_class = extends_class_obj;
+            // DEBUG_PRINT("class inherit: " +
+            //             class_name + " <- " +
+            //             extends_class_name);
+        }
+
+        // check class cycle inherit
+        for (auto &pair : context_->classes)
+        {
+            auto class_name = pair.first;
+            check_class_cycle_inherit(class_name);
         }
     }
 
@@ -49,6 +59,28 @@ namespace JLC::TC
         {
             // error: type already defined
             throw JLCTCError("Type already defined: " + type_name);
+        }
+    }
+
+    void JLC_UDT_DC_Checker::
+        check_class_cycle_inherit(std::string class_name)
+    {
+        // DEBUG_PRINT("check class cycle inherit: " + class_name);
+        auto parent_class =
+            context_->get_class(class_name)->parent_class;
+
+        auto child_name = class_name;
+        while (parent_class != nullptr)
+        {
+            if (parent_class->obj_name == class_name)
+            {
+                // error: class cycle inherit
+                throw JLCTCError(
+                    "Class cycle inherit: " +
+                    class_name + " <-> " + child_name);
+            }
+            child_name = parent_class->obj_name;
+            parent_class = parent_class->parent_class;
         }
     }
 

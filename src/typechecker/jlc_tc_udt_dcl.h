@@ -50,8 +50,11 @@ namespace JLC::TC
          * it is used in typedef.
          */
 
-        // chekcer selfdefined functions
+        // chekc selfdefined functions
         void check_user_defined_type_conflict(std::string type_name);
+
+        // check class cycle inherit
+        void check_class_cycle_inherit(std::string class_name);
 
     public:
         // override visitor functions
