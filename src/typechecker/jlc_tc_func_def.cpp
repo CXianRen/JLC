@@ -544,29 +544,40 @@ namespace JLC::TC
 
         auto scope = type.obj_name;
         auto func_name = e_func->ident_;
-        auto func_name_with_scope =
-            context_->get_scope_name(func_name,
-                                     scope);
-        // check if the function is defined
-        auto func_obj = context_->get_func(func_name_with_scope);
 
-        if (func_obj == nullptr)
+        std::vector<std::string> class_list;
+        auto class_obj = context_->get_class(scope);
+        while (class_obj != nullptr)
         {
-            // error
-            throw JLC::TC::JLCTCError(
-                "Function " + func_name +
-                " not found in the context");
+            class_list.push_back(class_obj->obj_name);
+            class_obj = class_obj->parent_class;
         }
 
-        checkFuncParams(func_obj, e_func->listexpr_);
+        // find the function in the class and its parent classes
+        for (int i = class_list.size() - 1; i >= 0; i--)
+        {
+            auto class_name = class_list[i];
+            auto func_name_with_scope =
+                context_->get_scope_name(func_name,
+                                         class_name);
+            auto func_obj = context_->get_func(func_name_with_scope);
+            if (func_obj != nullptr)
+            {
+                checkFuncParams(func_obj, e_func->listexpr_);
+                return;
+            }
+        }
+        throw JLC::TC::JLCTCError(
+            "Function: " + func_name + " not found in class: " + scope);
     }
 
     void JLC_FUNC_DEF_Checker::
         visitENewObj(ENewObj *e_new_obj)
     {
-        if (e_new_obj->otype_) e_new_obj->otype_->accept(this);
+        if (e_new_obj->otype_)
+            e_new_obj->otype_->accept(this);
         auto type = g_type_;
-        // check if the type is a class or struct 
+        // check if the type is a class or struct
         if (type.type != JLC::TYPE::type_enum::CLASS &&
             type.type != JLC::TYPE::type_enum::STRUCT)
         {

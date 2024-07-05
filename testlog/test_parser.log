@@ -130,7 +130,7 @@ About to run tests with these settings:
 [122/172] testsuite/bad/array03     ... OK
 [123/172] testsuite/bad/bad032      ... OK
 [124/172] testsuite/extensions/objects1/linked ... OK
-[125/172] testsuite/extensions/objects1/points ... FAILED
+[125/172] testsuite/extensions/objects1/points ... OK
 [126/172] testsuite/extensions/objects1/counter ... OK
 [127/172] testsuite/extensions/objects1/queue ... OK
 [128/172] testsuite/extensions/objects1/shadowedfunction ... OK
@@ -180,19 +180,6 @@ About to run tests with these settings:
 [172/172] testsuite/extensions/advstructs/adv_structs003 ... OK
 
 Some tests failed:
----------- !!! testsuite/extensions/objects1/points.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     
-    In Function main:
-    Function move not found in the context: 
-    	q . move (2, 4);
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
 ---------- !!! testsuite/extensions/objects1/bad/cyclic.jl failed !!! ----------
 
 - stderr expected:
