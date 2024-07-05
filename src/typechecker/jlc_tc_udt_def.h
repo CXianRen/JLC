@@ -25,6 +25,20 @@ namespace JLC::TC
         ~JLC_TC_UDT_DEF_Checker() = default;
 
     public:
+        // check if member redefine in inherit class
+        void check_member_redefine_inherit(std::string class_name);
+
+    public:
+        void visitProgram(Program *p) override
+        {
+            TypeVisitor::visitProgram(p);
+            for (auto &pair : context_->classes)
+            {
+                auto class_name = pair.first;
+                check_member_redefine_inherit(class_name);
+            }
+        }
+        
         /* enum */
         void visitEnum(Enum *p) override;
 

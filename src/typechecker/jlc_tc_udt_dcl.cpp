@@ -43,6 +43,7 @@ namespace JLC::TC
         }
 
         // check class cycle inherit
+        // check member redefine inherit
         for (auto &pair : context_->classes)
         {
             auto class_name = pair.first;

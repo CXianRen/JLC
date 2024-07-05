@@ -138,7 +138,7 @@ About to run tests with these settings:
 [130/172] testsuite/extensions/objects1/bad/cyclic ... OK
 [131/172] testsuite/extensions/objects1/bad/bad005 ... OK
 [132/172] testsuite/extensions/objects1/bad/bad004 ... OK
-[133/172] testsuite/extensions/objects1/bad/order ... FAILED
+[133/172] testsuite/extensions/objects1/bad/order ... OK
 [134/172] testsuite/extensions/objects1/bad/bad001 ... OK
 [135/172] testsuite/extensions/objects1/bad/bad003 ... OK
 [136/172] testsuite/extensions/objects1/bad/bad002 ... OK
@@ -180,15 +180,6 @@ About to run tests with these settings:
 [172/172] testsuite/extensions/advstructs/adv_structs003 ... OK
 
 Some tests failed:
----------- !!! testsuite/extensions/objects1/bad/order.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
 ---------- !!! testsuite/extensions/objects2/bad/bad001.jl failed !!! ----------
 
 - stderr expected:

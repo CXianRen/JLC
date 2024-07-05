@@ -21,7 +21,7 @@ namespace JLC::STRUCT
 
         JLCStruct(const std::string &name) : obj_name(name){};
 
-        bool has_member(const std::string &name)
+        virtual bool has_member(const std::string &name)
         {
             for (auto &member : members)
             {

@@ -1,4 +1,6 @@
 #include "jlc_class.h"
+#include "common/debug.h"
+
 
 namespace JLC::CLASS
 {

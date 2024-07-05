@@ -2,6 +2,33 @@
 
 namespace JLC::TC
 {
+    void JLC_TC_UDT_DEF_Checker::
+        check_member_redefine_inherit(std::string class_name)
+    {
+        // DEBUG_PRINT("check member redefine inherit: " + class_name);
+        auto class_obj = context_->get_class(class_name);
+        auto parent_class = class_obj->parent_class;
+
+        while (parent_class != nullptr)
+        {
+            for (auto &member : class_obj->members)
+            {
+                // DEBUG_PRINT("check member: " + member.first);
+                if (parent_class->has_member(member.first))
+                {
+                    // error: member redefine in inherit class
+                    throw JLCTCError(
+                        "Member redefine in inherit class: '" +
+                        member.first + "' in '" + class_name +
+                        "' which is first defined in '" +
+                        parent_class->obj_name +
+                        "'");
+                }
+            }
+            parent_class = parent_class->parent_class;
+        }
+    }
+
     void JLC_TC_UDT_DEF_Checker::visitEnum(Enum *enum_)
     {
         // enum name
@@ -76,7 +103,7 @@ namespace JLC::TC
         // call parent class
         TypeVisitor::visitTypeDefWS(type_def_ws);
     }
-    
+
     // class
     void JLC_TC_UDT_DEF_Checker::visitClass(Class *class_)
     {

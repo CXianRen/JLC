@@ -21,7 +21,7 @@ namespace JLC::CLASS
         // inherit class
         std::shared_ptr<JLCClass> parent_class;
 
-        bool has_member(const std::string &name);
+        bool has_member(const std::string &name) override;
     };
 
 } // namespace JLC::CLASS
