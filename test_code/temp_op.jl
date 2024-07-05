@@ -1,11 +1,12 @@
+class Point2 {
 
-enum Color {
-  RED,
-  GREEN,
-  BLUE
-};
+}
 
-int main() {
-  Color c = Color.RED;
+class Point3 extends Point2 {
+}
+
+int main () {
+  Point2 p = new Point3;
   return 0;
+
 }

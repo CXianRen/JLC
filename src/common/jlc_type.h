@@ -30,7 +30,7 @@ namespace JLC
         public:
             type_enum type;
 
-            // for array
+            // for array and class
             std::shared_ptr<JLCType> base_type;
 
             // for custom type like a struct, class, enum
@@ -47,10 +47,17 @@ namespace JLC
                     std::shared_ptr<JLCType> base_type) : type(type),
                                                           base_type(base_type){};
 
-            // for struct, class, enum
+            // for struct, enum
             JLCType(type_enum type,
                     const std::string &obj_name) : type(type),
                                                    obj_name(obj_name){};
+
+            // for class
+            JLCType(type_enum type,
+                    const std::string &obj_name,
+                    std::shared_ptr<JLCType> base_type) : type(type),
+                                                          base_type(base_type),
+                                                          obj_name(obj_name){};
 
             // copy constructor
             JLCType(const JLCType &t) : type(t.type),

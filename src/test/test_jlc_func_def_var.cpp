@@ -31,6 +31,8 @@ Prog *gen_ast(std::string input_str)
     }
     if (parse_tree == NULL)
     {
+        std::cerr << "code:\n"
+                  << input_str << "\n";
         TEST_FAIL();
         exit(-1);
     }
@@ -278,9 +280,31 @@ int main(int argc, char **argv)
     // self var in class function
     {
         std::string input_str =
-            "class A {int a; int f(){return 1;}; int f1(){return self.f();}} \n";
+            "class A {int a; \n"
+            "int f(){return 1;} \n"
+            "int f1(){return self.f();}} \n";
         init_checker();
         run_checker();
+    }
+
+    // child class init parente class
+    {
+        std::string input_str =
+            "class A {int a;} \n"
+            "class B extends A {int b;}\n"
+            "void f(){ A a = new B;}";
+        init_checker();
+        run_checker();
+    }
+    // parent class init child class
+    {
+        std::string input_str =
+            "class A {int a;} \n"
+            "class B extends A {int b;}\n"
+            "void f(){ B a = new A;}";
+        init_checker();
+        TEST_EXPECT_EXCEPTION(
+            run_checker());
     }
     TEST_PASS();
 }

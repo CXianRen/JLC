@@ -132,6 +132,8 @@ namespace JLC::TC
     {
         legal_expr_ = true;
 
+        auto decl_type = g_type_;
+
         auto var_type =
             std::make_shared<JLC::TYPE::JLCType>(g_type_);
 
@@ -174,6 +176,8 @@ namespace JLC::TC
         // add the variable to the current scope
         current_func_->add_var(
             JLC::VAR::JLCVar(var_name, var_type));
+
+        g_type_ = decl_type;
     }
 
     void JLC_FUNC_DEF_Checker::
@@ -560,22 +564,16 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitENewObj(ENewObj *e_new_obj)
     {
-        auto type_name = e_new_obj->ident_;
-        // check if the type is a class or struct
-        if (context_->has_class(type_name))
+        if (e_new_obj->otype_) e_new_obj->otype_->accept(this);
+        auto type = g_type_;
+        // check if the type is a class or struct 
+        if (type.type != JLC::TYPE::type_enum::CLASS &&
+            type.type != JLC::TYPE::type_enum::STRUCT)
         {
-            g_type_ = JLC::TYPE::JLCType(JLC::TYPE::type_enum::CLASS, type_name);
-            return;
+            // error
+            throw JLC::TC::JLCTCError(
+                "Type " + type.str() + " is not supported for new object.");
         }
-        if (context_->has_struct(type_name))
-        {
-            g_type_ = JLC::TYPE::JLCType(JLC::TYPE::type_enum::STRUCT, type_name);
-            return;
-        }
-
-        // error
-        throw JLC::TC::JLCTCError(
-            "Type " + type_name + " not found.");
     }
 
     void JLC_FUNC_DEF_Checker::

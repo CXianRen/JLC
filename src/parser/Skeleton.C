@@ -454,7 +454,7 @@ void Skeleton::visitENewObj(ENewObj *e_new_obj)
 {
   /* Code For ENewObj Goes Here */
 
-  visitIdent(e_new_obj->ident_);
+  if (e_new_obj->otype_) e_new_obj->otype_->accept(this);
 
 }
 

@@ -157,7 +157,7 @@ About to run tests with these settings:
 [149/172] testsuite/extensions/arrays1/bad/bad001 ... OK
 [150/172] testsuite/extensions/arrays1/bad/bad002 ... OK
 [151/172] testsuite/extensions/arrays1/bad/parentheses ... OK
-[152/172] testsuite/extensions/objects2/shapes ... FAILED
+[152/172] testsuite/extensions/objects2/shapes ... OK
 [153/172] testsuite/extensions/objects2/bad/bad001 ... FAILED
 [154/172] testsuite/extensions/arrays2/array001 ... OK
 [155/172] testsuite/extensions/arrays2/array002 ... OK
@@ -188,8 +188,8 @@ Some tests failed:
     ERROR, Type check error:
      
     In Function main:
-    Variable p type is class Point2 type is not the same as the init type class Point3: 
-    	Point2 p = new Point3;
+    Function move not found in the context: 
+    	q . move (2, 4);
 - compiler return code info:
     compiler return code: 1, 0 expected
 
@@ -210,19 +210,6 @@ Some tests failed:
     OK
 - compiler return code info:
     compiler return code: 0, nonzero expected
-
----------- !!! testsuite/extensions/objects2/shapes.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     
-    In Function main:
-    Can not assign var type: class Rectangle to var :class Shape: 
-    	s = new Rectangle;
-- compiler return code info:
-    compiler return code: 1, 0 expected
 
 ---------- !!! testsuite/extensions/objects2/bad/bad001.jl failed !!! ----------
 

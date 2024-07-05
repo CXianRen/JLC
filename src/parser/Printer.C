@@ -971,7 +971,7 @@ void PrintAbsyn::visitENewObj(ENewObj *p)
   if (oldi > 6) render(_L_PAREN);
 
   render("new");
-  visitIdent(p->ident_);
+  _i_ = 0; p->otype_->accept(this);
 
   if (oldi > 6) render(_R_PAREN);
   _i_ = oldi;
@@ -2037,7 +2037,9 @@ void ShowAbsyn::visitENewObj(ENewObj *p)
   bufAppend('(');
   bufAppend("ENewObj");
   bufAppend(' ');
-  visitIdent(p->ident_);
+  bufAppend('[');
+  if (p->otype_)  p->otype_->accept(this);
+  bufAppend(']');
   bufAppend(')');
 }
 void ShowAbsyn::visitEArrow(EArrow *p)

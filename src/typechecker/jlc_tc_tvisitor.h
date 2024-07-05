@@ -63,7 +63,23 @@ namespace JLC::TC
             }
             else if (context_->has_class(type_name))
             {
-                g_type_ = JLCType(type_enum::CLASS, type_name);
+                // DEBUG_PRINT("Class: " + type_name);
+
+                std::vector<std::string> class_list;
+                auto class_obj = context_->get_class(type_name);
+                while (class_obj != nullptr)
+                {
+                    class_list.push_back(class_obj->obj_name);
+                    // DEBUG_PRINT("Class e: " + class_obj->obj_name);
+                    class_obj = class_obj->parent_class;
+                }
+                auto rtype = JLCType(type_enum::CLASS, class_list.back(), nullptr);
+                for (int i = class_list.size() - 2; i >= 0; i--)
+                {
+                    rtype = JLCType(type_enum::CLASS, class_list[i],
+                                    std::make_shared<JLCType>(rtype));
+                }
+                g_type_ = rtype;
             }
             else if (context_->has_typedef(type_name))
             {
@@ -127,7 +143,7 @@ namespace JLC::TC
         {
             g_type_ = JLCType(type_enum::BOOL);
         }
-        
+
         void visitEString(EString *e_string)
         {
             g_type_ = JLCType(type_enum::STRING);

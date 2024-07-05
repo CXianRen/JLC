@@ -24,7 +24,17 @@ namespace JLC::TYPE
         case STRUCT:
             return "struct " + obj_name;
         case CLASS:
-            return "class " + obj_name;
+        {
+            if (base_type)
+            {
+                return "class " + obj_name + " : " + base_type->str();
+            }
+            else
+            {
+                return "class " + obj_name;
+            }   
+        }
+
         case ARRAY:
             return base_type->str() + "[]";
         case UNDEFINED:
@@ -43,6 +53,7 @@ namespace JLC::TYPE
     {
         if (type != t.type)
             return false;
+
         if (type == ARRAY)
         {
             if (!base_type || !t.base_type)
@@ -55,8 +66,26 @@ namespace JLC::TYPE
             }
             return true;
         }
-        if (type == ENUM || type == STRUCT || type == CLASS)
+        if (type == ENUM || type == STRUCT)
             return obj_name == t.obj_name;
+
+        // if type is class, child class can be assigned to parent class
+        if (type == CLASS)
+        {
+            if (obj_name == t.obj_name)
+                return true;
+
+            // check if t is a child class of this
+            auto t_base = t.base_type;
+            while (t_base)
+            {
+                if (t_base->obj_name == obj_name)
+                    return true;
+                t_base = t_base->base_type;
+            }
+            return false;
+        }
+
         return true;
     }
 

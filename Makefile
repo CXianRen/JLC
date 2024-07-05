@@ -5,8 +5,7 @@
 CC = g++ -std=c++11 -g
 CCFLAGS = -W -Wall \
 	-Wno-unused-parameter \
-	-Wno-unused-function \
-	-Wno-unneeded-internal-declaration
+	-Wno-unused-function 
 
 # run with DEBUG flag: make DEBUG=1
 ifdef DEBUG

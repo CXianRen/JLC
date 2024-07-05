@@ -1157,11 +1157,11 @@ public:
 class ENewObj : public Expr
 {
 public:
-  Ident ident_;
+  OType *otype_;
 
   ENewObj(const ENewObj &);
   ENewObj &operator=(const ENewObj &);
-  ENewObj(Ident p1);
+  ENewObj(OType *p1);
   ~ENewObj();
   virtual void accept(Visitor *v);
   virtual ENewObj *clone() const;

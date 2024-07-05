@@ -2249,15 +2249,15 @@ EApp *EApp::clone() const
 
 
 /********************   ENewObj    ********************/
-ENewObj::ENewObj(Ident p1)
+ENewObj::ENewObj(OType *p1)
 {
-  ident_ = p1;
+  otype_ = p1;
 
 }
 
 ENewObj::ENewObj(const ENewObj & other)
 {
-  ident_ = other.ident_;
+  otype_ = other.otype_->clone();
 
 }
 
@@ -2270,12 +2270,13 @@ ENewObj &ENewObj::operator=(const ENewObj & other)
 
 void ENewObj::swap(ENewObj & other)
 {
-  std::swap(ident_, other.ident_);
+  std::swap(otype_, other.otype_);
 
 }
 
 ENewObj::~ENewObj()
 {
+  delete(otype_);
 
 }
 
