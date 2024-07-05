@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 
     // call global function
     {
-        std::string input_str = "int f(){return 0;} int main() {int a = f();}";
+        std::string input_str = "int f(){return 0;} void f2() {int a = f();}";
 
         init_checker();
 
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
     }
     // call undefined function
     {
-        std::string input_str = "int main() {int a = f();}";
+        std::string input_str = "void f2() {int a = f();}";
 
         init_checker();
 
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
     }
     // function parameter
     {
-        std::string input_str = "int f(int a){return a;} int main() {int a = f(1);}";
+        std::string input_str = "int f(int a){return a;} void f2() {int a = f(1);}";
 
         init_checker();
 
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
     }
     // more function parameters
     {
-        std::string input_str = "int f(int a, int b){return a+b;} int main() {int a = f(1, 2);}";
+        std::string input_str = "int f(int a, int b){return a+b;} void f2() {int a = f(1, 2);}";
 
         init_checker();
 
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
     }
     // pass wrong number of parameters
     {
-        std::string input_str = "int f(int a, int b){return a+b;} int main() {int a = f(1);}";
+        std::string input_str = "int f(int a, int b){return a+b;} void f2() {int a = f(1);}";
 
         init_checker();
 
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
     // pass wrong type of parameters
     {
         std::string input_str =
-            "int f(int a, int b){return a+b;} int main() {int a = f(1, 2.0);}";
+            "int f(int a, int b){return a+b;} void f2() {int a = f(1, 2.0);}";
 
         init_checker();
 
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
     // pass more than the needed parameters
     {
         std::string input_str =
-            "int f(int a){return a;} int main() {int a = f(1, 2);}";
+            "int f(int a){return a;} void f2() {int a = f(1, 2);}";
 
         init_checker();
 
@@ -134,7 +134,7 @@ int main(int argc, char **argv)
 
         std::string input_str =
             "class A {int a; int access_a(){return a;}}\n"
-            "int main() {A a; int b = a.access_a();}";
+            "void f2() {A a; int b = a.access_a();}";
 
         init_checker();
 
@@ -146,7 +146,7 @@ int main(int argc, char **argv)
 
         std::string input_str =
             "class A {int a; int access_a(int b){return a+b;}}\n"
-            "int main() {A a; int b = a.access_a(1);}";
+            "void f2() {A a; int b = a.access_a(1);}";
 
         init_checker();
 

@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 
     // define variables no init
     {
-        std::string input_str = "int f(){ int a; int b; double c,d;}";
+        std::string input_str = "void f(){ int a; int b; double c,d;}";
 
         init_checker();
 
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
     // redefined variable in a scope
     {
 
-        std::string input_str = "int f(){ int a; int b; double a;}";
+        std::string input_str = "void f(){ int a; int b; double a;}";
 
         init_checker();
 
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
     }
     // shadow parameter
     {
-        std::string input_str = "int f(int a){ double a; int b;}";
+        std::string input_str = "void f(int a){ double a; int b;}";
 
         init_checker();
         // check the parse tree
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
     }
     // shadow outer variable
     {
-        std::string input_str = "int f(int a){ double a; int b; {double b;{int a;}}}";
+        std::string input_str = "void f(int a){ double a; int b; {double b;{int a;}}}";
 
         init_checker();
 
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
     }
     // with initialization
     {
-        std::string input_str = "int f(int a){int a, b=1; double c=0.0, d; }";
+        std::string input_str = "void f(int a){int a, b=1; double c=0.0, d; }";
         init_checker();
 
         // check the parse tree
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
     }
     // void type
     {
-        std::string input_str = "int f(int a){int a, b=1; void c, d; }";
+        std::string input_str = "void f(int a){int a, b=1; void c, d; }";
         init_checker();
 
         // check the parse tree
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
     }
     // array
     {
-        std::string input_str = "int f(){int[] a; int[][]b;}";
+        std::string input_str = "void f(){int[] a; int[][]b;}";
         init_checker();
 
         // check the parse tree
@@ -142,7 +142,7 @@ int main(int argc, char **argv)
     // struct
     {
         std::string input_str = "typedef struct a_t{int a;}  * A; \n"
-                                "int f(){A a;}";
+                                "void f(){A a;}";
         init_checker();
 
         // check the parse tree
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
     // enum
     {
         std::string input_str = "enum A {a,b,c}; \n"
-                                "int f(){A a;}";
+                                "void f(){A a;}";
         init_checker();
 
         // check the parse tree
@@ -160,7 +160,7 @@ int main(int argc, char **argv)
     // class
     {
         std::string input_str = "class A {int a;} \n"
-                                "int f(){A a;}";
+                                "void f(){A a;}";
         init_checker();
 
         // check the parse tree
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
     }
     // init with other variable
     {
-        std::string input_str = "int f(){int a=1; int b=a;}";
+        std::string input_str = "void f(){int a=1; int b=a;}";
         init_checker();
 
         // check the parse tree
@@ -176,7 +176,7 @@ int main(int argc, char **argv)
     }
     // init with other variable but not defined
     {
-        std::string input_str = "int f(){int b=a;}";
+        std::string input_str = "void f(){int b=a;}";
         init_checker();
 
         // check the parse tree
@@ -185,7 +185,7 @@ int main(int argc, char **argv)
     }
     // init with other variable but not the same type
     {
-        std::string input_str = "int f(){int a=1; double b=a;}";
+        std::string input_str = "void f(){int a=1; double b=a;}";
         init_checker();
 
         // check the parse tree
@@ -194,7 +194,7 @@ int main(int argc, char **argv)
     }
     // shadow outer variable with init
     {
-        std::string input_str = "int f(int a){ double a; double b; {int b=1;{int a=b;}}}";
+        std::string input_str = "void f(int a){ double a; double b; {int b=1;{int a=b;}}}";
 
         init_checker();
 
@@ -203,7 +203,7 @@ int main(int argc, char **argv)
     }
     // array . length
     {
-        std::string input_str = "int f(){int[] a; int b=a.length;}";
+        std::string input_str = "void f(){int[] a; int b=a.length;}";
         init_checker();
 
         // check the parse tree
@@ -212,7 +212,7 @@ int main(int argc, char **argv)
     // enum variable
     {
         std::string input_str = "enum A {a,b,c}; \n"
-                                "int f(){A a= A.b;}";
+                                "void f(){A a= A.b;}";
         init_checker();
 
         // check the parse tree
@@ -221,7 +221,7 @@ int main(int argc, char **argv)
     // struct variable
     {
         std::string input_str = "typedef struct a_t{int a;}  * A; \n"
-                                "int f(){A a; int b = a.a;}";
+                                "void f(){A a; int b = a.a;}";
         init_checker();
 
         // check the parse tree
@@ -231,7 +231,7 @@ int main(int argc, char **argv)
     // -> operator
     {
         std::string input_str = "typedef struct a_t{int a;}  * A; \n"
-                                "int f(){A a; int b = a->a;}";
+                                "void f(){A a; int b = a->a;}";
         init_checker();
 
         // check the parse tree
@@ -239,7 +239,7 @@ int main(int argc, char **argv)
     }
     // -> op on non struct
     {
-        std::string input_str = "int f(){int a; int b = a->a;}";
+        std::string input_str = "void f(){int a; int b = a->a;}";
         init_checker();
 
         // check the parse tree
@@ -249,7 +249,7 @@ int main(int argc, char **argv)
     // -> on class
     {
         std::string input_str = "class A {int a;} \n"
-                                "int f(){A a; int b = a->a;}";
+                                "void f(){A a; int b = a->a;}";
         init_checker();
 
         // check the parse tree
@@ -258,7 +258,7 @@ int main(int argc, char **argv)
     // class variable
     {
         std::string input_str = "class A {int a;} \n"
-                                "int f(){A a; int b = a.a;}";
+                                "void f(){A a; int b = a.a;}";
         init_checker();
 
         // check the parse tree
@@ -267,12 +267,20 @@ int main(int argc, char **argv)
     // class variable not the same type
     {
         std::string input_str = "class A {int a;} \n"
-                                "int f(){A a; double b = a.a;}";
+                                "void f(){A a; double b = a.a;}";
         init_checker();
 
         // check the parse tree
         TEST_EXPECT_EXCEPTION(
             run_checker());
+    }
+
+    // self var in class function
+    {
+        std::string input_str =
+            "class A {int a; int f(){return 1;}; int f1(){return self.f();}} \n";
+        init_checker();
+        run_checker();
     }
     TEST_PASS();
 }

@@ -208,6 +208,17 @@ namespace JLC::TC
         // check if variable is defined
 
         /*
+         * self parameter check
+         */
+        // if we are defining a class member function
+        if (func_scope_ != GLOBAL_SCOPE && var_name == "self")
+        {
+            g_type_ = JLC::TYPE::JLCType(
+                JLC::TYPE::type_enum::CLASS, func_scope_);
+            return;
+        }
+
+        /*
          * we regard enum as a virtual global variable
          * so that we can access the enum member by dot operator
          */

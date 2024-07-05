@@ -132,7 +132,7 @@ About to run tests with these settings:
 [124/172] testsuite/extensions/objects1/linked ... OK
 [125/172] testsuite/extensions/objects1/points ... FAILED
 [126/172] testsuite/extensions/objects1/counter ... OK
-[127/172] testsuite/extensions/objects1/queue ... FAILED
+[127/172] testsuite/extensions/objects1/queue ... OK
 [128/172] testsuite/extensions/objects1/shadowedfunction ... OK
 [129/172] testsuite/extensions/objects1/bad/parentheses ... OK
 [130/172] testsuite/extensions/objects1/bad/cyclic ... FAILED
@@ -190,19 +190,6 @@ Some tests failed:
     In Function main:
     Variable p type is class Point2 type is not the same as the init type class Point3: 
     	Point2 p = new Point3;
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/objects1/queue.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     
-    In Function insert:
-    Variable self not defined in function IntQueue::insert: 
-    	self . isEmpty ()
 - compiler return code info:
     compiler return code: 1, 0 expected
 

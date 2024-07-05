@@ -60,7 +60,7 @@ int main(int argc, char **argv)
     // new struct
     {
         std::string input_str = "typedef struct A_t { int x; }* A;\n"
-                                "int f(){ A a = new A_t;}";
+                                "void f(){ A a = new A_t;}";
 
         init_checker();
 
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
     }
     // new a undefined struct type
     {
-        std::string input_str = "int f(){ A a = new A_t;}";
+        std::string input_str = "void f(){ A a = new A_t;}";
 
         init_checker();
 
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
     // new a class
     {
         std::string input_str = "class A { int x; }\n"
-                                "int f(){ A a = new A;}";
+                                "void f(){ A a = new A;}";
 
         init_checker();
 
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
     }
     // new a undefined class type
     {
-        std::string input_str = "int f(){ A a = new A;}";
+        std::string input_str = "void f(){ A a = new A;}";
 
         init_checker();
 
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
     }
     // new basic type array
     {
-        std::string input_str = "int f(){ int[] a = new int[10];}";
+        std::string input_str = "void f(){ int[] a = new int[10];}";
 
         init_checker();
 
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
     }
     // new basic two dimension array
     {
-        std::string input_str = "int f(){ int[][] a = new int[10][10];}";
+        std::string input_str = "void f(){ int[][] a = new int[10][10];}";
 
         init_checker();
 
@@ -117,7 +117,7 @@ int main(int argc, char **argv)
     }
     // invalid array size
     {
-        std::string input_str = "int f(){ int[] a = new int[1.0];}";
+        std::string input_str = "void f(){ int[] a = new int[1.0];}";
 
         init_checker();
 
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
     // invalid array size
     {
         std::string input_str = "double f2(){return 0.0;} \n"
-                                "int f(){ int[][] a = new int[1][f2()];}";
+                                "void f(){ int[][] a = new int[1][f2()];}";
 
         init_checker();
 
@@ -139,7 +139,7 @@ int main(int argc, char **argv)
     // new struct array
     {
         std::string input_str = "typedef struct A_t { int x; }* A;\n"
-                                "int f(){ A[] a = new A[10];}";
+                                "void f(){ A[] a = new A[10];}";
 
         init_checker();
 
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
     // new class array
     {
         std::string input_str = "class A { int x; }\n"
-                                "int f(){ A[] a = new A[10];}";
+                                "void f(){ A[] a = new A[10];}";
 
         init_checker();
 
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
     // new struct two dimension array
     {
         std::string input_str = "typedef struct A_t { int x; }* A;\n"
-                                "int f(){ A[][] a = new A[10][10];}";
+                                "void f(){ A[][] a = new A[10][10];}";
 
         init_checker();
 
@@ -169,7 +169,7 @@ int main(int argc, char **argv)
     // new class two dimension array
     {
         std::string input_str = "class A { int x; }\n"
-                                "int f(){ A[][] a = new A[10][10];}";
+                                "void f(){ A[][] a = new A[10][10];}";
 
         init_checker();
 
@@ -179,7 +179,7 @@ int main(int argc, char **argv)
     // new struct array with invalid size
     {
         std::string input_str = "typedef struct A_t { int x; }* A;\n"
-                                "int f(){ A[] a = new A[1.0];}";
+                                "void f(){ A[] a = new A[1.0];}";
 
         init_checker();
 
