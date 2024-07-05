@@ -44,6 +44,83 @@ namespace JLC::TC
         context_->add_func(func_name, func);
     }
 
+    void JLC_FUNC_CD_Checker::
+        check_overload_fucntion()
+    {
+        // check overload function
+        for (auto &pair : context_->classes)
+        {
+            auto class_name = pair.first;
+            auto class_obj = context_->get_class(class_name);
+            // get all functions in the class
+            auto funcs = context_->get_funcs_in_scope(class_name);
+            for (auto &func_name : funcs)
+            {
+                // check if the function is overloaded
+                auto parent_class = class_obj->parent_class;
+                while (parent_class != nullptr)
+                {
+                    auto parent_class_name = parent_class->obj_name;
+                    auto parent_funcs = context_->get_funcs_in_scope(parent_class_name);
+                    for (auto &parent_func_name : parent_funcs)
+                    {
+                        if (func_name == parent_func_name)
+                        {
+                            // check overload function has the same return type and arguments
+                            auto func = context_->get_func(
+                                context_->get_scope_name(func_name, class_name));
+
+                            auto parent_func = context_->get_func(
+                                context_->get_scope_name(func_name, parent_class_name));
+
+                            if (*func->return_type != *parent_func->return_type)
+                            {
+                                // error: return type is different
+                                throw JLCTCError(
+                                    "Return type of function " +
+                                    func_name + " in class " +
+                                    class_name + " :'" + func->return_type->str() +
+                                    "' is different from parent class " +
+                                    parent_class_name + " :'" +
+                                    parent_func->return_type->str() + "'");
+                            }
+
+                            if (func->args.size() != parent_func->args.size())
+                            {
+                                // error: number of arguments is different
+                                throw JLCTCError(
+                                    "Number of arguments of function " +
+                                    func_name + " in class " +
+                                    class_name + ":(" +
+                                    std::to_string(func->args.size()) + ")" +
+                                    " is different from parent class " +
+                                    parent_class_name + ":(" +
+                                    std::to_string(parent_func->args.size()) + ")");
+                            }
+
+                            for (size_t i = 0; i < func->args.size(); i++)
+                            {
+                                if (func->args[i].type != parent_func->args[i].type)
+                                {
+                                    // error: argument type is different
+                                    throw JLCTCError(
+                                        "Argument type of function " +
+                                        func_name + " in class " +
+                                        class_name + " :'" + func->args[i].type->str() +
+                                        "' is different from parent class " +
+                                        parent_class_name + " :'" +
+                                        parent_func->args[i].type->str() +
+                                        "'");
+                                }
+                            }
+                        }
+                    }
+                    parent_class = parent_class->parent_class;
+                }
+            }
+        }
+    }
+
     void JLC_FUNC_CD_Checker::visitGFuncDef(GFuncDef *p)
     {
         set_scope(GLOBAL_SCOPE);
@@ -102,6 +179,8 @@ namespace JLC::TC
             func_name_with_scope, return_type);
 
         context_->add_func(func_name_with_scope, func);
+
+        context_->add_func_to_scope(func_scope_, func_name);
 
         // add arguments to function
         auto list_arg = func_def->listarg_;

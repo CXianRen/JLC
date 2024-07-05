@@ -58,7 +58,7 @@ namespace JLC::TC
 
     public:
         // override visitor functions
-        void visitProgram(Program *p);
+        void visitProgram(Program *p) override;
 
         /* enum */
         void visitEnum(Enum *p) override;

@@ -35,6 +35,8 @@ namespace JLC::CONTEXT
         // defined function
         std::map<std::string, std::shared_ptr<JLC::FUNC::JLCFunc>> funcs;
 
+        std::map<std::string, std::vector<std::string>> scope_funcs_map;
+
         // api for enum
         void add_enum(const std::string &name,
                       std::shared_ptr<JLC::ENUM::JLCEnum> e)
@@ -149,6 +151,24 @@ namespace JLC::CONTEXT
                 return nullptr;
             }
             return funcs[name];
+        }
+
+        void add_func_to_scope(std::string scope, std::string func_name)
+        {
+            if (scope_funcs_map.find(scope) == scope_funcs_map.end())
+            {
+                scope_funcs_map[scope] = std::vector<std::string>();
+            }
+            scope_funcs_map[scope].push_back(func_name);
+        }
+
+        std::vector<std::string> get_funcs_in_scope(std::string scope)
+        {
+            if (scope_funcs_map.find(scope) == scope_funcs_map.end())
+            {
+                return std::vector<std::string>();
+            }
+            return scope_funcs_map[scope];
         }
 
         std::string str();

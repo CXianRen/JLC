@@ -1,9 +1,9 @@
 #include "jlc_type.h"
-
+#include "common/debug.h"
 namespace JLC::TYPE
 {
 
-    std::string JLCType::str()
+    std::string JLCType::str() const
     {
         switch (type)
         {
@@ -32,7 +32,7 @@ namespace JLC::TYPE
             else
             {
                 return "class " + obj_name;
-            }   
+            }
         }
 
         case ARRAY:
@@ -51,6 +51,8 @@ namespace JLC::TYPE
 
     bool JLCType::operator==(const JLCType &t) const
     {
+        // DEBUG_PRINT("compare type: << " << this->str() << " >> with << " << t.str() << " >>");
+
         if (type != t.type)
             return false;
 

@@ -64,7 +64,7 @@ namespace JLC
                                         base_type(t.base_type),
                                         obj_name(t.obj_name){};
 
-            std::string str();
+            std::string str() const;
 
             // copy operator
             JLCType &operator=(const JLCType &t)

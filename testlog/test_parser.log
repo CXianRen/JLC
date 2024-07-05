@@ -158,7 +158,7 @@ About to run tests with these settings:
 [150/172] testsuite/extensions/arrays1/bad/bad002 ... OK
 [151/172] testsuite/extensions/arrays1/bad/parentheses ... OK
 [152/172] testsuite/extensions/objects2/shapes ... OK
-[153/172] testsuite/extensions/objects2/bad/bad001 ... FAILED
+[153/172] testsuite/extensions/objects2/bad/bad001 ... OK
 [154/172] testsuite/extensions/arrays2/array001 ... OK
 [155/172] testsuite/extensions/arrays2/array002 ... OK
 [156/172] testsuite/extensions/arrays2/bad/array_nested_default ... OK
@@ -179,14 +179,5 @@ About to run tests with these settings:
 [171/172] testsuite/extensions/advstructs/adv_structs002 ... OK
 [172/172] testsuite/extensions/advstructs/adv_structs003 ... OK
 
-Some tests failed:
----------- !!! testsuite/extensions/objects2/bad/bad001.jl failed !!! ----------
-
-- stderr expected:
-    ERROR
-- stderr actual:
-    OK
-- compiler return code info:
-    compiler return code: 0, nonzero expected
-
+All tests succeeded.
 /chalmers/users/chenhon/lab-group-22

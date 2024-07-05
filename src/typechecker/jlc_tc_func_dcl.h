@@ -42,8 +42,15 @@ namespace JLC::TC
 
         void add_inner_func();
 
+        void check_overload_fucntion();
+
     public:
         // override visitor functions
+        void visitProgram(Program *p) override
+        {
+            TypeVisitor::visitProgram(p);
+            check_overload_fucntion();
+        }
 
         /* function */
         void visitGFuncDef(GFuncDef *p) override;
