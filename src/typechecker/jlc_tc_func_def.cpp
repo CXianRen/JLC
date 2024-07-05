@@ -2,10 +2,32 @@
 #include "typechecker/jlc_tc_error.h"
 #include "Printer.H"
 
+static PrintAbsyn *p = new PrintAbsyn();
+
+#define TRY_BLOCK(block) \
+    try                  \
+    {                    \
+        block            \
+    }
+
+#define CATCH_BLOCK(node)                            \
+    catch (const JLC::TC::JLCTCError &e)             \
+    {                                                \
+        throw JLC::TC::JLCTCError(                   \
+            std::string(e.what()) +                  \
+            ": \n\t" + std::string(p->print(node))); \
+    }
+
+#define CATCH_BLOCK_WITH_MSG(msg)        \
+    catch (const JLC::TC::JLCTCError &e) \
+    {                                    \
+        throw JLC::TC::JLCTCError(       \
+            std::string(e.what()) +      \
+            ": \n\t" + msg);             \
+    }
+
 namespace JLC::TC
 {
-
-    static PrintAbsyn *p = new PrintAbsyn();
 
     void JLC_FUNC_DEF_Checker::
         visitFuncDef(FuncDef *func_def)
@@ -159,22 +181,24 @@ namespace JLC::TC
     {
         legal_expr_ = true;
 
-        if (ass->expr_1)
-            ass->expr_1->accept(this);
-        auto type_left = g_type_;
+        TRY_BLOCK({
+            if (ass->expr_1)
+                ass->expr_1->accept(this);
+            auto type_left = g_type_;
 
-        if (ass->expr_2)
-            ass->expr_2->accept(this);
-        auto type_right = g_type_;
-
-        // check if type_left == type_right
-        if (type_left != type_right)
-        {
-            // error
-            throw JLC::TC::JLCTCError(
-                "Can not assign var type: " + type_right.str() + " to var :" +
-                type_left.str());
-        }
+            if (ass->expr_2)
+                ass->expr_2->accept(this);
+            auto type_right = g_type_;
+            // check if type_left == type_right
+            if (type_left != type_right)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Can not assign var type: " + type_right.str() + " to var :" +
+                    type_left.str());
+            }
+        })
+        CATCH_BLOCK(ass);
     }
 
     void JLC_FUNC_DEF_Checker::
@@ -973,17 +997,20 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitCond(Cond *cond)
     {
-        if (cond->expr_)
-            cond->expr_->accept(this);
-        auto type = g_type_;
+        TRY_BLOCK({
+            if (cond->expr_)
+                cond->expr_->accept(this);
+            auto type = g_type_;
 
-        // check if type is BOOL
-        if (type.type != JLC::TYPE::type_enum::BOOL)
-        {
-            // error
-            throw JLC::TC::JLCTCError(
-                "Condition expression should be BOOL type, but got " + type.str());
-        }
+            // check if type is BOOL
+            if (type.type != JLC::TYPE::type_enum::BOOL)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Condition expression should be BOOL type, but got " + type.str());
+            }
+        })
+        CATCH_BLOCK(cond->expr_);
 
         // new block scope
         current_func_->push_blk();
@@ -998,17 +1025,21 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitCondElse(CondElse *cond_else)
     {
-        if (cond_else->expr_)
-            cond_else->expr_->accept(this);
-        auto type = g_type_;
+        TRY_BLOCK({
+            if (cond_else->expr_)
+                cond_else->expr_->accept(this);
+            auto type = g_type_;
 
-        // check if type is BOOL
-        if (type.type != JLC::TYPE::type_enum::BOOL)
-        {
-            // error
-            throw JLC::TC::JLCTCError(
-                "Condition expression should be BOOL type, but got " + type.str());
-        }
+            // check if type is BOOL
+            if (type.type != JLC::TYPE::type_enum::BOOL)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Condition expression should be BOOL type, but got " + type.str());
+            }
+        })
+        CATCH_BLOCK(cond_else->expr_);
+
         // new block scope
         current_func_->push_blk();
         if (cond_else->stmt_1)
@@ -1031,17 +1062,20 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitWhile(While *while_)
     {
-        if (while_->expr_)
-            while_->expr_->accept(this);
-        auto type = g_type_;
+        TRY_BLOCK({
+            if (while_->expr_)
+                while_->expr_->accept(this);
+            auto type = g_type_;
 
-        // check if type is BOOL
-        if (type.type != JLC::TYPE::type_enum::BOOL)
-        {
-            // error
-            throw JLC::TC::JLCTCError(
-                "Condition expression should be BOOL type, but got " + type.str());
-        }
+            // check if type is BOOL
+            if (type.type != JLC::TYPE::type_enum::BOOL)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Condition expression should be BOOL type, but got " + type.str());
+            }
+        })
+        CATCH_BLOCK(while_->expr_);
 
         // new block scope
         current_func_->push_blk();
@@ -1055,42 +1089,49 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitForLoop(ForLoop *for_loop)
     {
-        // new block scope
-        current_func_->push_blk();
+        TRY_BLOCK({
+            // new block scope
+            current_func_->push_blk();
 
-        if (for_loop->type_)
-            for_loop->type_->accept(this);
-        auto elem_type = g_type_;
+            if (for_loop->type_)
+                for_loop->type_->accept(this);
+            auto elem_type = g_type_;
 
-        visitIdent(for_loop->ident_);
-        auto var_name = for_loop->ident_;
+            visitIdent(for_loop->ident_);
+            auto var_name = for_loop->ident_;
 
-        // add the variable to the current scope
-        current_func_->add_var(
-            JLC::VAR::JLCVar(var_name, std::make_shared<JLC::TYPE::JLCType>(elem_type)));
+            // add the variable to the current scope
+            current_func_->add_var(
+                JLC::VAR::JLCVar(var_name, std::make_shared<JLC::TYPE::JLCType>(elem_type)));
 
-        if (for_loop->expr_)
-            for_loop->expr_->accept(this);
-        auto array_type = g_type_;
+            if (for_loop->expr_)
+                for_loop->expr_->accept(this);
+            auto array_type = g_type_;
 
-        // check if the type is an array
-        if (array_type.type != JLC::TYPE::type_enum::ARRAY)
-        {
-            // error
-            throw JLC::TC::JLCTCError(
-                "Type " + array_type.str() + " is not supported for for loop.");
-        }
+            // check if the type is an array
+            if (array_type.type != JLC::TYPE::type_enum::ARRAY)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Type " + array_type.str() + " is not supported for for loop.");
+            }
 
-        // get the base type of the array
-        auto base_type = array_type.base_type;
-        // check if the base type is the same as the element type
-        if ((*base_type) != elem_type)
-        {
-            // error
-            throw JLC::TC::JLCTCError(
-                "Array base type " + base_type->str() +
-                " is not the same as the element type " + elem_type.str());
-        }
+            // get the base type of the array
+            auto base_type = array_type.base_type;
+            // check if the base type is the same as the element type
+            if ((*base_type) != elem_type)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Array base type " + base_type->str() +
+                    " is not the same as the element type " + elem_type.str());
+            }
+        })
+        CATCH_BLOCK_WITH_MSG((std::string(p->print(for_loop->type_)) +
+                              std::string(" ") +
+                              for_loop->ident_ +
+                              std::string(" : ") +
+                              std::string(p->print(for_loop->expr_))));
 
         // new block scope
         current_func_->push_blk();
@@ -1109,38 +1150,45 @@ namespace JLC::TC
     void JLC_FUNC_DEF_Checker::
         visitRet(Ret *ret)
     {
-        if (ret->expr_)
-            ret->expr_->accept(this);
-        auto type = g_type_;
+        TRY_BLOCK({
+            if (ret->expr_)
+                ret->expr_->accept(this);
+            auto type = g_type_;
 
-        // check if the return type is the same as the function return type
-        if ((*current_func_->return_type) != type)
-        {
-            // error
-            throw JLC::TC::JLCTCError(
-                "Function " + current_func_->name + " return type " + type.str() +
-                " is not the same as the expected return type " + current_func_->return_type->str());
-        }
-        is_returned_ = true;
+            // check if the return type is the same as the function return type
+            if ((*current_func_->return_type) != type)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Function " + current_func_->name + " return type " + type.str() +
+                    " is not the same as the expected return type " + current_func_->return_type->str());
+            }
+            is_returned_ = true;
+        })
+        CATCH_BLOCK(ret);
     }
 
     void JLC_FUNC_DEF_Checker::
         visitVRet(VRet *v_ret)
     {
-        // check if the return type is void
-        if (current_func_->return_type->type != JLC::TYPE::type_enum::VOID)
-        {
-            // error
-            throw JLC::TC::JLCTCError(
-                "Function " + current_func_->name + " return type is not void");
-        }
-        is_returned_ = true;
+        TRY_BLOCK({
+            // check if the return type is void
+            if (current_func_->return_type->type != JLC::TYPE::type_enum::VOID)
+            {
+                // error
+                throw JLC::TC::JLCTCError(
+                    "Function " + current_func_->name + " return type is not void");
+            }
+            is_returned_ = true;
+        })
+        CATCH_BLOCK(v_ret);
     }
+
+    /********* legal expression **********/
 
     void JLC_FUNC_DEF_Checker::
         visitSExp(SExp *s_exp)
     {
-
         try
         {
             legal_expr_ = false;
@@ -1160,6 +1208,23 @@ namespace JLC::TC
             throw JLC::TC::JLCTCError(
                 std::string(e.what()) +
                 ": \n\t" + std::string(p->print(s_exp)));
+        }
+    }
+
+    /*************** error msg ***********/
+    void JLC_FUNC_DEF_Checker::
+        visitDecl(Decl *decl)
+    {
+        try
+        {
+            TypeVisitor::visitDecl(decl);
+        }
+        catch (const JLC::TC::JLCTCError &e)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                std::string(e.what()) +
+                ": \n\t" + std::string(p->print(decl)));
         }
     }
 

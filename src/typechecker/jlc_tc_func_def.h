@@ -99,8 +99,11 @@ namespace JLC::TC
 
         /* expression */
         bool legal_expr_ = false;
-        void visitSExp(SExp *p);
-        
+        void visitSExp(SExp *p) override;
+
+        /* error handle */
+        void visitDecl(Decl *p) override;
+
     private:
         void checkFuncParams(
             std::shared_ptr<JLC::FUNC::JLCFunc> &func,
