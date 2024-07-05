@@ -645,9 +645,10 @@ namespace JLC::TC
             e_new_o_arr->otype_->accept(this);
 
         auto type = g_type_;
-        // check if the type is struct or class
+        // check if the type is struct or class, enum
         if (type.type != JLC::TYPE::type_enum::STRUCT &&
-            type.type != JLC::TYPE::type_enum::CLASS)
+            type.type != JLC::TYPE::type_enum::CLASS &&
+            type.type != JLC::TYPE::type_enum::ENUM)
         {
             // error
             throw JLC::TC::JLCTCError(

@@ -173,7 +173,7 @@ About to run tests with these settings:
 [165/172] testsuite/extensions/pointers/bad/bad001 ... OK
 [166/172] testsuite/extensions/pointers/bad/parentheses ... OK
 [167/172] testsuite/extensions/arrays2_pointers/mixed001 ... OK
-[168/172] testsuite/extensions/advstructs/adv_structs004 ... FAILED
+[168/172] testsuite/extensions/advstructs/adv_structs004 ... OK
 [169/172] testsuite/extensions/advstructs/adv_structs005 ... OK
 [170/172] testsuite/extensions/advstructs/adv_structs001 ... OK
 [171/172] testsuite/extensions/advstructs/adv_structs002 ... OK
@@ -188,18 +188,5 @@ Some tests failed:
     OK
 - compiler return code info:
     compiler return code: 0, nonzero expected
-
----------- !!! testsuite/extensions/advstructs/adv_structs004.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     
-    In Function initRow:
-    Type enum Square is not supported for oarray.: 
-    	Square [] row = new Square [8];
-- compiler return code info:
-    compiler return code: 1, 0 expected
 
 /chalmers/users/chenhon/lab-group-22
