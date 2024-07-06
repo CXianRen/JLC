@@ -26,7 +26,6 @@ python3 testing.py path/to/submission
 + why do we seperate the checker into N checkers: for example, case good/core002.jl, all called functions in main function are defined after the main, then in the tree, those nodes will be visted only after the main node is visted. (making things complex if we check everything using a single vistor (checker), even if we save the context.)
 
 ## undefined operation: 
-- [ ] printInt(x++);
 - [x] what about variable name is same as a function name -> see core020.jl
 
 - [x] Short-circui evaluation:

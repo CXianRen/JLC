@@ -34,9 +34,9 @@ TYPECHECKER_DIR_H_FILES := $(wildcard $(SRC_DIR)/$(TYPECHECKER_DIR)/*.h)
 TYPECHECKER_DIR_CC_FILES := $(wildcard $(SRC_DIR)/$(TYPECHECKER_DIR)/*.cpp)
 TYPECHECKER_DIR_OBJS := $(patsubst $(SRC_DIR)/$(TYPECHECKER_DIR)/%.cpp, $(BUILD_DIR)/$(TYPECHECKER_DIR)/%.o, $(TYPECHECKER_DIR_CC_FILES))
 
-LLVM_DIR_H_FILES := $(wildcard $(SRC_DIR)/$(LLVM_DIR)/*.H)
-LLVM_DIR_CC_FILES := $(wildcard $(SRC_DIR)/$(LLVM_DIR)/*.C)
-LLVM_DIR_OBJS := $(patsubst $(SRC_DIR)/$(LLVM_DIR)/%.C, $(BUILD_DIR)/$(LLVM_DIR)/%.o, $(LLVM_DIR_CC_FILES))
+LLVM_DIR_H_FILES := $(wildcard $(SRC_DIR)/$(LLVM_DIR)/*.h)
+LLVM_DIR_CC_FILES := $(wildcard $(SRC_DIR)/$(LLVM_DIR)/*.cpp)
+LLVM_DIR_OBJS := $(patsubst $(SRC_DIR)/$(LLVM_DIR)/%.cpp, $(BUILD_DIR)/$(LLVM_DIR)/%.o, $(LLVM_DIR_CC_FILES))
 
 COMMON_DIR_H_FILES := $(wildcard $(SRC_DIR)/$(COMMON_DIR)/*.h)
 COMMON_DIR_CC_FILES := $(wildcard $(SRC_DIR)/$(COMMON_DIR)/*.cpp)
@@ -91,7 +91,7 @@ $(BUILD_DIR)/$(PARSER_DIR)/Lexer.o : $(SRC_DIR)/$(PARSER_DIR)/Lexer.C $(SRC_DIR)
 $(BUILD_DIR)/$(TYPECHECKER_DIR)/%.o: $(SRC_DIR)/$(TYPECHECKER_DIR)/%.cpp $(HEADERS)
 	$(CC) $(CCFLAGS) $(CC_INCLUDES) -c $< -o $@;
 
-$(BUILD_DIR)/$(LLVM_DIR)/%.o: $(SRC_DIR)/$(LLVM_DIR)/%.c $(HEADERS)
+$(BUILD_DIR)/$(LLVM_DIR)/%.o: $(SRC_DIR)/$(LLVM_DIR)/%.cpp $(HEADERS)
 	$(CC) $(CCFLAGS) $(CC_INCLUDES) $(LLVM_CC_CONFIG) -c $< -o $@;
 	
 
