@@ -30,8 +30,21 @@ namespace JLC::LLVM
     public:
         LLVMGenerator(
             std::shared_ptr<JLCContext>
-                context) : context_(context)
+                context)
         {
+            context_ = context;
+            for (auto &pair : context_->enums)
+            {
+                gen_enum_type(pair.second);
+            }
+            for (auto &pair : context_->structs)
+            {
+                gen_struct_type(pair.second);
+            }
+            for (auto &pair : context_->classes)
+            {
+                gen_class_type(pair.second);
+            }
         }
 
         ~LLVMGenerator()
@@ -45,6 +58,14 @@ namespace JLC::LLVM
 
     private:
         /**** class internal ****/
+
+        MLLVM::LLVM_Type jlc_type2llvm_type(const JLCType &type);
+
+        void gen_enum_type(std::shared_ptr<JLCEnum> e);
+
+        void gen_struct_type(std::shared_ptr<JLCStruct> s);
+
+        void gen_class_type(std::shared_ptr<JLCClass> c);
 
     public:
         /**** override skeleton ****/

@@ -30,6 +30,7 @@ namespace MLLVM
     {
     }
 
+    /******************* basic functions *******************/
     void LLVM_Context::
         gen_comment(std::string comment)
     {
@@ -42,13 +43,63 @@ namespace MLLVM
         return "%" + var_name + std::to_string(name_counter++);
     }
 
+    /******************* define type *******************/
+
     void LLVM_Context::
-        gen_alloc_inst(
-            std::string &llvm_value,
-            LLVM_Type type)
+        gen_define_type(
+            const std::string &llvm_type,
+            const std::vector<std::string> &llvm_elements)
+    {
+        std::string result = llvm_type + " = type {";
+        for (int i = 0; i < llvm_elements.size(); i++)
+        {
+            result += " " + llvm_elements[i];
+            if (i != llvm_elements.size() - 1)
+            {
+                result += ",";
+            }
+        }
+        result += " }";
+        llvm_instructions.push_back(result);
+    }
+
+    void LLVM_Context::
+        gen_offset_field_in_type(
+            const std::string &llvm_type,
+            const std::string &llvm_field,
+            const int offset)
     {
         llvm_instructions.push_back(
-            llvm_value + " = alloca " + MLLVM::str(type));
+            llvm_field + " = getelementptr " +
+            llvm_type + ", ptr %struct_pointer, i32 0, i32 " + std::to_string(offset));
+    }
+
+    void LLVM_Context::
+        gen_global_const_var(
+            const std::string &llvm_var_name,
+            const std::string &llvm_type,
+            const std::string &llvm_value)
+    {
+        llvm_instructions.push_back(
+            "@" + llvm_var_name + " = constant " + llvm_type + " " + llvm_value);
+    }
+
+    /******************* memory operations *******************/
+    void LLVM_Context::
+        gen_alloc_inst(
+            const std::string &llvm_value,
+            const LLVM_Type type)
+    {
+        gen_alloc_inst(llvm_value, MLLVM::str(type));
+    }
+
+    void LLVM_Context::
+        gen_alloc_inst(
+            const std::string &llvm_value,
+            const std::string &llvm_type)
+    {
+        llvm_instructions.push_back(
+            llvm_value + " = alloca " + llvm_type);
     }
 
     void LLVM_Context::

@@ -36,16 +36,52 @@ namespace MLLVM
 
         std::string gen_name(std::string var_name);
 
+        /******** define type ********/
+
+        /*
+         * Generate a type definition
+         * like:
+         * %struct.type = type { i32, i32 }
+         */
+
+        void gen_define_type(
+            const std::string &llvm_type,
+            const std::vector<std::string> &llvm_elements);
+
+        /**
+         * Generate a getelementptr instruction
+         * like:
+         * %field = getelementptr %type, ptr* %struct_pointer, i32 0, i32 0
+         */
+        void gen_offset_field_in_type(
+            const std::string &llvm_type,
+            const std::string &llvm_field,
+            const int offset);
+
+        /***
+         * Generate a global constant variable
+         * like:
+         * @var_name = constant i32 10
+         */
+        void gen_global_const_var(
+            const std::string &llvm_var_name,
+            const std::string &llvm_type,
+            const std::string &llvm_value);
+
         /******** memory operations ********/
-        
+
         /*
          * Generate an alloca instruction
          * like:
          * %var_name = alloca i32
          */
         void gen_alloc_inst(
-            std::string &llvm_value,
-            LLVM_Type type);
+            const std::string &llvm_value,
+            const LLVM_Type type);
+
+        void gen_alloc_inst(
+            const std::string &llvm_value,
+            const std::string &llvm_type);
 
         /*
          * Generate a store instruction

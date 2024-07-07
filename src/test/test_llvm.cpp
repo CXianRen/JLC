@@ -3,6 +3,8 @@
 #include "llvm/llvm.h"
 #include "common/test.h"
 
+#include "common/debug.h"
+
 int main(int argc, char **argv)
 {
 
@@ -75,6 +77,47 @@ int main(int argc, char **argv)
         context.gen_load_inst(llvm_src, llvm_dst, MLLVM::LLVM_i32);
         std::string result = context.llvm_instructions.back();
         std::string expected = "%var = load i32, ptr %var_pointer";
+        TEST_ASSERT(result == expected);
+    }
+
+    // test llvm type definition
+    {
+        MLLVM::LLVM_Context context;
+        std::string llvm_type = "\%struct.type";
+        std::vector<std::string> llvm_elements = {"i32", "i32"};
+        context.gen_define_type(llvm_type, llvm_elements);
+        std::string result = context.llvm_instructions.back();
+        std::string expected = "\%struct.type = type { i32, i32 }";
+        DEBUG_PRINT("result  : " + result);
+        DEBUG_PRINT("expected: " + expected);
+        TEST_ASSERT(result == expected);
+    }
+
+    // test llvm access field in type
+    {
+        MLLVM::LLVM_Context context;
+        std::string llvm_type = "\%struct.type";
+        std::string llvm_field = "\%field";
+        int offset = 0;
+        context.gen_offset_field_in_type(llvm_type, llvm_field, offset);
+        std::string result = context.llvm_instructions.back();
+        std::string expected = "\%field = getelementptr \%struct.type, ptr \%struct_pointer, i32 0, i32 0";
+        DEBUG_PRINT("result  : " + result);
+        DEBUG_PRINT("expected: " + expected);
+        TEST_ASSERT(result == expected);
+    }
+
+    // test llvm global constant variable
+    {
+        MLLVM::LLVM_Context context;
+        std::string llvm_var_name = "var_name";
+        std::string llvm_type = "i32";
+        std::string llvm_value = "10";
+        context.gen_global_const_var(llvm_var_name, llvm_type, llvm_value);
+        std::string result = context.llvm_instructions.back();
+        std::string expected = "@var_name = constant i32 10";
+        DEBUG_PRINT("result  : " + result);
+        DEBUG_PRINT("expected: " + expected);
         TEST_ASSERT(result == expected);
     }
 
