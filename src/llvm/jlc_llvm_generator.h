@@ -70,8 +70,12 @@ namespace JLC::LLVM
 
         void visitFuncDef(FuncDef *p) override;
 
+        // declaration variables
+        void visitNoInit(NoInit *p) override;
+        // void visitInit(Init *p) override;
+        // void visitENewObj(ENewObj *p) override;
 
-
+        // void visitENewBArr(ENewBArr *p) override;
 
     }; // class LLVMGenerator
 

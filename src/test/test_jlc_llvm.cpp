@@ -132,5 +132,60 @@ int main(int argc, char **argv)
                     "declare double @readDouble()");
     }
 
+    // test define variable
+    {
+        std::string input_str = "void f(){ int x; }";
+        init_checker();
+        run_checker();
+
+        auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
+        parse_tree->accept(llvm_gen.get());
+
+        auto result = llvm_gen->llvm_context_.llvm_instructions;
+        DEBUG_PRINT(result[result.size() - 2]);
+        TEST_ASSERT(result[result.size() - 2] == "%x0 = alloca i32");
+    }
+    // define a struct variable
+    {
+        std::string input_str = "typedef struct Point { int x; int y; }* Point;\n"
+                                "void f(){ Point p; }";
+        init_checker();
+        run_checker();
+
+        auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
+        parse_tree->accept(llvm_gen.get());
+
+        auto result = llvm_gen->llvm_context_.llvm_instructions;
+        DEBUG_PRINT(result[result.size() - 2]);
+        TEST_ASSERT(result[result.size() - 2] == "%p0 = alloca ptr");
+    }
+    // define a class variable
+    {
+        std::string input_str = "class Point { int x; int y; }\n"
+                                "void f(){ Point p; }";
+        init_checker();
+        run_checker();
+
+        auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
+        parse_tree->accept(llvm_gen.get());
+
+        auto result = llvm_gen->llvm_context_.llvm_instructions;
+        DEBUG_PRINT(result[result.size() - 2]);
+        TEST_ASSERT(result[result.size() - 2] == "%p0 = alloca ptr");
+    }
+    // define a array variable 
+    {
+        std::string input_str = "void f(){ int[] x; }";
+        init_checker();
+        run_checker();
+
+        auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
+        parse_tree->accept(llvm_gen.get());
+
+        auto result = llvm_gen->llvm_context_.llvm_instructions;
+        DEBUG_PRINT(result[result.size() - 2]);
+        TEST_ASSERT(result[result.size() - 2] == "%x0 = alloca ptr");
+    }
+
     TEST_PASS();
 }

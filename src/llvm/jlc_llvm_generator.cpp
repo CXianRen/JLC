@@ -136,6 +136,7 @@ namespace JLC::LLVM
             context_->get_func(func_name_with_scope);
 
         // function declaration start
+        llvm_context_.reset_name_counter();
         llvm_context_.gen_define_func_start(
             func_name,
             str(jlc_type2llvm_type(*current_func_->return_type)),
@@ -156,4 +157,46 @@ namespace JLC::LLVM
         llvm_context_.gen_define_func_end();
     }
 
+    void LLVMGenerator::
+        visitNoInit(NoInit *no_init)
+    {
+        legal_expr_ = true;
+
+        auto var_type =
+            std::make_shared<JLC::TYPE::JLCType>(g_type_);
+
+        auto var_name = no_init->ident_;
+
+        // add the variable to the current scope
+        current_func_->add_var(
+            JLC::VAR::JLCVar(
+                var_name,
+                var_type));
+
+        // get llvm_name
+        auto llvm_name = llvm_context_.gen_name(var_name);
+
+        // gen alloca instruction
+        // baisc type
+        if (var_type->type == JLC::TYPE::type_enum::INT ||
+            var_type->type == JLC::TYPE::type_enum::DOUB ||
+            var_type->type == JLC::TYPE::type_enum::BOOL ||
+            var_type->type == JLC::TYPE::type_enum::STRING)
+        {
+            llvm_context_.gen_alloc_inst(
+                llvm_name,
+                jlc_type2llvm_type(*var_type));
+            return;
+        }
+        // if struct class array, the obj is a pointer
+        if (var_type->type == JLC::TYPE::type_enum::STRUCT ||
+            var_type->type == JLC::TYPE::type_enum::CLASS ||
+            var_type->type == JLC::TYPE::type_enum::ARRAY)
+        {
+            llvm_context_.gen_alloc_inst(
+                llvm_name,
+                jlc_type2llvm_type(*var_type));
+            return;
+        }
+    }
 } // namespace JLC::LLVM
