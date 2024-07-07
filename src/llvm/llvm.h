@@ -67,6 +67,16 @@ namespace MLLVM
             const std::string &llvm_var_name,
             const std::string &llvm_type,
             const std::string &llvm_value);
+    
+        /**
+         * Generate a declare function instruction
+         * like:
+         * declare i32 @func_name(i32, i32)
+         */
+        void gen_declare_func(
+            const std::string &llvm_func_name,
+            const std::string &llvm_return_type,
+            const std::vector<std::string> &llvm_args);
 
         /******** memory operations ********/
 
