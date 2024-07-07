@@ -25,6 +25,8 @@ namespace JLC::LLVM
             return MLLVM::LLVM_ptr;
         case type_enum::CLASS:
             return MLLVM::LLVM_ptr;
+        case type_enum::ARRAY:
+            return MLLVM::LLVM_ptr;
         default:
         {
             throw JLCError(
@@ -53,7 +55,7 @@ namespace JLC::LLVM
             "printString",
             "void",
             {"ptr"});
-        
+
         // add readInt declaration
         llvm_context_.gen_declare_func(
             "readInt",
@@ -67,7 +69,25 @@ namespace JLC::LLVM
             {});
     }
 
-    void LLVMGenerator::gen_enum_type(std::shared_ptr<JLCEnum> e)
+    void LLVMGenerator::
+        add_udt()
+    {
+        for (auto &pair : context_->enums)
+        {
+            gen_enum_type(pair.second);
+        }
+        for (auto &pair : context_->structs)
+        {
+            gen_struct_type(pair.second);
+        }
+        for (auto &pair : context_->classes)
+        {
+            gen_class_type(pair.second);
+        }
+    }
+
+    void LLVMGenerator::
+        gen_enum_type(std::shared_ptr<JLCEnum> e)
     {
         for (auto &pair : e->members)
         {
@@ -78,7 +98,8 @@ namespace JLC::LLVM
         }
     }
 
-    void LLVMGenerator::gen_struct_type(std::shared_ptr<JLCStruct> s)
+    void LLVMGenerator::
+        gen_struct_type(std::shared_ptr<JLCStruct> s)
     {
         std::vector<std::string> elements;
         for (auto &pair : s->members)
@@ -89,7 +110,8 @@ namespace JLC::LLVM
         llvm_context_.gen_define_type(std::string("\%struct.") + s->obj_name, elements);
     }
 
-    void LLVMGenerator::gen_class_type(std::shared_ptr<JLCClass> c)
+    void LLVMGenerator::
+        gen_class_type(std::shared_ptr<JLCClass> c)
     {
         std::vector<std::string> elements;
         for (auto &pair : c->members)
@@ -98,6 +120,40 @@ namespace JLC::LLVM
                 str(jlc_type2llvm_type(*pair.second)));
         }
         llvm_context_.gen_define_type(std::string("\%class.") + c->obj_name, elements);
+    }
+
+    /****** override ******/
+    /*** FUNC_DEF ***/
+    void LLVMGenerator::
+        visitFuncDef(FuncDef *func_def)
+    {
+        std::string func_name = func_def->ident_;
+        auto func_name_with_scope =
+            context_->get_scope_name(func_name,
+                                     func_scope_);
+
+        current_func_ =
+            context_->get_func(func_name_with_scope);
+
+        // function declaration start
+        llvm_context_.gen_define_func_start(
+            func_name,
+            str(jlc_type2llvm_type(*current_func_->return_type)),
+            {});
+
+        // entry label
+        llvm_context_.gen_label("entry");
+
+        // function body scope start
+        current_func_->push_blk();
+
+        JLC::TC::TypeVisitor::visitFuncDef(func_def);
+
+        // function body scope end
+        current_func_->pop_blk();
+
+        // function declaration end
+        llvm_context_.gen_define_func_end();
     }
 
 } // namespace JLC::LLVM

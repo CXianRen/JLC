@@ -2,6 +2,18 @@
 
 namespace MLLVM
 {
+
+    static int prefix_size = 0;
+
+    void set_prefix_size(int size)
+    {
+        prefix_size = size;
+    }
+    int get_prefix_size()
+    {
+        return prefix_size;
+    }
+
     std::string str(const LLVM_Type type)
     {
         switch (type)
@@ -34,7 +46,7 @@ namespace MLLVM
     void LLVM_Context::
         gen_comment(std::string comment)
     {
-        llvm_instructions.push_back("; " + comment);
+        llvm_instructions.push_back(std::string(prefix_size, ' ') + "; " + comment);
     }
 
     std::string LLVM_Context::
@@ -70,6 +82,7 @@ namespace MLLVM
             const int offset)
     {
         llvm_instructions.push_back(
+            std::string(prefix_size, ' ') +
             llvm_field + " = getelementptr " +
             llvm_type + ", ptr %struct_pointer, i32 0, i32 " + std::to_string(offset));
     }
@@ -137,6 +150,7 @@ namespace MLLVM
             const std::string &llvm_type)
     {
         llvm_instructions.push_back(
+            std::string(prefix_size, ' ') +
             llvm_value + " = alloca " + llvm_type);
     }
 
@@ -147,6 +161,7 @@ namespace MLLVM
             LLVM_Type type)
     {
         llvm_instructions.push_back(
+            std::string(prefix_size, ' ') +
             "store " +
             MLLVM::str(type) + " " + llvm_src +
             ", " + "ptr" + " " + llvm_dst);
@@ -159,6 +174,7 @@ namespace MLLVM
             LLVM_Type type)
     {
         llvm_instructions.push_back(
+            std::string(prefix_size, ' ') +
             llvm_dst + " = load " +
             MLLVM::str(type) + ", " + "ptr" + " " + llvm_src);
     }
@@ -168,16 +184,7 @@ namespace MLLVM
         std::string result;
         for (auto &inst : llvm_instructions)
         {
-            // check if the instruction is a label
-            if (inst.back() == ':')
-            {
-                result += inst + "\n";
-                continue;
-            }
-            else
-            {
-                result += "\t" + inst + "\n";
-            }
+            result += inst + "\n";
         }
         return result;
     }

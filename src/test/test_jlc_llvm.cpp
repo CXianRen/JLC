@@ -65,6 +65,7 @@ int main(int argc, char **argv)
         init_checker();
         run_checker();
         auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
+        llvm_gen->add_udt();
 
         TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions.size() == 3);
         DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[0]);
@@ -83,6 +84,7 @@ int main(int argc, char **argv)
         init_checker();
         run_checker();
         auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
+        llvm_gen->add_udt();
 
         TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions.size() == 1);
         DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[0]);
@@ -95,6 +97,7 @@ int main(int argc, char **argv)
         init_checker();
         run_checker();
         auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
+        llvm_gen->add_udt();
 
         TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions.size() == 1);
         DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[0]);

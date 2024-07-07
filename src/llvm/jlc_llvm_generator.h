@@ -33,18 +33,6 @@ namespace JLC::LLVM
                 context)
         {
             context_ = context;
-            for (auto &pair : context_->enums)
-            {
-                gen_enum_type(pair.second);
-            }
-            for (auto &pair : context_->structs)
-            {
-                gen_struct_type(pair.second);
-            }
-            for (auto &pair : context_->classes)
-            {
-                gen_class_type(pair.second);
-            }
         }
 
         ~LLVMGenerator()
@@ -57,6 +45,8 @@ namespace JLC::LLVM
         MLLVM::LLVM_Context llvm_context_;
 
         void add_internal_func();
+
+        void add_udt();
 
     private:
         /**** class internal ****/
@@ -71,6 +61,17 @@ namespace JLC::LLVM
 
     public:
         /**** override skeleton ****/
+        void visitProgram(Program *p) override
+        {
+            add_internal_func();
+            add_udt();
+            TypeVisitor::visitProgram(p);
+        }
+
+        void visitFuncDef(FuncDef *p) override;
+
+
+
 
     }; // class LLVMGenerator
 

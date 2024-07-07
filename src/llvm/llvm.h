@@ -6,6 +6,10 @@
 
 namespace MLLVM
 {
+
+    void set_prefix_size(int size);
+    int get_prefix_size();
+
     enum LLVM_Type
     {
         LLVM_i1,
@@ -92,7 +96,7 @@ namespace MLLVM
             const std::vector<std::string> &llvm_args);
 
         void gen_label(const std::string &label)
-        { 
+        {
             llvm_instructions.push_back(label + ":");
         }
 
