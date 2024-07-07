@@ -67,7 +67,7 @@ namespace MLLVM
             const std::string &llvm_var_name,
             const std::string &llvm_type,
             const std::string &llvm_value);
-    
+
         /**
          * Generate a declare function instruction
          * like:
@@ -78,6 +78,25 @@ namespace MLLVM
             const std::string &llvm_return_type,
             const std::vector<std::string> &llvm_args);
 
+        /*
+         *  Generate a define function instruction
+         *  like:
+         *  define i32 @func_name(i32 %arg1, i32 %arg2) {
+         */
+        void gen_define_func_start(
+            const std::string &llvm_func_name,
+            const std::string &llvm_return_type,
+            const std::vector<std::string> &llvm_args);
+
+        /*
+         * Generate a define function end instruction
+         * like:
+         * }
+         */
+        void gen_define_func_end()
+        {
+            llvm_instructions.push_back("}");
+        }
         /******** memory operations ********/
 
         /*

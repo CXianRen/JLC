@@ -84,10 +84,11 @@ namespace MLLVM
             "@" + llvm_var_name + " = constant " + llvm_type + " " + llvm_value);
     }
 
-    void LLVM_Context::gen_declare_func(
-        const std::string &llvm_func_name,
-        const std::string &llvm_return_type,
-        const std::vector<std::string> &llvm_args)
+    void LLVM_Context::
+        gen_declare_func(
+            const std::string &llvm_func_name,
+            const std::string &llvm_return_type,
+            const std::vector<std::string> &llvm_args)
     {
         std::string result = "declare " + llvm_return_type + " @" + llvm_func_name + "(";
         for (int i = 0; i < llvm_args.size(); i++)
@@ -99,6 +100,25 @@ namespace MLLVM
             }
         }
         result += ")";
+        llvm_instructions.push_back(result);
+    }
+
+    void LLVM_Context::
+        gen_define_func_start(
+            const std::string &llvm_func_name,
+            const std::string &llvm_return_type,
+            const std::vector<std::string> &llvm_args)
+    {
+        std::string result = "define " + llvm_return_type + " @" + llvm_func_name + "(";
+        for (int i = 0; i < llvm_args.size(); i++)
+        {
+            result += llvm_args[i];
+            if (i != llvm_args.size() - 1)
+            {
+                result += ", ";
+            }
+        }
+        result += ") {";
         llvm_instructions.push_back(result);
     }
 

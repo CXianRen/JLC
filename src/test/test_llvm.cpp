@@ -135,5 +135,30 @@ int main(int argc, char **argv)
         TEST_ASSERT(result == expected);
     }
 
+    // test llvm function definition start
+    {
+        MLLVM::LLVM_Context context;
+        std::string llvm_func_name = "func_name";
+        std::string llvm_return_type = "i32";
+        std::vector<std::string> llvm_args = {"i32", "i32"};
+        context.gen_define_func_start(llvm_func_name, llvm_return_type, llvm_args);
+        std::string result = context.llvm_instructions.back();
+        std::string expected = "define i32 @func_name(i32, i32) {";
+        DEBUG_PRINT("result  : " + result);
+        DEBUG_PRINT("expected: " + expected);
+        TEST_ASSERT(result == expected);
+    }
+
+    // test llvm function definition end
+    {
+        MLLVM::LLVM_Context context;
+        context.gen_define_func_end();
+        std::string result = context.llvm_instructions.back();
+        std::string expected = "}";
+        DEBUG_PRINT("result  : " + result);
+        DEBUG_PRINT("expected: " + expected);
+        TEST_ASSERT(result == expected);
+    }
+
     TEST_PASS();
 }
