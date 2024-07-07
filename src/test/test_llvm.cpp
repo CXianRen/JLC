@@ -160,5 +160,17 @@ int main(int argc, char **argv)
         TEST_ASSERT(result == expected);
     }
 
+    // test llvm label
+    {
+        MLLVM::LLVM_Context context;
+        std::string label = "entry";
+        context.gen_label(label);
+        std::string result = context.llvm_instructions.back();
+        std::string expected = "entry:";
+        DEBUG_PRINT("result  : " + result);
+        DEBUG_PRINT("expected: " + expected);
+        TEST_ASSERT(result == expected);
+    }
+
     TEST_PASS();
 }

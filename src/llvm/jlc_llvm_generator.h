@@ -56,6 +56,8 @@ namespace JLC::LLVM
 
         MLLVM::LLVM_Context llvm_context_;
 
+        void add_internal_func();
+
     private:
         /**** class internal ****/
 

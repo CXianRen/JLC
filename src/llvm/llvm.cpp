@@ -168,7 +168,16 @@ namespace MLLVM
         std::string result;
         for (auto &inst : llvm_instructions)
         {
-            result += inst + "\n";
+            // check if the instruction is a label
+            if (inst.back() == ':')
+            {
+                result += inst + "\n";
+                continue;
+            }
+            else
+            {
+                result += "\t" + inst + "\n";
+            }
         }
         return result;
     }

@@ -34,6 +34,39 @@ namespace JLC::LLVM
         }
     }
 
+    void LLVMGenerator::
+        add_internal_func()
+    {
+        // add printInt declaration
+        llvm_context_.gen_declare_func(
+            "printInt",
+            "void",
+            {"i32"});
+        // add printDouble declaration
+        llvm_context_.gen_declare_func(
+            "printDouble",
+            "void",
+            {"double"});
+
+        // add printString declaration
+        llvm_context_.gen_declare_func(
+            "printString",
+            "void",
+            {"ptr"});
+        
+        // add readInt declaration
+        llvm_context_.gen_declare_func(
+            "readInt",
+            "i32",
+            {});
+
+        // add readDouble declaration
+        llvm_context_.gen_declare_func(
+            "readDouble",
+            "double",
+            {});
+    }
+
     void LLVMGenerator::gen_enum_type(std::shared_ptr<JLCEnum> e)
     {
         for (auto &pair : e->members)

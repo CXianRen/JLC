@@ -29,7 +29,10 @@ namespace MLLVM
         int name_counter;
 
     public:
-        void reset_name_counter() { name_counter = 0; }
+        void reset_name_counter()
+        {
+            name_counter = 0;
+        }
 
     public:
         void gen_comment(std::string comment);
@@ -87,6 +90,11 @@ namespace MLLVM
             const std::string &llvm_func_name,
             const std::string &llvm_return_type,
             const std::vector<std::string> &llvm_args);
+
+        void gen_label(const std::string &label)
+        { 
+            llvm_instructions.push_back(label + ":");
+        }
 
         /*
          * Generate a define function end instruction

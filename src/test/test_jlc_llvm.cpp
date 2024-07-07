@@ -102,5 +102,32 @@ int main(int argc, char **argv)
                     "\%class.Point = type { i32, i32 }");
     }
 
+    // test internal function decleration
+    {
+        std::string input_str = "void f(){}";
+        init_checker();
+        run_checker();
+
+        auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
+        llvm_gen->add_internal_func();
+
+        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions.size() > 0);
+        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[0]);
+        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[0] ==
+                    "declare void @printInt(i32)");
+        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[1]);
+        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[1] ==
+                    "declare void @printDouble(double)");
+        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[2]);
+        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[2] ==
+                    "declare void @printString(ptr)");
+        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[3]);
+        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[3] ==
+                    "declare i32 @readInt()");
+        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[4]);
+        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[4] ==
+                    "declare double @readDouble()");
+    }
+
     TEST_PASS();
 }
