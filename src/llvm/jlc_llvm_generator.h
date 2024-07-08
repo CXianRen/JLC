@@ -59,7 +59,11 @@ namespace JLC::LLVM
 
         void gen_class_type(std::shared_ptr<JLCClass> c);
 
+        int get_obj_size(const std::string &obj_name);
+
     public:
+        std::string g_llvm_value_;
+
         /**** override skeleton ****/
         void visitProgram(Program *p) override
         {
@@ -68,14 +72,67 @@ namespace JLC::LLVM
             TypeVisitor::visitProgram(p);
         }
 
+        /****  immediate value ****/
+        void visitELitNull(ELitNull *p) override
+        {
+            g_llvm_value_ = "null";
+            TypeVisitor::visitELitNull(p);
+        }
+
+        void visitELitInt(ELitInt *e_lit_int) override
+        {
+            g_llvm_value_ = std::to_string(e_lit_int->integer_);
+            TypeVisitor::visitELitInt(e_lit_int);
+        }
+
+        void visitELitDoub(ELitDoub *e_lit_doub) override
+        {
+            g_llvm_value_ = std::to_string(e_lit_doub->double_);
+            TypeVisitor::visitELitDoub(e_lit_doub);
+        }
+
+        void visitELitTrue(ELitTrue *e_lit_true) override
+        {
+            g_llvm_value_ = "1";
+            TypeVisitor::visitELitTrue(e_lit_true);
+        }
+
+        void visitELitFalse(ELitFalse *e_lit_false) override
+        {
+            g_llvm_value_ = "0";
+            TypeVisitor::visitELitFalse(e_lit_false);
+        }
+
+        std::map<std::string, std::string> const_string_llvm_value_map_;
+        void visitEString(EString *e_string) override
+        {
+            TypeVisitor::visitEString(e_string);
+            // new a constant string
+            // check if the string is already in the map
+            auto const_string = e_string->string_;
+            if (const_string_llvm_value_map_.find(const_string) ==
+                const_string_llvm_value_map_.end())
+            {
+                // new a constant string
+                llvm_context_.gen_global_const_var(
+                    "str_" + std::to_string(const_string_llvm_value_map_.size()),
+                    std::string("[") +
+                        std::to_string(const_string.size() + 1) +
+                        std::string(" x i8]"),
+                    "c\"" + const_string + "\\00\"");
+            }
+            g_llvm_value_ = const_string_llvm_value_map_[const_string];
+        }
+
+        /**** function definition ****/
         void visitFuncDef(FuncDef *p) override;
 
-        // declaration variables
+        /*** variable declaration ***/
         void visitNoInit(NoInit *p) override;
-        // void visitInit(Init *p) override;
-        // void visitENewObj(ENewObj *p) override;
-
-        // void visitENewBArr(ENewBArr *p) override;
+        void visitInit(Init *p) override;
+        void visitENewObj(ENewObj *p) override;
+        void visitENewBArr(ENewBArr *p) override;
+        // void visitENewOArr(ENewOArr *p) override;
 
     }; // class LLVMGenerator
 

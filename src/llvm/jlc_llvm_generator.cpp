@@ -36,6 +36,38 @@ namespace JLC::LLVM
         }
     }
 
+    int LLVMGenerator::
+        get_obj_size(const std::string &obj_name)
+    {
+        // if the obj is a struct or class
+        auto obj = context_->get_struct(obj_name);
+        if (obj == nullptr)
+        {
+            obj = context_->get_class(obj_name);
+        }
+        if (obj == nullptr)
+        {
+            throw JLCError(
+                "get_obj_size: unknown obj: " +
+                obj_name);
+        }
+
+        int size = 0;
+        for (auto &pair : obj->members)
+        {
+            auto llvm_type = jlc_type2llvm_type(*pair.second);
+            if (MLLVM::LLVM_Type_Size_map.find(llvm_type) ==
+                MLLVM::LLVM_Type_Size_map.end())
+            {
+                throw JLCError(
+                    "get_obj_size: unknown type: " +
+                    pair.second->str());
+            }
+            size += std::stoi(MLLVM::LLVM_Type_Size_map.at(llvm_type));
+        }
+        return size;
+    }
+
     void LLVMGenerator::
         add_internal_func()
     {
@@ -67,6 +99,12 @@ namespace JLC::LLVM
             "readDouble",
             "double",
             {});
+
+        // malloc
+        llvm_context_.gen_declare_func(
+            "malloc",
+            "ptr",
+            {"i32"});
     }
 
     void LLVMGenerator::
@@ -199,4 +237,101 @@ namespace JLC::LLVM
             return;
         }
     }
+
+    void LLVMGenerator::
+        visitInit(Init *init)
+    {
+        auto decl_type = g_type_;
+
+        auto var_type =
+            std::make_shared<JLC::TYPE::JLCType>(g_type_);
+
+        auto var_name = init->ident_;
+
+        // gen alloc inst
+        auto llvm_name = llvm_context_.gen_name(var_name);
+        llvm_context_.gen_alloc_inst(
+            llvm_name,
+            jlc_type2llvm_type(*var_type));
+
+        if (init->expr_)
+            init->expr_->accept(this);
+        auto llvm_value = g_llvm_value_;
+
+        // gen store inst
+        llvm_context_.gen_store_inst(
+            llvm_value,
+            llvm_name,
+            jlc_type2llvm_type(*var_type));
+
+        current_func_->add_var(
+            JLC::VAR::JLCVar(var_name, var_type));
+
+        g_type_ = decl_type;
+    }
+
+    void LLVMGenerator::
+        visitENewObj(ENewObj *e_new_obj)
+    {
+        if (e_new_obj->otype_)
+            e_new_obj->otype_->accept(this);
+        auto type = g_type_;
+
+        std::string obj_name = type.obj_name;
+        std::string llvm_value_type;
+        int obj_size = get_obj_size(obj_name);
+
+        // malloc
+        auto llvm_return_value = llvm_context_.gen_name("tmp");
+        llvm_context_.gen_call_inst(
+            llvm_return_value,
+            "malloc",
+            "ptr",
+            {{"i32", std::to_string(obj_size)}});
+
+        // store the return value to the llvm_value
+        g_llvm_value_ = llvm_return_value;
+    }
+
+    void LLVMGenerator::
+        visitENewBArr(ENewBArr *e_new_b_arr)
+    {
+        if (e_new_b_arr->btype_)
+            e_new_b_arr->btype_->accept(this);
+
+        auto type = g_type_;
+
+        std::vector<std::string> llvm_dim_values;
+
+        auto list_dim_expr = e_new_b_arr->listdimexpr_;
+        for (ListDimExpr::iterator i = list_dim_expr->begin();
+             i != list_dim_expr->end();
+             ++i)
+        {
+            (*i)->accept(this);
+            llvm_dim_values.push_back(g_llvm_value_);
+        }
+
+        // get the base type
+        auto base_type = type.base_type;
+        while (base_type->type == JLC::TYPE::type_enum::ARRAY)
+        {
+            base_type = base_type->base_type;
+        }
+        // check the base type
+        // if (MLLVM::LLVM_Type_Size_map.at(jlc_type2llvm_type(*base_type)) ==
+        //     MLLVM::LLVM_Type_Size_map.end())
+        // {
+        //     throw JLCError(
+        //         "visitENewBArr: unknown type: " +
+        //         base_type->str());
+        // }
+        // std::string base_type_size =
+        //     MLLVM::LLVM_Type_Size_map.at(jlc_type2llvm_type(*base_type));
+
+        // // get the total size
+        // int dim = list_dim_expr->size();
+        // multi-dimensional array
+    }
+
 } // namespace JLC::LLVM

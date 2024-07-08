@@ -173,7 +173,7 @@ int main(int argc, char **argv)
         DEBUG_PRINT(result[result.size() - 2]);
         TEST_ASSERT(result[result.size() - 2] == "%p0 = alloca ptr");
     }
-    // define a array variable 
+    // define a array variable
     {
         std::string input_str = "void f(){ int[] x; }";
         init_checker();
@@ -185,6 +185,87 @@ int main(int argc, char **argv)
         auto result = llvm_gen->llvm_context_.llvm_instructions;
         DEBUG_PRINT(result[result.size() - 2]);
         TEST_ASSERT(result[result.size() - 2] == "%x0 = alloca ptr");
+    }
+    // defina a int with initial number
+    {
+        std::string input_str = "void f(){ int x = 10; }";
+        init_checker();
+        run_checker();
+
+        auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
+        parse_tree->accept(llvm_gen.get());
+
+        auto result = llvm_gen->llvm_context_.llvm_instructions;
+        // DEBUG_PRINT(llvm_gen->llvm_context_.str());
+        TEST_ASSERT(
+            result[result.size() - 2] ==
+            "store i32 10, ptr %x0");
+    }
+    // define a double with initial number
+    {
+        std::string input_str = "void f(){ double x = 10.0; }";
+        init_checker();
+        run_checker();
+
+        auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
+        parse_tree->accept(llvm_gen.get());
+
+        auto result = llvm_gen->llvm_context_.llvm_instructions;
+        DEBUG_PRINT(llvm_gen->llvm_context_.str());
+        TEST_ASSERT(
+            result[result.size() - 2] ==
+            "store double 10.000000, ptr %x0");
+    }
+    // define a class with null
+    {
+        std::string input_str = "class Point { int x; int y; }\n"
+                                "void f(){ Point p = (Point)null; }";
+        init_checker();
+        run_checker();
+
+        auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
+        parse_tree->accept(llvm_gen.get());
+
+        auto result = llvm_gen->llvm_context_.llvm_instructions;
+        DEBUG_PRINT(llvm_gen->llvm_context_.str());
+        TEST_ASSERT(
+            result[result.size() - 2] ==
+            "store ptr null, ptr %p0");
+    }
+    // define a struct with null
+    {
+        std::string input_str = "typedef struct Point { int x; int y; }* Point;\n"
+                                "void f(){ Point p = (Point)null; }";
+        init_checker();
+        run_checker();
+
+        auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
+        parse_tree->accept(llvm_gen.get());
+
+        auto result = llvm_gen->llvm_context_.llvm_instructions;
+        DEBUG_PRINT(llvm_gen->llvm_context_.str());
+        TEST_ASSERT(
+            result[result.size() - 2] ==
+            "store ptr null, ptr %p0");
+    }
+    // init with new 
+    {
+        std::string input_str = "class Point { int x; int y; }\n"
+                                "void f(){ Point p = new Point; }";
+        init_checker();
+        run_checker();
+
+        auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
+        parse_tree->accept(llvm_gen.get());
+
+        auto result = llvm_gen->llvm_context_.llvm_instructions;
+        DEBUG_PRINT(llvm_gen->llvm_context_.str());
+        TEST_ASSERT(
+            result[result.size() - 3] ==
+            "%tmp1 = call ptr @malloc(i32 8)");
+        TEST_ASSERT(
+            result[result.size() - 2] ==
+            "store ptr %tmp1, ptr %p0");
     }
 
     TEST_PASS();
