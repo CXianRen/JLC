@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-
+#include <map>
 namespace MLLVM
 {
 
@@ -19,6 +19,13 @@ namespace MLLVM
         LLVM_void
     };
     std::string str(const LLVM_Type type);
+
+    const std::map<LLVM_Type, std::string> LLVM_Type_Size_map = {
+        {LLVM_i1, "1"},
+        {LLVM_i32, "4"},
+        {LLVM_double, "8"},
+        {LLVM_ptr, "8"},
+        {LLVM_void, "0"}};
 
     class LLVM_Context
     {
@@ -146,7 +153,59 @@ namespace MLLVM
             std::string &llvm_dst,
             LLVM_Type type);
 
+        /********* call operations *********/
+
+        /**
+         * Generate a call instruction
+         * like:
+         * %var = call i32 @func_name(i32 10, i32 20)
+         */
+
+        void gen_call_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_func_name,
+            const std::string &llvm_return_type,
+            const std::vector<std::pair<std::string, std::string>> &llvm_args);
+
         /******** math operations ********/
+
+        /**
+         * Generate an add instruction
+         * like:
+         * %var = add i32 10, i32 20
+         */
+
+        void gen_add_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type);
+
+        void gen_sub_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type);
+
+        void gen_mul_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type);
+
+        void gen_div_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type);
+
+        void gen_mod_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type);
+
+        /********* compare operations *********/
 
     public:
         std::string str();

@@ -22,6 +22,17 @@
         exit(1);                                                 \
     }
 
+#define TEST_ASSERT_STR_EQ(str1, str2)                    \
+    if (str1 != str2)                                     \
+    {                                                     \
+        TEST_FAIL();                                      \
+        std::cerr << "Assertion failed: "                 \
+                  << str1 << " != " << str2 << std::endl; \
+        std::cerr << "File: " << __FILE__ << std::endl;   \
+        std::cerr << "Line: " << __LINE__ << std::endl;   \
+        exit(1);                                          \
+    }
+
 // expect an exception
 #define TEST_EXPECT_EXCEPTION(expr)                                  \
     try                                                              \

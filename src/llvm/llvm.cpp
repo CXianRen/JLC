@@ -179,6 +179,144 @@ namespace MLLVM
             MLLVM::str(type) + ", " + "ptr" + " " + llvm_src);
     }
 
+    /******************* call operations *******************/
+    void LLVM_Context::
+        gen_call_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_func_name,
+            const std::string &llvm_return_type,
+            const std::vector<std::pair<std::string, std::string>> &llvm_args)
+    {
+        std::string result = std::string(prefix_size, ' ') +
+                             "call " + llvm_return_type + " @" + llvm_func_name + "(";
+        for (int i = 0; i < llvm_args.size(); i++)
+        {
+            result += llvm_args[i].first + " " + llvm_args[i].second;
+            if (i != llvm_args.size() - 1)
+            {
+                result += ", ";
+            }
+        }
+        result += ")";
+        if (llvm_return_value != "")
+        {
+            result = llvm_return_value + " = " + result;
+        }
+        llvm_instructions.push_back(result);
+    }
+
+    /******************* math operations *******************/
+    void LLVM_Context::
+        gen_add_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type)
+    {
+        std::string add_op = "add";
+        if (type == LLVM_i32)
+        {
+            add_op = "add";
+        }
+        else if (type == LLVM_double)
+        {
+            add_op = "fadd";
+        }
+
+        std::string result = std::string(prefix_size, ' ') +
+                             llvm_return_value + " = " + add_op + " " +
+                             MLLVM::str(type) + " " + llvm_value1 + ", " + llvm_value2;
+        llvm_instructions.push_back(result);
+    }
+
+    void LLVM_Context::
+        gen_sub_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type)
+    {
+        std::string sub_op = "sub";
+        if (type == LLVM_i32)
+        {
+            sub_op = "sub";
+        }
+        else if (type == LLVM_double)
+        {
+            sub_op = "fsub";
+        }
+
+        std::string result = std::string(prefix_size, ' ') +
+                             llvm_return_value + " = " + sub_op + " " +
+                             MLLVM::str(type) + " " + llvm_value1 + ", " + llvm_value2;
+        llvm_instructions.push_back(result);
+    }
+
+    void LLVM_Context::
+        gen_mul_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type)
+    {
+        std::string mul_op = "mul";
+        if (type == LLVM_i32)
+        {
+            mul_op = "mul";
+        }
+        else if (type == LLVM_double)
+        {
+            mul_op = "fmul";
+        }
+
+        std::string result = std::string(prefix_size, ' ') +
+                             llvm_return_value + " = " + mul_op + " " +
+                             MLLVM::str(type) + " " + llvm_value1 + ", " + llvm_value2;
+        llvm_instructions.push_back(result);
+    }
+
+    void LLVM_Context::
+        gen_div_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type)
+    {
+        std::string div_op = "sdiv";
+        if (type == LLVM_i32)
+        {
+            div_op = "sdiv";
+        }
+        else if (type == LLVM_double)
+        {
+            div_op = "fdiv";
+        }
+
+        std::string result = std::string(prefix_size, ' ') +
+                             llvm_return_value + " = " + div_op + " " +
+                             MLLVM::str(type) + " " + llvm_value1 + ", " + llvm_value2;
+        llvm_instructions.push_back(result);
+    }
+
+    void LLVM_Context::
+        gen_mod_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type)
+    {
+        std::string mod_op = "srem";
+        if (type == LLVM_i32)
+        {
+            mod_op = "srem";
+        }
+
+        std::string result = std::string(prefix_size, ' ') +
+                             llvm_return_value + " = " + mod_op + " " +
+                             MLLVM::str(type) + " " + llvm_value1 + ", " + llvm_value2;
+        llvm_instructions.push_back(result);
+    }
+
     std::string LLVM_Context::str()
     {
         std::string result;

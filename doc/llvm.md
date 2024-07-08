@@ -21,3 +21,8 @@ store i32 1, ptr %field1_ptr
 %field2_ptr = getelementptr %Mystruct, ptr %myStruct, i32 0, i32 1 
 store float 1, ptr %field2_ptr
 ```
+
+# const string 
+```
+@str1 = constant [14 x i8] c"xxxx\00"
+```
