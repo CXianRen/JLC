@@ -65,11 +65,12 @@ namespace MLLVM
         /**
          * Generate a getelementptr instruction
          * like:
-         * %field = getelementptr %type, ptr* %struct_pointer, i32 0, i32 0
+         * %field = getelementptr %type, ptr %obj_ptr, i32 0, i32 0
          */
         void gen_offset_field_in_type(
-            const std::string &llvm_type,
             const std::string &llvm_field,
+            const std::string &llvm_type,
+            const std::string &llvm_obj_ptr,
             const int offset);
 
         /***

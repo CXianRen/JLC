@@ -1,6 +1,10 @@
 #include "llvm/jlc_llvm_generator.h"
 #include "common/jlc_error.h"
 
+#include "Printer.H"
+
+static PrintAbsyn *p = new PrintAbsyn();
+
 namespace JLC::LLVM
 {
 
@@ -105,6 +109,11 @@ namespace JLC::LLVM
             "malloc",
             "ptr",
             {"i32"});
+
+        llvm_context_.gen_declare_func(
+            "gen_nda",
+            "ptr",
+            {"ptr", "i32", "i32"});
     }
 
     void LLVMGenerator::
@@ -195,6 +204,7 @@ namespace JLC::LLVM
         llvm_context_.gen_define_func_end();
     }
 
+    /*** Definiton ***/
     void LLVMGenerator::
         visitNoInit(NoInit *no_init)
     {
@@ -312,26 +322,120 @@ namespace JLC::LLVM
             llvm_dim_values.push_back(g_llvm_value_);
         }
 
-        // get the base type
-        auto base_type = type.base_type;
-        while (base_type->type == JLC::TYPE::type_enum::ARRAY)
-        {
-            base_type = base_type->base_type;
-        }
-        // check the base type
-        // if (MLLVM::LLVM_Type_Size_map.at(jlc_type2llvm_type(*base_type)) ==
-        //     MLLVM::LLVM_Type_Size_map.end())
-        // {
-        //     throw JLCError(
-        //         "visitENewBArr: unknown type: " +
-        //         base_type->str());
-        // }
-        // std::string base_type_size =
-        //     MLLVM::LLVM_Type_Size_map.at(jlc_type2llvm_type(*base_type));
+        int dim = list_dim_expr->size();
 
-        // // get the total size
-        // int dim = list_dim_expr->size();
-        // multi-dimensional array
+        auto e_type = jlc_type2llvm_type(type);
+
+        std::string e_type_size =
+            MLLVM::LLVM_Type_Size_map.at(e_type);
+
+        llvm_context_.gen_comment("multi-dimensional array");
+
+        // gen dims array
+        auto llvm_dims_array_type = "[" + std::to_string(dim) + " x " + "i32" + "]";
+        auto llvm_dims_array_name = llvm_context_.gen_name("pdims");
+        llvm_context_.gen_alloc_inst(
+            llvm_dims_array_name,
+            llvm_dims_array_type);
+
+        for (int i = 0; i < dim; i++)
+        {
+            auto llvm_name = llvm_context_.gen_name("e_i" + std::to_string(i) + "_");
+            llvm_context_.gen_offset_field_in_type(
+                llvm_name,
+                llvm_dims_array_type,
+                llvm_dims_array_name,
+                i);
+
+            // store the dim value
+            llvm_context_.gen_store_inst(
+                llvm_dim_values[i],
+                llvm_name,
+                MLLVM::LLVM_i32);
+        }
+
+        // call gen_nda
+        auto llvm_return_value = llvm_context_.gen_name("tmp");
+        llvm_context_.gen_call_inst(
+            llvm_return_value,
+            "gen_nda",
+            "ptr",
+            {{"ptr", llvm_dims_array_name},
+             {"i32", std::to_string(dim)},
+             {"i32", e_type_size}});
+
+        g_llvm_value_ = llvm_return_value;
+    }
+
+    void LLVMGenerator::
+        visitENewOArr(ENewOArr *e_new_o_arr)
+    {
+        if (e_new_o_arr->otype_)
+            e_new_o_arr->otype_->accept(this);
+        auto type = g_type_;
+
+        std::vector<std::string> llvm_dim_values;
+        auto list_dim_expr = e_new_o_arr->listdimexpr_;
+        for (ListDimExpr::iterator i = list_dim_expr->begin();
+             i != list_dim_expr->end(); ++i)
+        {
+            (*i)->accept(this);
+            llvm_dim_values.push_back(g_llvm_value_);
+        }
+
+        int dim = list_dim_expr->size();
+        auto e_type = jlc_type2llvm_type(type);
+
+        std::string e_type_size = std::to_string(get_obj_size(type.obj_name));
+
+        llvm_context_.gen_comment("multi-dimensional array");
+        llvm_context_.gen_comment("object " + type.obj_name + " size: " + e_type_size);
+
+        // gen dims array
+        auto llvm_dims_array_type = "[" + std::to_string(dim) + " x " + "i32" + "]";
+        auto llvm_dims_array_name = llvm_context_.gen_name("pdims");
+        llvm_context_.gen_alloc_inst(
+            llvm_dims_array_name,
+            llvm_dims_array_type);
+
+        for (int i = 0; i < dim; i++)
+        {
+            auto llvm_name = llvm_context_.gen_name("e_i" + std::to_string(i) + "_");
+            llvm_context_.gen_offset_field_in_type(
+                llvm_name,
+                llvm_dims_array_type,
+                llvm_dims_array_name,
+                i);
+
+            // store the dim value
+            llvm_context_.gen_store_inst(
+                llvm_dim_values[i],
+                llvm_name,
+                MLLVM::LLVM_i32);
+        }
+
+        // call gen_nda
+        auto llvm_return_value = llvm_context_.gen_name("tmp");
+        llvm_context_.gen_call_inst(
+            llvm_return_value,
+            "gen_nda",
+            "ptr",
+            {{"ptr", llvm_dims_array_name},
+             {"i32", std::to_string(dim)},
+             {"i32", e_type_size}});
+
+        g_llvm_value_ = llvm_return_value;
+    }
+
+    /**** print original code ****/
+    void LLVMGenerator::
+        visitDecl(Decl *decl)
+    {
+        auto code = std::string(p->print(decl));
+        code.pop_back(); // remove the last '\n'
+
+        llvm_context_.gen_comment(code);
+        TypeVisitor::visitDecl(decl);
     }
 
 } // namespace JLC::LLVM

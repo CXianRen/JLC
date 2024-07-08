@@ -77,14 +77,16 @@ namespace MLLVM
 
     void LLVM_Context::
         gen_offset_field_in_type(
-            const std::string &llvm_type,
             const std::string &llvm_field,
+            const std::string &llvm_type,
+            const std::string &llvm_obj_ptr,
             const int offset)
     {
         llvm_instructions.push_back(
             std::string(prefix_size, ' ') +
             llvm_field + " = getelementptr " +
-            llvm_type + ", ptr %struct_pointer, i32 0, i32 " + std::to_string(offset));
+            llvm_type + ", ptr " + llvm_obj_ptr +
+            ", i32 0, i32 " + std::to_string(offset));
     }
 
     void LLVM_Context::
@@ -187,8 +189,14 @@ namespace MLLVM
             const std::string &llvm_return_type,
             const std::vector<std::pair<std::string, std::string>> &llvm_args)
     {
-        std::string result = std::string(prefix_size, ' ') +
-                             "call " + llvm_return_type + " @" + llvm_func_name + "(";
+        std::string result = std::string(prefix_size, ' ');
+
+        if (llvm_return_value != "")
+        {
+            result += llvm_return_value + " = ";
+        }
+
+        result += "call " + llvm_return_type + " @" + llvm_func_name + "(";
         for (int i = 0; i < llvm_args.size(); i++)
         {
             result += llvm_args[i].first + " " + llvm_args[i].second;
@@ -198,10 +206,7 @@ namespace MLLVM
             }
         }
         result += ")";
-        if (llvm_return_value != "")
-        {
-            result = llvm_return_value + " = " + result;
-        }
+
         llvm_instructions.push_back(result);
     }
 

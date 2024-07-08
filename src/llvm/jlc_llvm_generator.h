@@ -132,7 +132,11 @@ namespace JLC::LLVM
         void visitInit(Init *p) override;
         void visitENewObj(ENewObj *p) override;
         void visitENewBArr(ENewBArr *p) override;
-        // void visitENewOArr(ENewOArr *p) override;
+        void visitENewOArr(ENewOArr *p) override;
+
+
+        /*** print original code ***/
+        void visitDecl(Decl *p) override;
 
     }; // class LLVMGenerator
 

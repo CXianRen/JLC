@@ -94,12 +94,17 @@ int main(int argc, char **argv)
     // test llvm access field in type
     {
         MLLVM::LLVM_Context context;
-        std::string llvm_type = "%struct.type";
+        std::string llvm_type = "%struct.A";
         std::string llvm_field = "%field";
+        std::string llvm_struct_pointer = "%obj_a";
         int offset = 0;
-        context.gen_offset_field_in_type(llvm_type, llvm_field, offset);
+        context.gen_offset_field_in_type(
+            llvm_field,
+            llvm_type,
+            llvm_struct_pointer,
+            offset);
         std::string result = context.llvm_instructions.back();
-        std::string expected = "%field = getelementptr %struct.type, ptr %struct_pointer, i32 0, i32 0";
+        std::string expected = "%field = getelementptr %struct.A, ptr %obj_a, i32 0, i32 0";
         TEST_ASSERT_STR_EQ(result, expected);
     }
 
