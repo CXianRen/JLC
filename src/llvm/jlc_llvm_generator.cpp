@@ -433,7 +433,7 @@ namespace JLC::LLVM
         }
 
         int dim = list_dim_expr->size();
-        auto e_type = jlc_type2llvm_type(type);
+        // auto e_type = jlc_type2llvm_type(type);
 
         std::string e_type_size = std::to_string(get_obj_size(type.obj_name));
 
@@ -488,7 +488,10 @@ namespace JLC::LLVM
         if (ass->expr_1)
             ass->expr_1->accept(this);
         left_value_ = false;
+
         auto type = g_type_;
+        // DEBUG_PRINT("type:" << type.str());
+
         auto left_llvm_value = g_llvm_value_;
 
         if (ass->expr_2)
@@ -545,6 +548,120 @@ namespace JLC::LLVM
         g_llvm_value_ = var_llvm_value;
     }
 
+    void LLVMGenerator::
+        visitEpropety(Epropety *epropety)
+    {
+
+        if (epropety->expr_)
+            epropety->expr_->accept(this);
+
+        auto obj_type = g_type_;
+
+        auto prop_name = epropety->ident_;
+
+        // length property for array
+        if (obj_type.type == JLC::TYPE::type_enum::ARRAY &&
+            prop_name == "length")
+        {
+            if (left_value_)
+            {
+                throw JLC::TC::JLCTCError(
+                    "Array length property is read-only.");
+            }
+
+            // gen load instruction
+            auto loaded_value = llvm_context_.gen_name("len");
+            llvm_context_.gen_load_inst(
+                g_llvm_value_,
+                loaded_value,
+                MLLVM::LLVM_i32);
+            g_llvm_value_ = loaded_value;
+            g_type_ = JLC::TYPE::JLCType(JLC::TYPE::type_enum::INT);
+            return;
+        }
+
+        // enum
+        if (obj_type.type == JLC::TYPE::type_enum::ENUM)
+        {
+            if (left_value_)
+            {
+                throw JLC::TC::JLCTCError(
+                    "Enum property is read-only.");
+            }
+
+            auto type_name = obj_type.obj_name;
+            auto enum_obj = context_->get_enum(type_name);
+
+            // return the const value
+            g_llvm_value_ = "@" +
+                            enum_obj->obj_name + "_" + prop_name;
+            // do not set the type of the property
+            g_type_ = obj_type;
+            return;
+        }
+
+        /*
+         * struct does not support dot operator
+         * instead, we use -> operator to access the member
+         */
+
+        // struct
+        if (obj_type.type == JLC::TYPE::type_enum::STRUCT)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Struct pointer does not support . operator, use -> operator instead.");
+        }
+
+        // class
+        if (obj_type.type == JLC::TYPE::type_enum::CLASS)
+        {
+            auto type_name = obj_type.obj_name;
+            auto class_obj = context_->get_class(type_name);
+            auto member_type = class_obj->get_member_type(prop_name);
+            auto member_idx = class_obj->get_member_index(prop_name);
+            g_type_ = *member_type;
+
+            auto addr_llvm_value = g_llvm_value_;
+            if(left_value_){
+                // load the address of the obj
+                addr_llvm_value = llvm_context_.gen_name("addr");
+                llvm_context_.gen_load_inst(
+                    g_llvm_value_,
+                    addr_llvm_value,
+                    MLLVM::LLVM_ptr);
+            }
+
+            // gen offset
+            auto llvm_offset = llvm_context_.gen_name("a_" + prop_name);
+            llvm_context_.gen_offset_field_in_type(
+                llvm_offset,
+                "%class." + type_name,
+                addr_llvm_value,
+                member_idx);
+
+            if (left_value_)
+            {
+                g_llvm_value_ = llvm_offset;
+            }
+            else
+            {
+                // gen load
+                auto loaded_value = llvm_context_.gen_name("v_" + prop_name);
+                llvm_context_.gen_load_inst(
+                    llvm_offset,
+                    loaded_value,
+                    jlc_type2llvm_type(*member_type));
+
+                g_llvm_value_ = loaded_value;
+            }
+            return;
+        }
+        // show not reach here
+        throw JLC::TC::JLCTCError(
+            "Property " + prop_name +
+            " is not defined for type " + obj_type.str());
+    }
     /************** Return ***************/
 
     void LLVMGenerator::

@@ -131,3 +131,5 @@ printInt((new int[3])[2]);
 # todo 
 [ ] check varaiblename and function name 
 are not same as custom defined type
+
+[ ] evar llvm support enum

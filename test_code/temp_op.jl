@@ -8,19 +8,26 @@ class B{
   int b;
 }
 
-int f(){
-  return 2;
-}
+enum C{
+  A,
+  B,
+  C
+};
 
 int main(){
-  int a;
-  a = 1;
-  int b = a;
-  printInt(b);
-  printString("hello");
-  printString("world");
-  printString("hello");
-  printDouble(1.0);
-  printInt(f());
+  B b = new B;
+  b.a = 1;
+  b.b = 2;
+  printInt(b.a);
+  printInt(b.b);
+
+  int[] arr = new int[10];
+  printInt(arr.length);
+  int[][] arr2 = new int[5][10];
+  printInt(arr2.length);
+
+
+  C c = C.A;
+
   return 0;
 }

@@ -396,15 +396,16 @@ namespace JLC::TC
                     " is not defined for class " + type_name);
             }
 
-            auto member = class_obj->get_member_type(prop_name);
-            if (member == nullptr)
+            auto member_type = class_obj->get_member_type(prop_name);
+            if (member_type == nullptr)
             {
                 // error
                 throw JLC::TC::JLCTCError(
                     "Property " + prop_name +
                     " is not defined for class " + type_name);
             }
-            g_type_ = *member;
+            g_type_ = *member_type;
+            // DEBUG_PRINT("Property " + prop_name + " type: " + g_type_.str());
             return;
         }
 

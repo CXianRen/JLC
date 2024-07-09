@@ -22,6 +22,19 @@ namespace JLC::STRUCT
         return nullptr;
     }
 
+    int JLCStruct::
+        get_member_index(const std::string &name)
+    {
+        for (int i = 0; i < members.size(); i++)
+        {
+            if (members[i].first == name)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     std::string JLCStruct::str()
     {
         std::string ret = "struct " + obj_name + " {\n";

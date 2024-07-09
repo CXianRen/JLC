@@ -39,6 +39,8 @@ namespace JLC::STRUCT
         std::shared_ptr<TYPE::JLCType>
         get_member_type(const std::string &name);
 
+        int get_member_index(const std::string &name);
+
         std::string str();
     };
 
