@@ -577,4 +577,14 @@ namespace JLC::LLVM
         TypeVisitor::visitDecl(decl);
     }
 
+    void LLVMGenerator::
+        visitSExp(SExp *s_exp)
+    {
+        auto code = std::string(p->print(s_exp));
+        code.pop_back(); // remove the last '\n'
+        llvm_context_.gen_comment(code);
+
+        TypeVisitor::visitSExp(s_exp);
+    }
+
 } // namespace JLC::LLVM

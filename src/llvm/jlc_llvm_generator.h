@@ -204,7 +204,7 @@ namespace JLC::LLVM
         /*** print original code ***/
         void visitDecl(Decl *p) override;
 
-        void visitSExp(SExp *p) override { TypeVisitor::visitSExp(p); }
+        void visitSExp(SExp *p) override;
 
     }; // class LLVMGenerator
 

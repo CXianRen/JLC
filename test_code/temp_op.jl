@@ -18,6 +18,8 @@ int main(){
   int b = a;
   printInt(b);
   printString("hello");
+  printString("world");
+  printString("hello");
   printDouble(1.0);
   printInt(f());
   return 0;
