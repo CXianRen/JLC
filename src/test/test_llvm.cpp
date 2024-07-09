@@ -115,7 +115,7 @@ int main(int argc, char **argv)
         std::string llvm_type = "i32";
         std::string llvm_value = "10";
         context.gen_global_const_var(llvm_var_name, llvm_type, llvm_value);
-        std::string result = context.llvm_instructions.back();
+        std::string result = context.global_def.back();
         std::string expected = "@var_name = constant i32 10";
         TEST_ASSERT_STR_EQ(result, expected);
     }

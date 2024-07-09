@@ -67,15 +67,15 @@ int main(int argc, char **argv)
         auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
         llvm_gen->add_udt();
 
-        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions.size() == 3);
-        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[0]);
-        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[0] ==
+        TEST_ASSERT(llvm_gen->llvm_context_.global_def.size() == 3);
+        DEBUG_PRINT(llvm_gen->llvm_context_.global_def[0]);
+        TEST_ASSERT(llvm_gen->llvm_context_.global_def[0] ==
                     "@Color_RED = constant i32 0");
-        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[1]);
-        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[1] ==
+        DEBUG_PRINT(llvm_gen->llvm_context_.global_def[1]);
+        TEST_ASSERT(llvm_gen->llvm_context_.global_def[1] ==
                     "@Color_GREEN = constant i32 1");
-        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[2]);
-        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[2] ==
+        DEBUG_PRINT(llvm_gen->llvm_context_.global_def[2]);
+        TEST_ASSERT(llvm_gen->llvm_context_.global_def[2] ==
                     "@Color_BLUE = constant i32 2");
     }
     // test struct type

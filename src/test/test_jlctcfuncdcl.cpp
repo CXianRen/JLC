@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 
         // check the result
         auto name = context->get_scope_name("foo", "global");
-        TEST_ASSERT(name == "global::foo");
+        TEST_ASSERT(name == "foo");
         TEST_ASSERT(context->has_func(name) == true);
         TEST_ASSERT(context->get_func(name)->name == name);
 
@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 
         // check the parse tree
         TEST_ASSERT(
-            context->has_func("global::foo") == true);
+            context->has_func("foo") == true);
         TEST_ASSERT(
             context->has_func("A::foo") == true);
     }

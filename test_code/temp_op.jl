@@ -8,9 +8,17 @@ class B{
   int b;
 }
 
+int f(){
+  return 2;
+}
+
 int main(){
   int a;
   a = 1;
   int b = a;
+  printInt(b);
+  printString("hello");
+  printDouble(1.0);
+  printInt(f());
   return 0;
 }

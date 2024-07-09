@@ -95,7 +95,7 @@ namespace MLLVM
             const std::string &llvm_type,
             const std::string &llvm_value)
     {
-        llvm_instructions.push_back(
+        global_def.push_back(
             "@" + llvm_var_name + " = constant " + llvm_type + " " + llvm_value);
     }
 
@@ -325,6 +325,12 @@ namespace MLLVM
     std::string LLVM_Context::str()
     {
         std::string result;
+        for (auto &def : global_def)
+        {
+            result += def + "\n";
+        }
+        result +="\n";
+        
         for (auto &inst : llvm_instructions)
         {
             result += inst + "\n";

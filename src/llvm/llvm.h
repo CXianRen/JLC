@@ -36,6 +36,7 @@ namespace MLLVM
 
     public:
         std::vector<std::string> llvm_instructions;
+        std::vector<std::string> global_def;
 
         int name_counter;
 

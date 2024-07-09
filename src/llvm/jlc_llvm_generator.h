@@ -147,21 +147,25 @@ namespace JLC::LLVM
             if (const_string_llvm_value_map_.find(const_string) ==
                 const_string_llvm_value_map_.end())
             {
+                auto str_name = "str_" + std::to_string(const_string_llvm_value_map_.size());
                 // new a constant string
                 llvm_context_.gen_global_const_var(
-                    "str_" + std::to_string(const_string_llvm_value_map_.size()),
+                    str_name,
                     std::string("[") +
                         std::to_string(const_string.size() + 1) +
                         std::string(" x i8]"),
                     "c\"" + const_string + "\\00\"");
+                const_string_llvm_value_map_[const_string] = "@" + str_name;
             }
             g_llvm_value_ = const_string_llvm_value_map_[const_string];
         }
 
-        /**** function definition ****/
+        /**** function ****/
         void visitFuncDef(FuncDef *p) override;
         void visitBStmt(BStmt *p);
-        
+
+        void visitEApp(EApp *p) override;
+
         /*** variable declaration ***/
         void visitNoInit(NoInit *p) override;
         void visitInit(Init *p) override;
@@ -199,6 +203,8 @@ namespace JLC::LLVM
 
         /*** print original code ***/
         void visitDecl(Decl *p) override;
+
+        void visitSExp(SExp *p) override { TypeVisitor::visitSExp(p); }
 
     }; // class LLVMGenerator
 

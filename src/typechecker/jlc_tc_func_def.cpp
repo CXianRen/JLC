@@ -1220,7 +1220,7 @@ namespace JLC::TC
             {
                 // error
                 throw JLC::TC::JLCTCError(
-                    "Illegal expression.");
+                    "Illegal expression");
             }
         }
         catch (const JLC::TC::JLCTCError &e)

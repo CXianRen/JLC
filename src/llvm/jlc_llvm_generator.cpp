@@ -218,6 +218,51 @@ namespace JLC::LLVM
         pop_llvm_value_stack();
     }
 
+    void LLVMGenerator::
+        visitEApp(EApp *e_app)
+    {
+        auto func_name = e_app->ident_;
+        func_name =
+            context_->get_scope_name(func_name,
+                                     GLOBAL_SCOPE);
+        auto func_obj = context_->get_func(func_name);
+
+        if (func_obj == nullptr)
+        {
+            // error
+            throw JLC::TC::JLCTCError(
+                "Function " + func_name + " not found in the context");
+        }
+
+        // gen function call
+        std::vector<std::pair<std::string, std::string>> llvm_args;
+        auto list_expr = e_app->listexpr_;
+        for (int idx = 0; idx < list_expr->size(); idx++)
+        {
+            auto arg_expr = list_expr->at(idx);
+            arg_expr->accept(this);
+            auto arg_type = g_type_;
+            llvm_args.push_back(
+                {MLLVM::str(jlc_type2llvm_type(arg_type)),
+                 g_llvm_value_});
+        }
+
+        std::string llvm_return_value = "";
+        if (func_obj->return_type->type != JLC::TYPE::VOID)
+        {
+            llvm_return_value = llvm_context_.gen_name("tmp");
+        }
+
+        llvm_context_.gen_call_inst(
+            llvm_return_value,
+            func_name,
+            MLLVM::str(jlc_type2llvm_type(*func_obj->return_type)),
+            llvm_args);
+
+        g_type_ = *func_obj->return_type;
+        g_llvm_value_ = llvm_return_value;
+    }
+
     /*** Definiton ***/
     void LLVMGenerator::
         visitNoInit(NoInit *no_init)
@@ -472,10 +517,10 @@ namespace JLC::LLVM
             type = *var.type;
         }
 
-        if(type.type == JLC::TYPE::UNDEFINED){
+        if (type.type == JLC::TYPE::UNDEFINED)
+        {
             throw JLCError(
-                "Undefined type of var:" + var_name
-            );
+                "Undefined type of var:" + var_name);
         }
 
         // get llvm_value of var_name

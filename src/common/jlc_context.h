@@ -129,6 +129,11 @@ namespace JLC::CONTEXT
         std::string get_scope_name(
             std::string func_name, std::string scope)
         {
+            if (scope == "global")
+            {
+                return func_name;
+            }
+
             return scope + "::" + func_name;
         }
 
