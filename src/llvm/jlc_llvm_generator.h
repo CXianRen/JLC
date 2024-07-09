@@ -61,8 +61,42 @@ namespace JLC::LLVM
 
         int get_obj_size(const std::string &obj_name);
 
+        void push_llvm_value_stack()
+        {
+            g_llvm_value_stack_.push_back(
+                std::map<std::string, std::string>());
+        }
+
+        void pop_llvm_value_stack()
+        {
+            g_llvm_value_stack_.pop_back();
+        }
+
+        void add_var_llvm_value(const std::string &var_name,
+                                const std::string &llvm_value)
+        {
+            g_llvm_value_stack_.back()[var_name] = llvm_value;
+        }
+
+        std::string get_var_llvm_value(const std::string &var_name)
+        {
+            for (auto it = g_llvm_value_stack_.rbegin();
+                 it != g_llvm_value_stack_.rend();
+                 ++it)
+            {
+                if (it->find(var_name) != it->end())
+                {
+                    return it->at(var_name);
+                }
+            }
+            return "";
+        }
+
     public:
         std::string g_llvm_value_;
+        std::vector<
+            std::map<std::string, std::string>>
+            g_llvm_value_stack_;
 
         /**** override skeleton ****/
         void visitProgram(Program *p) override
@@ -126,7 +160,8 @@ namespace JLC::LLVM
 
         /**** function definition ****/
         void visitFuncDef(FuncDef *p) override;
-
+        void visitBStmt(BStmt *p);
+        
         /*** variable declaration ***/
         void visitNoInit(NoInit *p) override;
         void visitInit(Init *p) override;
@@ -134,6 +169,33 @@ namespace JLC::LLVM
         void visitENewBArr(ENewBArr *p) override;
         void visitENewOArr(ENewOArr *p) override;
 
+        /*** variable access ***/
+        bool left_value_;
+        void visitAss(Ass *p) override;
+        void visitEVar(EVar *p) override;
+
+        // void visitEpropety(Epropety *p) override;
+        // void visitEArrow(EArrow *p) override;
+        // void visitEAcc(EAcc *p) override;
+
+        /* function */
+        // void visitEApp(EApp *p) override;
+        // void visitEFunc(EFunc *p) override;
+
+        /* math operation */
+        // void visitEInc(EInc *p) override;   // ++
+        // void visitEDecr(EDecr *p) override; // --
+        // void visitENeg(ENeg *p) override;   // -
+        // void visitENot(ENot *p) override;   // !
+        // void visitEMul(EMul *p) override;   // x / mod
+        // void visitEAdd(EAdd *p) override;   // + -
+        // void visitERel(ERel *p) override;   // > < <= == >= !=
+        // void visitEAnd(EAnd *p) override;   // &&
+        // void visitEOr(EOr *p) override;     // ||
+
+        /* return */
+        void visitRet(Ret *p) override;
+        void visitVRet(VRet *p) override;
 
         /*** print original code ***/
         void visitDecl(Decl *p) override;

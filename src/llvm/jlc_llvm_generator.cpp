@@ -194,14 +194,28 @@ namespace JLC::LLVM
 
         // function body scope start
         current_func_->push_blk();
+        push_llvm_value_stack();
 
         JLC::TC::TypeVisitor::visitFuncDef(func_def);
 
         // function body scope end
         current_func_->pop_blk();
+        pop_llvm_value_stack();
 
         // function declaration end
         llvm_context_.gen_define_func_end();
+    }
+
+    void LLVMGenerator::
+        visitBStmt(BStmt *b_stmt)
+    {
+        // block scope start
+        current_func_->push_blk();
+        push_llvm_value_stack();
+        JLC::TC::TypeVisitor::visitBStmt(b_stmt);
+        // block scope end
+        current_func_->pop_blk();
+        pop_llvm_value_stack();
     }
 
     /*** Definiton ***/
@@ -226,26 +240,13 @@ namespace JLC::LLVM
 
         // gen alloca instruction
         // baisc type
-        if (var_type->type == JLC::TYPE::type_enum::INT ||
-            var_type->type == JLC::TYPE::type_enum::DOUB ||
-            var_type->type == JLC::TYPE::type_enum::BOOL ||
-            var_type->type == JLC::TYPE::type_enum::STRING)
-        {
-            llvm_context_.gen_alloc_inst(
-                llvm_name,
-                jlc_type2llvm_type(*var_type));
-            return;
-        }
         // if struct class array, the obj is a pointer
-        if (var_type->type == JLC::TYPE::type_enum::STRUCT ||
-            var_type->type == JLC::TYPE::type_enum::CLASS ||
-            var_type->type == JLC::TYPE::type_enum::ARRAY)
-        {
-            llvm_context_.gen_alloc_inst(
-                llvm_name,
-                jlc_type2llvm_type(*var_type));
-            return;
-        }
+        llvm_context_.gen_alloc_inst(
+            llvm_name,
+            jlc_type2llvm_type(*var_type));
+
+        // add the variable to the llvm_value stack
+        add_var_llvm_value(var_name, llvm_name);
     }
 
     void LLVMGenerator::
@@ -263,6 +264,9 @@ namespace JLC::LLVM
         llvm_context_.gen_alloc_inst(
             llvm_name,
             jlc_type2llvm_type(*var_type));
+
+        // add the variable to the llvm_value stack
+        add_var_llvm_value(var_name, llvm_name);
 
         if (init->expr_)
             init->expr_->accept(this);
@@ -425,6 +429,96 @@ namespace JLC::LLVM
              {"i32", e_type_size}});
 
         g_llvm_value_ = llvm_return_value;
+    }
+
+    /************** variable access ***************/
+    void LLVMGenerator::
+        visitAss(Ass *ass)
+    {
+        auto code = std::string(p->print(ass));
+        code.pop_back();
+        llvm_context_.gen_comment(code);
+
+        left_value_ = true;
+        if (ass->expr_1)
+            ass->expr_1->accept(this);
+        left_value_ = false;
+        auto type = g_type_;
+        auto left_llvm_value = g_llvm_value_;
+
+        if (ass->expr_2)
+            ass->expr_2->accept(this);
+        auto right_llvm_value = g_llvm_value_;
+
+        // gen store instruction
+        llvm_context_.gen_store_inst(
+            right_llvm_value,
+            left_llvm_value,
+            jlc_type2llvm_type(type));
+    }
+
+    void LLVMGenerator::
+        visitEVar(EVar *e_var)
+    {
+        JLC_FUNC_DEF_Checker::visitEVar(e_var);
+
+        auto var_name = e_var->ident_;
+
+        auto type = JLC::TYPE::JLCType();
+
+        if (current_func_->has_var(var_name))
+        {
+            auto var = current_func_->get_var(var_name);
+            type = *var.type;
+        }
+
+        if(type.type == JLC::TYPE::UNDEFINED){
+            throw JLCError(
+                "Undefined type of var:" + var_name
+            );
+        }
+
+        // get llvm_value of var_name
+        auto var_llvm_value = get_var_llvm_value(var_name);
+        if (var_llvm_value == "")
+        {
+            // error
+            throw JLCError(
+                "Undefined llvm value of var:" + var_name);
+        }
+        if (!left_value_)
+        {
+            auto loaded_value = llvm_context_.gen_name(var_name);
+            // gen load instruction
+            llvm_context_.gen_load_inst(
+                var_llvm_value,
+                loaded_value,
+                jlc_type2llvm_type(type));
+            g_llvm_value_ = loaded_value;
+            return;
+        }
+        g_llvm_value_ = var_llvm_value;
+    }
+
+    /************** Return ***************/
+
+    void LLVMGenerator::
+        visitVRet(VRet *v_ret)
+    {
+        JLC_FUNC_DEF_Checker::visitVRet(v_ret);
+        llvm_context_.gen_return_inst("", MLLVM::LLVM_void);
+    }
+
+    void LLVMGenerator::
+        visitRet(Ret *ret)
+    {
+        JLC_FUNC_DEF_Checker::visitRet(ret);
+
+        auto type = g_type_;
+
+        llvm_context_.gen_return_inst(
+            g_llvm_value_,
+            jlc_type2llvm_type(type));
     }
 
     /**** print original code ****/

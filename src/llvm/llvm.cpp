@@ -331,4 +331,26 @@ namespace MLLVM
         }
         return result;
     }
+
+    /******************* compare operations *******************/
+
+    /******************* control flow operations *******************/
+
+    void LLVM_Context::gen_return_inst(
+        const std::string &llvm_return_value,
+        LLVM_Type type)
+    {
+        if (type == LLVM_void)
+        {
+            llvm_instructions.push_back(
+                std::string(prefix_size, ' ') +
+                "ret void");
+        }
+        else
+        {
+            llvm_instructions.push_back(
+                std::string(prefix_size, ' ') +
+                "ret " + MLLVM::str(type) + " " + llvm_return_value);
+        }
+    }
 } // namespace MLLVM

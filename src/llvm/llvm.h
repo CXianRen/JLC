@@ -208,6 +208,17 @@ namespace MLLVM
 
         /********* compare operations *********/
 
+        /*** control flow operations ***/
+
+        /**
+         * Generate a return instruction
+         * like:
+         * ret i32 10
+         */
+        void gen_return_inst(
+            const std::string &llvm_return_value,
+            LLVM_Type type);
+
     public:
         std::string str();
 

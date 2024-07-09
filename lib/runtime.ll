@@ -68,18 +68,18 @@ if_else:											; else
 	%p = getelementptr ptr, ptr null, i32 1			; size = sizeof(ptr)
 	%s = ptrtoint ptr %p to i32
 
-	%t9 = mul i32 da_0, %s 							; dim_arr[0]*sizeof(ptr)
+	%t9 = mul i32 %da_0, %s 							; dim_arr[0]*sizeof(ptr)
 	%t10 = add i32 %t9, 4 							; + 4
 
 	%t11 = call ptr @calloc(i32 %t10, i32 1) 		; array = calloc(size, 1)
 
-	store i32 da_0, ptr %t11						; store length field
+	store i32 %da_0, ptr %t11						; store length field
 	br label %for_cond
 
 ; for (i = 0; i < dim_arr[0]; i++)
 for_cond:
 	%ti = phi i32 [ 0, %if_else ], [ %ti_new, %for_body ] 		; i
-	%t14 = icmp slt i32 %ti, da_0						  		; i < dim_arr[0]
+	%t14 = icmp slt i32 %ti, %da_0						  		; i < dim_arr[0]
 	br i1 %t14, label %for_body, label %for_end 
 
 for_body:											; to generate next dimension

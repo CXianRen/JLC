@@ -8,10 +8,9 @@ class B{
   int b;
 }
 
-void f(){
-  int[] a = new int[10];
-  int[][] b = new int[10][10];
-  A[] c = new A[10];
-  B[] d = new B[10];
-  double[][][][] e = new double[1][2][3][4];
+int main(){
+  int a;
+  a = 1;
+  int b = a;
+  return 0;
 }

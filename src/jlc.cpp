@@ -118,10 +118,10 @@ int main(int argc, char **argv)
 
       parse_tree->accept(llvm_generator.get());
 
-      std::cout << "-----------llvm code-----------\n"
+      std::cout << ";-----------llvm code-----------\n"
                 << llvm_generator->llvm_context_.str()
                 << std::endl
-                << "-----------llvm code-----------\n"
+                << ";-----------llvm code-----------\n"
                 << std::endl;
     }
     catch (JLC::TC::JLCTCError &e)
