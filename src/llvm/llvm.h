@@ -214,8 +214,12 @@ namespace MLLVM
             LLVM_Type type);
 
         /********* compare operations *********/
+        void gen_not_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value,
+            LLVM_Type type);
 
-        /*** control flow operations ***/
+        /********* control flow operations *********/
 
         /**
          * Generate a return instruction

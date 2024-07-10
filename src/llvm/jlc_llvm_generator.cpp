@@ -985,10 +985,26 @@ namespace JLC::LLVM
         g_llvm_value_ = llvm_ret;
     }
 
+    // !
+    void LLVMGenerator::
+        visitENot(ENot *e_not)
+    {
+        if (e_not->expr_)
+            e_not->expr_->accept(this);
+        auto type = g_type_;
+        auto llvm_return_value = llvm_context_.gen_name("tmp");
+        // gen sub 1
+        llvm_context_.gen_not_inst(
+            llvm_return_value,
+            g_llvm_value_,
+            jlc_type2llvm_type(type));
+
+        g_llvm_value_ = llvm_return_value;
+    }
+
     // void visitERel(ERel *p) override;   // > < <= == >= !=
     // void visitEAnd(EAnd *p) override;   // &&
     // void visitEOr(EOr *p) override;     // ||
-    // void visitENot(ENot *p) override;   // !
 
     /************** Return ***************/
 

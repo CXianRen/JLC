@@ -35,6 +35,11 @@ int main(){
   printInt(2+3);
   printInt(2-3);
 
+  # not 
+  printInt((int)true);
+  printInt((int)false);
+  boolean b1 = false;
+  b1 = !b1;
 
   return 0;
 }

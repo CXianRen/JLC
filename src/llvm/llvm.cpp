@@ -332,23 +332,18 @@ namespace MLLVM
         llvm_instructions.push_back(result);
     }
 
-    std::string LLVM_Context::str()
-    {
-        std::string result;
-        for (auto &def : global_def)
-        {
-            result += def + "\n";
-        }
-        result += "\n";
-
-        for (auto &inst : llvm_instructions)
-        {
-            result += inst + "\n";
-        }
-        return result;
-    }
-
     /******************* compare operations *******************/
+    void LLVM_Context::
+        gen_not_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value,
+            LLVM_Type type)
+    {
+        std::string result = std::string(prefix_size, ' ') +
+                             llvm_return_value + " = xor " +
+                             MLLVM::str(type) + " " + llvm_value + ", 1";
+        llvm_instructions.push_back(result);
+    }
 
     /******************* control flow operations *******************/
 
@@ -368,5 +363,21 @@ namespace MLLVM
                 std::string(prefix_size, ' ') +
                 "ret " + MLLVM::str(type) + " " + llvm_return_value);
         }
+    }
+
+    std::string LLVM_Context::str()
+    {
+        std::string result;
+        for (auto &def : global_def)
+        {
+            result += def + "\n";
+        }
+        result += "\n";
+
+        for (auto &inst : llvm_instructions)
+        {
+            result += inst + "\n";
+        }
+        return result;
     }
 } // namespace MLLVM
