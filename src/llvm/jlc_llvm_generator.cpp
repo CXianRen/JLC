@@ -1002,7 +1002,84 @@ namespace JLC::LLVM
         g_llvm_value_ = llvm_return_value;
     }
 
-    // void visitERel(ERel *p) override;   // > < <= == >= !=
+    // > < <= == >= !=
+    void LLVMGenerator::
+        visitERel(ERel *e_rel)
+    {
+        if (e_rel->expr_1)
+            e_rel->expr_1->accept(this);
+        auto type_left = g_type_;
+        auto llvm_left_value = g_llvm_value_;
+
+        if (e_rel->relop_)
+            e_rel->relop_->accept(this);
+        auto relop = g_rel_op_;
+
+        if (e_rel->expr_2)
+            e_rel->expr_2->accept(this);
+        auto type_right = g_type_;
+        auto llvm_right_value = g_llvm_value_;
+
+        auto llvm_ret = llvm_context_.gen_name("tmp");
+        switch (relop)
+        {
+        case JLC::OP::RelOp::LTH:
+            llvm_context_.gen_lth_inst(
+                llvm_ret,
+                llvm_left_value,
+                llvm_right_value,
+                jlc_type2llvm_type(type_left));
+            break;
+
+        case JLC::OP::RelOp::LE:
+            llvm_context_.gen_le_inst(
+                llvm_ret,
+                llvm_left_value,
+                llvm_right_value,
+                jlc_type2llvm_type(type_left));
+            break;
+
+        case JLC::OP::RelOp::GTH:
+            llvm_context_.gen_gth_inst(
+                llvm_ret,
+                llvm_left_value,
+                llvm_right_value,
+                jlc_type2llvm_type(type_left));
+            break;
+
+        case JLC::OP::RelOp::GE:
+            llvm_context_.gen_ge_inst(
+                llvm_ret,
+                llvm_left_value,
+                llvm_right_value,
+                jlc_type2llvm_type(type_left));
+            break;
+
+        case JLC::OP::RelOp::EQU:
+            llvm_context_.gen_equ_inst(
+                llvm_ret,
+                llvm_left_value,
+                llvm_right_value,
+                jlc_type2llvm_type(type_left));
+            break;
+
+        case JLC::OP::RelOp::NE:
+            llvm_context_.gen_ne_inst(
+                llvm_ret,
+                llvm_left_value,
+                llvm_right_value,
+                jlc_type2llvm_type(type_left));
+            break;
+
+        default:
+            // error
+            throw JLCError(
+                "Unknown relop: " + std::to_string(relop));
+            break;
+        }
+        g_llvm_value_ = llvm_ret;
+    }
+
     // void visitEAnd(EAnd *p) override;   // &&
     // void visitEOr(EOr *p) override;     // ||
 

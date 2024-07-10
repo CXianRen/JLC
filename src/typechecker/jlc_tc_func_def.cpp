@@ -875,6 +875,7 @@ namespace JLC::TC
 
         if (e_add->addop_)
             e_add->addop_->accept(this);
+            
         if (e_add->expr_2)
             e_add->expr_2->accept(this);
         auto type_right = g_type_;

@@ -214,9 +214,46 @@ namespace MLLVM
             LLVM_Type type);
 
         /********* compare operations *********/
+        // ! == != > < <= >=
         void gen_not_inst(
             const std::string &llvm_return_value,
             const std::string &llvm_value,
+            LLVM_Type type);
+
+        void gen_equ_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type);
+
+        void gen_ne_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type);
+
+        void gen_lth_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type);
+
+        void gen_le_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type);
+
+        void gen_gth_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
+            LLVM_Type type);
+
+        void gen_ge_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_value1,
+            const std::string &llvm_value2,
             LLVM_Type type);
 
         /********* control flow operations *********/

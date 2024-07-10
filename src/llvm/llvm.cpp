@@ -345,6 +345,91 @@ namespace MLLVM
         llvm_instructions.push_back(result);
     }
 
+    void LLVM_Context::gen_equ_inst(
+        const std::string &llvm_return_value,
+        const std::string &llvm_value1,
+        const std::string &llvm_value2,
+        LLVM_Type type)
+    {
+        std::string op = type == LLVM_double ? "fcmp oeq " : "icmp eq ";
+
+        std::string result = std::string(prefix_size, ' ') +
+                             llvm_return_value + " = " + op +
+                             MLLVM::str(type) + " " +
+                             llvm_value1 + ", " + llvm_value2;
+        llvm_instructions.push_back(result);
+    }
+
+    void LLVM_Context::gen_ne_inst(
+        const std::string &llvm_return_value,
+        const std::string &llvm_value1,
+        const std::string &llvm_value2,
+        LLVM_Type type)
+    {
+        std::string op = type == LLVM_double ? "fcmp one " : "icmp ne ";
+        std::string result = std::string(prefix_size, ' ') +
+                             llvm_return_value + " = " + op +
+                             MLLVM::str(type) + " " +
+                             llvm_value1 + ", " + llvm_value2;
+        llvm_instructions.push_back(result);
+    }
+
+    void LLVM_Context::gen_lth_inst(
+        const std::string &llvm_return_value,
+        const std::string &llvm_value1,
+        const std::string &llvm_value2,
+        LLVM_Type type)
+    {
+        std::string op = type == LLVM_double ? "fcmp olt " : "icmp slt ";
+        std::string result = std::string(prefix_size, ' ') +
+                             llvm_return_value + " = " + op +
+                             MLLVM::str(type) + " " +
+                             llvm_value1 + ", " + llvm_value2;
+        llvm_instructions.push_back(result);
+    }
+
+    void LLVM_Context::gen_le_inst(
+        const std::string &llvm_return_value,
+        const std::string &llvm_value1,
+        const std::string &llvm_value2,
+        LLVM_Type type)
+    {
+        std::string op = type == LLVM_double ? "fcmp ole " : "icmp sle ";
+        std::string result = std::string(prefix_size, ' ') +
+                             llvm_return_value + " = " + op +
+                             MLLVM::str(type) + " " +
+                             llvm_value1 + ", " + llvm_value2;
+        llvm_instructions.push_back(result);
+    }
+
+    void LLVM_Context::gen_gth_inst(
+        const std::string &llvm_return_value,
+        const std::string &llvm_value1,
+        const std::string &llvm_value2,
+        LLVM_Type type)
+    {
+        std::string op = type == LLVM_double ? "fcmp ogt " : "icmp sgt ";
+        std::string result = std::string(prefix_size, ' ') +
+                             llvm_return_value + " = " + op +
+                             MLLVM::str(type) + " " +
+                             llvm_value1 + ", " + llvm_value2;
+        llvm_instructions.push_back(result);
+    }
+
+    void LLVM_Context::gen_ge_inst(
+        const std::string &llvm_return_value,
+        const std::string &llvm_value1,
+        const std::string &llvm_value2,
+        LLVM_Type type)
+    {
+        std::string op = type == LLVM_double ? "fcmp oge " : "icmp sge ";
+        std::string result = std::string(prefix_size, ' ') +
+                             llvm_return_value + " = " + op +
+                             MLLVM::str(type) + " " +
+                             llvm_value1 + ", " + llvm_value2;
+        llvm_instructions.push_back(result);
+    }
+
     /******************* control flow operations *******************/
 
     void LLVM_Context::gen_return_inst(
