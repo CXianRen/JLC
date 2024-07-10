@@ -514,6 +514,14 @@ namespace JLC::LLVM
 
         auto type = JLC::TYPE::JLCType();
 
+        if (context_->has_enum(var_name))
+        {
+            auto enum_obj = context_->get_enum(var_name);
+            // just return, we don't need to update g_llvm_value,
+            // it will be updated in . op.
+            return;
+        }
+
         if (current_func_->has_var(var_name))
         {
             auto var = current_func_->get_var(var_name);
@@ -593,8 +601,19 @@ namespace JLC::LLVM
             auto enum_obj = context_->get_enum(type_name);
 
             // return the const value
-            g_llvm_value_ = "@" +
+            auto enum_ptr = "@" +
                             enum_obj->obj_name + "_" + prop_name;
+
+            auto enum_v = llvm_context_.gen_name("v_" +
+                                                 enum_obj->obj_name +
+                                                 "_" + prop_name);
+            llvm_context_.gen_load_inst(
+                enum_ptr,
+                enum_v,
+                MLLVM::LLVM_i32);
+
+            g_llvm_value_ = enum_v;
+
             // do not set the type of the property
             g_type_ = obj_type;
             return;
@@ -623,7 +642,8 @@ namespace JLC::LLVM
             g_type_ = *member_type;
 
             auto addr_llvm_value = g_llvm_value_;
-            if(left_value_){
+            if (left_value_)
+            {
                 // load the address of the obj
                 addr_llvm_value = llvm_context_.gen_name("addr");
                 llvm_context_.gen_load_inst(
