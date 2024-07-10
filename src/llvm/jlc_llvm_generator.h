@@ -179,7 +179,7 @@ namespace JLC::LLVM
         void visitEVar(EVar *p) override;
 
         void visitEpropety(Epropety *p) override;
-        // void visitEArrow(EArrow *p) override;
+        void visitEArrow(EArrow *p) override;
         // void visitEAcc(EAcc *p) override;
 
         /* function */

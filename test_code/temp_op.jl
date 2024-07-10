@@ -28,6 +28,15 @@ int main(){
 
 
   C c = C.A;
+  printInt((int)c);
+
+  A a = new A_t;
+  a->a = 1;
+  a->b = 2;
+  printInt(a->b);
+  a->a = 3;
+  printInt(a->a);
+
 
   return 0;
 }

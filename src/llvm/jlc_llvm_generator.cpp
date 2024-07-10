@@ -682,6 +682,66 @@ namespace JLC::LLVM
             "Property " + prop_name +
             " is not defined for type " + obj_type.str());
     }
+
+    void LLVMGenerator::
+        visitEArrow(EArrow *e_arrow)
+    {
+
+        if (e_arrow->expr_)
+            e_arrow->expr_->accept(this);
+
+        auto obj_type = g_type_;
+        auto prop_name = e_arrow->ident_;
+
+        if (obj_type.type == JLC::TYPE::type_enum::STRUCT)
+        {
+            auto type_name = obj_type.obj_name;
+            auto struct_obj = context_->get_struct(type_name);
+
+            auto member = struct_obj->get_member_type(prop_name);
+            g_type_ = *member;
+
+            int member_idx = struct_obj->get_member_index(prop_name);
+
+            auto addr_llvm_value = g_llvm_value_;
+            if (left_value_)
+            {
+                // gen load instruction
+                auto loaded_value = llvm_context_.gen_name("a_" + obj_type.obj_name);
+                llvm_context_.gen_load_inst(
+                    addr_llvm_value,
+                    loaded_value,
+                    MLLVM::LLVM_ptr);
+                addr_llvm_value = loaded_value;
+            }
+            // gen offset
+            auto llvm_offset = llvm_context_.gen_name("a_" + obj_type.obj_name + "_" + prop_name);
+            llvm_context_.gen_offset_field_in_type(
+                llvm_offset,
+                "%struct." + type_name,
+                addr_llvm_value,
+                member_idx);
+
+            if (left_value_)
+            {
+                g_llvm_value_ = llvm_offset;
+                return;
+            }
+            // gen load
+            auto loaded_value = llvm_context_.gen_name("v_" + obj_type.obj_name + "_" + prop_name);
+            llvm_context_.gen_load_inst(
+                llvm_offset,
+                loaded_value,
+                jlc_type2llvm_type(*member));
+            
+            g_llvm_value_ = loaded_value;
+            return;
+        }
+        // error
+        throw JLC::TC::JLCTCError(
+            "Type " + obj_type.str() + " does not support -> operator.");
+    }
+
     /************** Return ***************/
 
     void LLVMGenerator::
