@@ -186,13 +186,13 @@ namespace JLC::LLVM
         /* math operation */
         void visitEInc(EInc *p) override;   // ++
         void visitEDecr(EDecr *p) override; // --
-        // void visitENeg(ENeg *p) override;   // -
-        // void visitENot(ENot *p) override;   // !
-        // void visitEMul(EMul *p) override;   // x / mod
-        // void visitEAdd(EAdd *p) override;   // + -
+        void visitENeg(ENeg *p) override;   // -
+        void visitEMul(EMul *p) override;   // x / mod
+        void visitEAdd(EAdd *p) override;   // + -
         // void visitERel(ERel *p) override;   // > < <= == >= !=
         // void visitEAnd(EAnd *p) override;   // &&
         // void visitEOr(EOr *p) override;     // ||
+        // void visitENot(ENot *p) override;   // !
 
         /* logic operation */
 

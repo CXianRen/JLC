@@ -110,6 +110,12 @@ namespace JLC::LLVM
             "ptr",
             {"i32"});
 
+        // malloc
+        llvm_context_.gen_declare_func(
+            "calloc",
+            "ptr",
+            {"i32", "i32"});
+
         llvm_context_.gen_declare_func(
             "gen_nda",
             "ptr",
@@ -344,9 +350,10 @@ namespace JLC::LLVM
         auto llvm_return_value = llvm_context_.gen_name("tmp");
         llvm_context_.gen_call_inst(
             llvm_return_value,
-            "malloc",
+            "calloc",
             "ptr",
-            {{"i32", std::to_string(obj_size)}});
+            {{"i32", std::to_string(obj_size)},
+             {"i32", "1"}});
 
         // store the return value to the llvm_value
         g_llvm_value_ = llvm_return_value;
@@ -858,13 +865,130 @@ namespace JLC::LLVM
         g_llvm_value_ = llvm_return_value;
     }
 
-    // void visitENeg(ENeg *p) override;   // -
-    // void visitENot(ENot *p) override;   // !
-    // void visitEMul(EMul *p) override;   // x / mod
-    // void visitEAdd(EAdd *p) override;   // + -
+    // -
+    void LLVMGenerator::
+        visitENeg(ENeg *e_neg)
+    {
+        if (e_neg->expr_)
+            e_neg->expr_->accept(this);
+        auto type = g_type_;
+        auto llvm_return_value = llvm_context_.gen_name("tmp");
+        // gen sub 1
+        llvm_context_.gen_sub_inst(
+            llvm_return_value,
+            type.type == JLC::TYPE::type_enum::INT ? "0" : "0.0",
+            g_llvm_value_,
+            jlc_type2llvm_type(type));
+        g_llvm_value_ = llvm_return_value;
+    }
+
+    // x / mod
+    void LLVMGenerator::
+        visitEMul(EMul *e_mul)
+    {
+        if (e_mul->expr_1)
+            e_mul->expr_1->accept(this);
+        auto type_left = g_type_;
+        auto llvm_left_value = g_llvm_value_;
+
+        if (e_mul->mulop_)
+            e_mul->mulop_->accept(this);
+        auto mul_op = g_mul_op_;
+
+        if (e_mul->expr_2)
+            e_mul->expr_2->accept(this);
+        auto type_right = g_type_;
+        auto llvm_right_value = g_llvm_value_;
+
+        auto llvm_ret = llvm_context_.gen_name("tmp");
+        switch (mul_op)
+        {
+        case JLC::OP::MulOp::MUL:
+            // gen mul
+            llvm_context_.gen_mul_inst(
+                llvm_ret,
+                llvm_left_value,
+                llvm_right_value,
+                jlc_type2llvm_type(type_left));
+            break;
+
+        case JLC::OP::MulOp::DIV:
+            llvm_context_.gen_div_inst(
+                llvm_ret,
+                llvm_left_value,
+                llvm_right_value,
+                jlc_type2llvm_type(type_left));
+            break;
+
+        case JLC::OP::MulOp::MOD:
+            llvm_context_.gen_mod_inst(
+                llvm_ret,
+                llvm_left_value,
+                llvm_right_value,
+                jlc_type2llvm_type(type_left));
+            break;
+
+        default:
+            // error
+            throw JLCError(
+                "Unknown mulop: " + std::to_string(mul_op));
+            break;
+        }
+        g_llvm_value_ = llvm_ret;
+    }
+
+    // + -
+    void LLVMGenerator::
+        visitEAdd(EAdd *e_add)
+    {
+        if (e_add->expr_1)
+            e_add->expr_1->accept(this);
+        auto type_left = g_type_;
+        auto llvm_left_value = g_llvm_value_;
+
+        if (e_add->addop_)
+            e_add->addop_->accept(this);
+        auto add_op = g_add_op_;
+
+        if (e_add->expr_2)
+            e_add->expr_2->accept(this);
+        auto type_right = g_type_;
+        auto llvm_right_value = g_llvm_value_;
+
+        auto llvm_ret = llvm_context_.gen_name("tmp");
+        switch (add_op)
+        {
+        case JLC::OP::AddOp::ADD:
+            // gen add
+            llvm_context_.gen_add_inst(
+                llvm_ret,
+                llvm_left_value,
+                llvm_right_value,
+                jlc_type2llvm_type(type_left));
+            break;
+
+        case JLC::OP::AddOp::SUB:
+            // gen sub
+            llvm_context_.gen_sub_inst(
+                llvm_ret,
+                llvm_left_value,
+                llvm_right_value,
+                jlc_type2llvm_type(type_left));
+            break;
+
+        default:
+            // error
+            throw JLCError(
+                "Unknown addop: " + std::to_string(add_op));
+            break;
+        }
+        g_llvm_value_ = llvm_ret;
+    }
+
     // void visitERel(ERel *p) override;   // > < <= == >= !=
     // void visitEAnd(EAnd *p) override;   // &&
     // void visitEOr(EOr *p) override;     // ||
+    // void visitENot(ENot *p) override;   // !
 
     /************** Return ***************/
 
