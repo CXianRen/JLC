@@ -538,6 +538,7 @@ namespace JLC::LLVM
                 "Undefined llvm value of var:" + var_name);
         }
 
+        g_llvm_value_ = var_llvm_value;
         if (!left_value_)
         {
             auto loaded_value = llvm_context_.gen_name(var_name);
@@ -549,7 +550,6 @@ namespace JLC::LLVM
             g_llvm_value_ = loaded_value;
             return;
         }
-        g_llvm_value_ = var_llvm_value;
     }
 
     void LLVMGenerator::
@@ -824,6 +824,48 @@ namespace JLC::LLVM
 
         g_type_ = base_type;
     }
+
+    /**************  math operation ***************/
+    // ++
+    void LLVMGenerator::
+        visitEInc(EInc *e_inc)
+    {
+        if (e_inc->expr_)
+            e_inc->expr_->accept(this);
+        // gen add 1
+        auto llvm_return_value = llvm_context_.gen_name("tmp");
+        llvm_context_.gen_add_inst(
+            llvm_return_value,
+            g_llvm_value_,
+            "1",
+            jlc_type2llvm_type(g_type_));
+        g_llvm_value_ = llvm_return_value;
+    }
+
+    // --
+    void LLVMGenerator::
+        visitEDecr(EDecr *e_decr)
+    {
+        if (e_decr->expr_)
+            e_decr->expr_->accept(this);
+        // gen sub 1
+        auto llvm_return_value = llvm_context_.gen_name("tmp");
+        llvm_context_.gen_sub_inst(
+            llvm_return_value,
+            g_llvm_value_,
+            "1",
+            jlc_type2llvm_type(g_type_));
+        g_llvm_value_ = llvm_return_value;
+    }
+
+    // void visitENeg(ENeg *p) override;   // -
+    // void visitENot(ENot *p) override;   // !
+    // void visitEMul(EMul *p) override;   // x / mod
+    // void visitEAdd(EAdd *p) override;   // + -
+    // void visitERel(ERel *p) override;   // > < <= == >= !=
+    // void visitEAnd(EAnd *p) override;   // &&
+    // void visitEOr(EOr *p) override;     // ||
+
     /************** Return ***************/
 
     void LLVMGenerator::

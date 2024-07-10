@@ -165,6 +165,7 @@ namespace JLC::LLVM
         void visitBStmt(BStmt *p);
 
         void visitEApp(EApp *p) override;
+        // void visitEFunc(EFunc *p) override;
 
         /*** variable declaration ***/
         void visitNoInit(NoInit *p) override;
@@ -182,13 +183,9 @@ namespace JLC::LLVM
         void visitEArrow(EArrow *p) override;
         void visitEAcc(EAcc *p) override;
 
-        /* function */
-        // void visitEApp(EApp *p) override;
-        // void visitEFunc(EFunc *p) override;
-
         /* math operation */
-        // void visitEInc(EInc *p) override;   // ++
-        // void visitEDecr(EDecr *p) override; // --
+        void visitEInc(EInc *p) override;   // ++
+        void visitEDecr(EDecr *p) override; // --
         // void visitENeg(ENeg *p) override;   // -
         // void visitENot(ENot *p) override;   // !
         // void visitEMul(EMul *p) override;   // x / mod
@@ -197,7 +194,9 @@ namespace JLC::LLVM
         // void visitEAnd(EAnd *p) override;   // &&
         // void visitEOr(EOr *p) override;     // ||
 
-        /* return */
+        /* logic operation */
+
+        /* return and flow control */
         void visitRet(Ret *p) override;
         void visitVRet(VRet *p) override;
 
