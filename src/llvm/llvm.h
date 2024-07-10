@@ -74,6 +74,12 @@ namespace MLLVM
             const std::string &llvm_obj_ptr,
             const int offset);
 
+        void gen_offset_field_in_type(
+            const std::string &llvm_field,
+            const std::string &llvm_type,
+            const std::string &llvm_obj_ptr,
+            const std::string offset);
+
         /***
          * Generate a global constant variable
          * like:

@@ -82,11 +82,21 @@ namespace MLLVM
             const std::string &llvm_obj_ptr,
             const int offset)
     {
+        gen_offset_field_in_type(llvm_field, llvm_type, llvm_obj_ptr, std::to_string(offset));
+    }
+
+    void LLVM_Context::
+        gen_offset_field_in_type(
+            const std::string &llvm_field,
+            const std::string &llvm_type,
+            const std::string &llvm_obj_ptr,
+            const std::string offset)
+    {
         llvm_instructions.push_back(
             std::string(prefix_size, ' ') +
             llvm_field + " = getelementptr " +
             llvm_type + ", ptr " + llvm_obj_ptr +
-            ", i32 0, i32 " + std::to_string(offset));
+            ", i32 0, i32 " + offset);
     }
 
     void LLVM_Context::
@@ -329,8 +339,8 @@ namespace MLLVM
         {
             result += def + "\n";
         }
-        result +="\n";
-        
+        result += "\n";
+
         for (auto &inst : llvm_instructions)
         {
             result += inst + "\n";

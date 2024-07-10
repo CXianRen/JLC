@@ -433,12 +433,14 @@ namespace JLC::LLVM
         }
 
         int dim = list_dim_expr->size();
-        // auto e_type = jlc_type2llvm_type(type);
 
-        std::string e_type_size = std::to_string(get_obj_size(type.obj_name));
+        auto e_type = jlc_type2llvm_type(type);
+
+        std::string e_type_size =
+            MLLVM::LLVM_Type_Size_map.at(e_type);
 
         llvm_context_.gen_comment("multi-dimensional array");
-        llvm_context_.gen_comment("object " + type.obj_name + " size: " + e_type_size);
+        llvm_context_.gen_comment("object " + type.obj_name + " ptr size:" + e_type_size);
 
         // gen dims array
         auto llvm_dims_array_type = "[" + std::to_string(dim) + " x " + "i32" + "]";
@@ -508,15 +510,14 @@ namespace JLC::LLVM
     void LLVMGenerator::
         visitEVar(EVar *e_var)
     {
-        JLC_FUNC_DEF_Checker::visitEVar(e_var);
-
         auto var_name = e_var->ident_;
-
-        auto type = JLC::TYPE::JLCType();
 
         if (context_->has_enum(var_name))
         {
             auto enum_obj = context_->get_enum(var_name);
+            g_type_ =
+                JLC::TYPE::JLCType(
+                    JLC::TYPE::type_enum::ENUM, var_name);
             // just return, we don't need to update g_llvm_value,
             // it will be updated in . op.
             return;
@@ -525,13 +526,7 @@ namespace JLC::LLVM
         if (current_func_->has_var(var_name))
         {
             auto var = current_func_->get_var(var_name);
-            type = *var.type;
-        }
-
-        if (type.type == JLC::TYPE::UNDEFINED)
-        {
-            throw JLCError(
-                "Undefined type of var:" + var_name);
+            g_type_ = *var.type;
         }
 
         // get llvm_value of var_name
@@ -542,6 +537,7 @@ namespace JLC::LLVM
             throw JLCError(
                 "Undefined llvm value of var:" + var_name);
         }
+
         if (!left_value_)
         {
             auto loaded_value = llvm_context_.gen_name(var_name);
@@ -549,7 +545,7 @@ namespace JLC::LLVM
             llvm_context_.gen_load_inst(
                 var_llvm_value,
                 loaded_value,
-                jlc_type2llvm_type(type));
+                jlc_type2llvm_type(g_type_));
             g_llvm_value_ = loaded_value;
             return;
         }
@@ -733,7 +729,7 @@ namespace JLC::LLVM
                 llvm_offset,
                 loaded_value,
                 jlc_type2llvm_type(*member));
-            
+
             g_llvm_value_ = loaded_value;
             return;
         }
@@ -742,6 +738,92 @@ namespace JLC::LLVM
             "Type " + obj_type.str() + " does not support -> operator.");
     }
 
+    void LLVMGenerator::
+        visitEAcc(EAcc *e_acc)
+    {
+        if (e_acc->expr_)
+            e_acc->expr_->accept(this);
+        auto obj_type = g_type_;
+
+        auto obj_addr = g_llvm_value_;
+        if (left_value_)
+        {
+            auto loaded_value = llvm_context_.gen_name("a_arr");
+            llvm_context_.gen_load_inst(
+                obj_addr,
+                loaded_value,
+                MLLVM::LLVM_ptr);
+            obj_addr = loaded_value;
+        }
+
+        auto list_dim_expr = e_acc->listdimexpr_;
+        int accessed_dim = list_dim_expr->size();
+
+        // get the type of N - accessed_dim dimension array
+        auto base_type = obj_type;
+        for (int i = 0; i < accessed_dim; i++)
+        {
+            base_type = *base_type.base_type;
+        }
+
+        std::string len_llvm_value = "";
+        for (ListDimExpr::iterator i = list_dim_expr->begin(); i != list_dim_expr->end(); ++i)
+        {
+            (*i)->accept(this);
+            auto dim_llvm_value = g_llvm_value_;
+            // gen offset + 4;
+            llvm_context_.gen_comment("+4 (length filed)");
+            auto offset_llvm_value = llvm_context_.gen_name("offset");
+            llvm_context_.gen_offset_field_in_type(
+                offset_llvm_value,
+                "[ 0 x " + str(MLLVM::LLVM_i32) + "]",
+                obj_addr,
+                1);
+            obj_addr = offset_llvm_value;
+            // gen offset N-th element
+            auto e_type = str(MLLVM::LLVM_ptr);
+            if (i == list_dim_expr->end() - 1)
+            {
+                e_type = str(jlc_type2llvm_type(base_type));
+            }
+
+            auto llvm_offset = llvm_context_.gen_name("a_elem");
+            llvm_context_.gen_offset_field_in_type(
+                llvm_offset,
+                "[ 0 x " + e_type + "]",
+                obj_addr,
+                dim_llvm_value);
+            obj_addr = llvm_offset;
+
+            // if not the last dimension, load the address
+            if (i < list_dim_expr->end() - 1)
+            {
+                // gen load
+                auto loaded_value = llvm_context_.gen_name("v_elem");
+                llvm_context_.gen_load_inst(
+                    obj_addr,
+                    loaded_value,
+                    MLLVM::LLVM_ptr);
+                obj_addr = loaded_value;
+            }
+        }
+        if (left_value_)
+        {
+            g_llvm_value_ = obj_addr;
+        }
+        else
+        {
+            // gen load
+            auto loaded_value = llvm_context_.gen_name("v_elem");
+            llvm_context_.gen_load_inst(
+                obj_addr,
+                loaded_value,
+                jlc_type2llvm_type(base_type));
+            g_llvm_value_ = loaded_value;
+        }
+
+        g_type_ = base_type;
+    }
     /************** Return ***************/
 
     void LLVMGenerator::
