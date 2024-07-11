@@ -189,12 +189,19 @@ namespace JLC::LLVM
         void visitENeg(ENeg *p) override;   // -
         void visitEMul(EMul *p) override;   // x / mod
         void visitEAdd(EAdd *p) override;   // + -
+  
+
+        /* logic operation */
         void visitENot(ENot *p) override;   // !
         void visitERel(ERel *p) override;   // > < <= == >= !=
         // void visitEAnd(EAnd *p) override;   // &&
         // void visitEOr(EOr *p) override;     // ||
 
-        /* logic operation */
+        /* control flow */
+        void visitCond(Cond *p) override;
+        // void visitCondElse(CondElse *p) override;
+        // void visitWhile(While *p) override;
+        // void visitForLoop(ForLoop *p) override;
 
         /* return and flow control */
         void visitRet(Ret *p) override;

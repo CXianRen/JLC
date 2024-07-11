@@ -10,20 +10,20 @@ int main(int argc, char **argv)
 
     // test llvm type to string
     {
-        TEST_ASSERT(MLLVM::str(MLLVM::LLVM_i1) == "i1");
-        TEST_ASSERT(MLLVM::str(MLLVM::LLVM_i32) == "i32");
-        TEST_ASSERT(MLLVM::str(MLLVM::LLVM_double) == "double");
-        TEST_ASSERT(MLLVM::str(MLLVM::LLVM_ptr) == "ptr");
-        TEST_ASSERT(MLLVM::str(MLLVM::LLVM_void) == "void");
+        TEST_ASSERT_STR_EQ(MLLVM::str(MLLVM::LLVM_i1), "i1");
+        TEST_ASSERT_STR_EQ(MLLVM::str(MLLVM::LLVM_i32), "i32");
+        TEST_ASSERT_STR_EQ(MLLVM::str(MLLVM::LLVM_double), "double");
+        TEST_ASSERT_STR_EQ(MLLVM::str(MLLVM::LLVM_ptr), "ptr");
+        TEST_ASSERT_STR_EQ(MLLVM::str(MLLVM::LLVM_void), "void");
     }
 
     // test gen comment
     {
         MLLVM::LLVM_Context context;
         context.gen_comment("test comment");
-        std::string result = context.str();
-        std::string expected = "; test comment\n";
-        TEST_ASSERT(result == expected);
+        std::string result = context.llvm_instructions.back();
+        std::string expected = "; test comment";
+        TEST_ASSERT_STR_EQ(result, expected);
     }
 
     // test name generation

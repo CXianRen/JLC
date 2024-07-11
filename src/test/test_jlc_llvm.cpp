@@ -67,16 +67,13 @@ int main(int argc, char **argv)
         auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
         llvm_gen->add_udt();
 
-        TEST_ASSERT(llvm_gen->llvm_context_.global_def.size() == 3);
-        DEBUG_PRINT(llvm_gen->llvm_context_.global_def[0]);
-        TEST_ASSERT(llvm_gen->llvm_context_.global_def[0] ==
-                    "@Color_RED = constant i32 0");
-        DEBUG_PRINT(llvm_gen->llvm_context_.global_def[1]);
-        TEST_ASSERT(llvm_gen->llvm_context_.global_def[1] ==
-                    "@Color_GREEN = constant i32 1");
-        DEBUG_PRINT(llvm_gen->llvm_context_.global_def[2]);
-        TEST_ASSERT(llvm_gen->llvm_context_.global_def[2] ==
-                    "@Color_BLUE = constant i32 2");
+        TEST_ASSERT_INT_EQ(llvm_gen->llvm_context_.global_def.size(), 3);
+        TEST_ASSERT_STR_EQ(llvm_gen->llvm_context_.global_def[0],
+                           "@Color_RED = constant i32 0");
+        TEST_ASSERT_STR_EQ(llvm_gen->llvm_context_.global_def[1],
+                           "@Color_GREEN = constant i32 1");
+        TEST_ASSERT_STR_EQ(llvm_gen->llvm_context_.global_def[2],
+                           "@Color_BLUE = constant i32 2");
     }
     // test struct type
     {
@@ -86,10 +83,9 @@ int main(int argc, char **argv)
         auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
         llvm_gen->add_udt();
 
-        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions.size() == 1);
-        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[0]);
-        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[0] ==
-                    "\%struct.Point = type { i32, i32 }");
+        TEST_ASSERT_INT_EQ(llvm_gen->llvm_context_.llvm_instructions.size(), 1);
+        TEST_ASSERT_STR_EQ(llvm_gen->llvm_context_.llvm_instructions[0],
+                           "%struct.Point = type { i32, i32 }");
     }
     // test class type
     {
@@ -99,10 +95,9 @@ int main(int argc, char **argv)
         auto llvm_gen = std::make_shared<JLC::LLVM::LLVMGenerator>(context);
         llvm_gen->add_udt();
 
-        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions.size() == 1);
-        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[0]);
-        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[0] ==
-                    "\%class.Point = type { i32, i32 }");
+        TEST_ASSERT_INT_EQ(llvm_gen->llvm_context_.llvm_instructions.size(), 1);
+        TEST_ASSERT_STR_EQ(llvm_gen->llvm_context_.llvm_instructions[0],
+                           "%class.Point = type { i32, i32 }");
     }
 
     // test internal function decleration
@@ -115,21 +110,20 @@ int main(int argc, char **argv)
         llvm_gen->add_internal_func();
 
         TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions.size() > 0);
-        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[0]);
-        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[0] ==
-                    "declare void @printInt(i32)");
-        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[1]);
-        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[1] ==
-                    "declare void @printDouble(double)");
-        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[2]);
-        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[2] ==
-                    "declare void @printString(ptr)");
-        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[3]);
-        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[3] ==
-                    "declare i32 @readInt()");
-        DEBUG_PRINT(llvm_gen->llvm_context_.llvm_instructions[4]);
-        TEST_ASSERT(llvm_gen->llvm_context_.llvm_instructions[4] ==
-                    "declare double @readDouble()");
+        TEST_ASSERT_STR_EQ(llvm_gen->llvm_context_.llvm_instructions[0],
+                           "declare void @printInt(i32)");
+
+        TEST_ASSERT_STR_EQ(llvm_gen->llvm_context_.llvm_instructions[1],
+                           "declare void @printDouble(double)");
+
+        TEST_ASSERT_STR_EQ(llvm_gen->llvm_context_.llvm_instructions[2],
+                           "declare void @printString(ptr)");
+
+        TEST_ASSERT_STR_EQ(llvm_gen->llvm_context_.llvm_instructions[3],
+                           "declare i32 @readInt()");
+
+        TEST_ASSERT_STR_EQ(llvm_gen->llvm_context_.llvm_instructions[4],
+                           "declare double @readDouble()");
     }
 
     // test define variable
@@ -142,8 +136,7 @@ int main(int argc, char **argv)
         parse_tree->accept(llvm_gen.get());
 
         auto result = llvm_gen->llvm_context_.llvm_instructions;
-        DEBUG_PRINT(result[result.size() - 2]);
-        TEST_ASSERT(result[result.size() - 2] == "%x0 = alloca i32");
+        TEST_ASSERT_STR_EQ(result[result.size() - 2], "%x0 = alloca i32");
     }
     // define a struct variable
     {
@@ -156,8 +149,7 @@ int main(int argc, char **argv)
         parse_tree->accept(llvm_gen.get());
 
         auto result = llvm_gen->llvm_context_.llvm_instructions;
-        DEBUG_PRINT(result[result.size() - 2]);
-        TEST_ASSERT(result[result.size() - 2] == "%p0 = alloca ptr");
+        TEST_ASSERT_STR_EQ(result[result.size() - 2], "%p0 = alloca ptr");
     }
     // define a class variable
     {
@@ -170,8 +162,7 @@ int main(int argc, char **argv)
         parse_tree->accept(llvm_gen.get());
 
         auto result = llvm_gen->llvm_context_.llvm_instructions;
-        DEBUG_PRINT(result[result.size() - 2]);
-        TEST_ASSERT(result[result.size() - 2] == "%p0 = alloca ptr");
+        TEST_ASSERT_STR_EQ(result[result.size() - 2], "%p0 = alloca ptr");
     }
     // define a array variable
     {
@@ -183,8 +174,7 @@ int main(int argc, char **argv)
         parse_tree->accept(llvm_gen.get());
 
         auto result = llvm_gen->llvm_context_.llvm_instructions;
-        DEBUG_PRINT(result[result.size() - 2]);
-        TEST_ASSERT(result[result.size() - 2] == "%x0 = alloca ptr");
+        TEST_ASSERT_STR_EQ(result[result.size() - 2], "%x0 = alloca ptr");
     }
     // defina a int with initial number
     {
@@ -196,10 +186,8 @@ int main(int argc, char **argv)
         parse_tree->accept(llvm_gen.get());
 
         auto result = llvm_gen->llvm_context_.llvm_instructions;
-        // DEBUG_PRINT(llvm_gen->llvm_context_.str());
-        TEST_ASSERT(
-            result[result.size() - 2] ==
-            "store i32 10, ptr %x0");
+        TEST_ASSERT_STR_EQ(result[result.size() - 2],
+                           "store i32 10, ptr %x0");
     }
     // define a double with initial number
     {
@@ -211,10 +199,8 @@ int main(int argc, char **argv)
         parse_tree->accept(llvm_gen.get());
 
         auto result = llvm_gen->llvm_context_.llvm_instructions;
-        DEBUG_PRINT(llvm_gen->llvm_context_.str());
-        TEST_ASSERT(
-            result[result.size() - 2] ==
-            "store double 10.000000, ptr %x0");
+        TEST_ASSERT_STR_EQ(result[result.size() - 2],
+                           "store double 10.000000, ptr %x0");
     }
     // define a class with null
     {
@@ -227,10 +213,8 @@ int main(int argc, char **argv)
         parse_tree->accept(llvm_gen.get());
 
         auto result = llvm_gen->llvm_context_.llvm_instructions;
-        DEBUG_PRINT(llvm_gen->llvm_context_.str());
-        TEST_ASSERT(
-            result[result.size() - 2] ==
-            "store ptr null, ptr %p0");
+        TEST_ASSERT_STR_EQ(result[result.size() - 2],
+                           "store ptr null, ptr %p0");
     }
     // define a struct with null
     {
@@ -243,12 +227,10 @@ int main(int argc, char **argv)
         parse_tree->accept(llvm_gen.get());
 
         auto result = llvm_gen->llvm_context_.llvm_instructions;
-        DEBUG_PRINT(llvm_gen->llvm_context_.str());
-        TEST_ASSERT(
-            result[result.size() - 2] ==
-            "store ptr null, ptr %p0");
+        TEST_ASSERT_STR_EQ(result[result.size() - 2],
+                           "store ptr null, ptr %p0");
     }
-    // init with new 
+    // init with new
     {
         std::string input_str = "class Point { int x; int y; }\n"
                                 "void f(){ Point p = new Point; }";
@@ -259,13 +241,11 @@ int main(int argc, char **argv)
         parse_tree->accept(llvm_gen.get());
 
         auto result = llvm_gen->llvm_context_.llvm_instructions;
-        DEBUG_PRINT(llvm_gen->llvm_context_.str());
-        TEST_ASSERT(
-            result[result.size() - 3] ==
-            "%tmp1 = call ptr @malloc(i32 8)");
-        TEST_ASSERT(
-            result[result.size() - 2] ==
-            "store ptr %tmp1, ptr %p0");
+        TEST_ASSERT_STR_EQ(result[result.size() - 3],
+                                       "%tmp1 = call ptr @calloc(i32 8, i32 1)");
+
+        TEST_ASSERT_STR_EQ(result[result.size() - 2],
+                           "store ptr %tmp1, ptr %p0");
     }
 
     TEST_PASS();

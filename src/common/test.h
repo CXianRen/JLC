@@ -7,10 +7,10 @@
 #include <iomanip>
 
 #define TEST_PASS() std::cout << "[TEST] " \
-                              << std::setw(40) << std::left << __FILE__ << ": PASSED" << std::endl;
+                              << std::setw(50) << std::left << __FILE__ << ": PASSED" << std::endl;
 
 #define TEST_FAIL() std::cout << "[TEST] " \
-                              << std::setw(40) << std::left << __FILE__ << ": FAILED" << std::endl;
+                              << std::setw(50) << std::left << __FILE__ << ": FAILED" << std::endl;
 
 #define TEST_ASSERT(expr)                                        \
     if (!(expr))                                                 \
@@ -28,6 +28,17 @@
         TEST_FAIL();                                      \
         std::cerr << "Assertion failed: "                 \
                   << str1 << " != " << str2 << std::endl; \
+        std::cerr << "File: " << __FILE__ << std::endl;   \
+        std::cerr << "Line: " << __LINE__ << std::endl;   \
+        exit(1);                                          \
+    }
+
+#define TEST_ASSERT_INT_EQ(int1, int2)                    \
+    if (int1 != int2)                                     \
+    {                                                     \
+        TEST_FAIL();                                      \
+        std::cerr << "Assertion failed: "                 \
+                  << int1 << " != " << int2 << std::endl; \
         std::cerr << "File: " << __FILE__ << std::endl;   \
         std::cerr << "Line: " << __LINE__ << std::endl;   \
         exit(1);                                          \

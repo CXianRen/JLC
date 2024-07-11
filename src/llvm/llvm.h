@@ -257,6 +257,13 @@ namespace MLLVM
             LLVM_Type type);
 
         /********* control flow operations *********/
+        void gen_br_inst(
+            const std::string &llvm_label);
+
+        void gen_cond_br_inst(
+            const std::string &llvm_cond,
+            const std::string &llvm_true_label,
+            const std::string &llvm_false_label);
 
         /**
          * Generate a return instruction

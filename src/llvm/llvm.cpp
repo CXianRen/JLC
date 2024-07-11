@@ -432,6 +432,28 @@ namespace MLLVM
 
     /******************* control flow operations *******************/
 
+    void LLVM_Context::
+        gen_br_inst(
+            const std::string &llvm_label)
+    {
+        llvm_instructions.push_back(
+            std::string(prefix_size, ' ') +
+            "br label %" + llvm_label);
+    }
+
+    void LLVM_Context::
+        gen_cond_br_inst(
+            const std::string &llvm_cond,
+            const std::string &llvm_true_label,
+            const std::string &llvm_false_label)
+    {
+        llvm_instructions.push_back(
+            std::string(prefix_size, ' ') +
+            "br i1 " + llvm_cond +
+            ", label %" + llvm_true_label +
+            ", label %" + llvm_false_label);
+    }
+
     void LLVM_Context::gen_return_inst(
         const std::string &llvm_return_value,
         LLVM_Type type)

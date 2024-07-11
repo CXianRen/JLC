@@ -1083,7 +1083,23 @@ namespace JLC::LLVM
     // void visitEAnd(EAnd *p) override;   // &&
     // void visitEOr(EOr *p) override;     // ||
 
-    /************** Return ***************/
+    /************** Control flow ***************/
+    void LLVMGenerator::
+        visitCond(Cond *cond)
+    {
+        // if (cond->expr_)
+        //     cond->expr_->accept(this);
+
+
+        // // new block scope
+        // current_func_->push_blk();
+        // if (cond->stmt_)
+        //     cond->stmt_->accept(this);
+        // // pop block scope
+        // current_func_->pop_blk();
+
+        // is_returned_ = false;
+    }
 
     void LLVMGenerator::
         visitVRet(VRet *v_ret)
