@@ -837,14 +837,30 @@ namespace JLC::LLVM
     void LLVMGenerator::
         visitEInc(EInc *e_inc)
     {
+        left_value_ = true;
         if (e_inc->expr_)
             e_inc->expr_->accept(this);
+        left_value_ = false;
+        auto llvm_var_addr = g_llvm_value_;
+
+        // load the value
+        auto llvm_load_value = llvm_context_.gen_name("t");
+        llvm_context_.gen_load_inst(
+            llvm_var_addr,
+            llvm_load_value,
+            jlc_type2llvm_type(g_type_));
+
         // gen add 1
-        auto llvm_return_value = llvm_context_.gen_name("tmp");
+        auto llvm_return_value = llvm_context_.gen_name("t");
         llvm_context_.gen_add_inst(
             llvm_return_value,
-            g_llvm_value_,
+            llvm_load_value,
             "1",
+            jlc_type2llvm_type(g_type_));
+        // store the value
+        llvm_context_.gen_store_inst(
+            llvm_return_value,
+            llvm_var_addr,
             jlc_type2llvm_type(g_type_));
         g_llvm_value_ = llvm_return_value;
     }
@@ -853,15 +869,32 @@ namespace JLC::LLVM
     void LLVMGenerator::
         visitEDecr(EDecr *e_decr)
     {
+        left_value_ = true;
         if (e_decr->expr_)
             e_decr->expr_->accept(this);
+        left_value_ = false;
+        auto llvm_var_addr = g_llvm_value_;
+        // load the value
+        auto llvm_load_value = llvm_context_.gen_name("t");
+        llvm_context_.gen_load_inst(
+            llvm_var_addr,
+            llvm_load_value,
+            jlc_type2llvm_type(g_type_));
+
         // gen sub 1
         auto llvm_return_value = llvm_context_.gen_name("tmp");
         llvm_context_.gen_sub_inst(
             llvm_return_value,
-            g_llvm_value_,
+            llvm_load_value,
             "1",
             jlc_type2llvm_type(g_type_));
+
+        // store the value
+        llvm_context_.gen_store_inst(
+            llvm_return_value,
+            llvm_var_addr,
+            jlc_type2llvm_type(g_type_));
+
         g_llvm_value_ = llvm_return_value;
     }
 
@@ -1177,6 +1210,42 @@ namespace JLC::LLVM
         {
             llvm_context_.release_insert_point(end_blk);
         }
+    }
+
+    void LLVMGenerator::
+        visitWhile(While *while_)
+    {
+        auto cond_blk = llvm_context_.new_insert_point("wcond");
+        auto body_blk = llvm_context_.new_insert_point("wbody");
+        auto end_blk = llvm_context_.new_insert_point("wend");
+
+        llvm_context_.gen_br_inst(cond_blk->label);
+        llvm_context_.set_insert_point(cond_blk);
+
+        if (while_->expr_)
+            while_->expr_->accept(this);
+        auto llvm_cond_value = g_llvm_value_;
+
+        llvm_context_.gen_cond_br_inst(
+            llvm_cond_value,
+            body_blk->label,
+            end_blk->label);
+
+        llvm_context_.set_insert_point(body_blk);
+        // new block scope
+        current_func_->push_blk();
+        if (while_->stmt_)
+            while_->stmt_->accept(this);
+        // pop block scope
+        current_func_->pop_blk();
+
+        llvm_context_.gen_br_inst(cond_blk->label);
+
+        llvm_context_.set_insert_point(end_blk);
+        // release insert point
+        llvm_context_.release_insert_point(cond_blk);
+        llvm_context_.release_insert_point(body_blk);
+        llvm_context_.release_insert_point(end_blk);
     }
 
     void LLVMGenerator::

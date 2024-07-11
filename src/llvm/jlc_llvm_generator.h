@@ -200,7 +200,7 @@ namespace JLC::LLVM
         /* control flow */
         void visitCond(Cond *p) override;
         void visitCondElse(CondElse *p) override;
-        // void visitWhile(While *p) override;
+        void visitWhile(While *p) override;
         // void visitForLoop(ForLoop *p) override;
 
         /* return and flow control */
