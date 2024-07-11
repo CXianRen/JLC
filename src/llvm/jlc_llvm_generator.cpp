@@ -1087,18 +1087,39 @@ namespace JLC::LLVM
     void LLVMGenerator::
         visitCond(Cond *cond)
     {
-        // if (cond->expr_)
-        //     cond->expr_->accept(this);
 
+        auto cond_blk = llvm_context_.new_insert_point("cond");
 
-        // // new block scope
-        // current_func_->push_blk();
-        // if (cond->stmt_)
-        //     cond->stmt_->accept(this);
-        // // pop block scope
-        // current_func_->pop_blk();
+        auto end_blk = llvm_context_.new_insert_point("end");
 
-        // is_returned_ = false;
+        if (cond->expr_)
+            cond->expr_->accept(this);
+        auto llvm_cond_value = g_llvm_value_;
+
+        DEBUG_PRINT("cond value:" << llvm_cond_value);
+        // gen cond branch
+        llvm_context_.gen_cond_br_inst(
+            llvm_cond_value,
+            cond_blk->label,
+            end_blk->label);
+
+        // new block scope
+        llvm_context_.set_insert_point(cond_blk);
+        current_func_->push_blk();
+        if (cond->stmt_)
+            cond->stmt_->accept(this);
+        // pop block scope
+        current_func_->pop_blk();
+
+        if (!llvm_context_.end_with_term_inst(cond_blk))
+        {
+            llvm_context_.gen_br_inst(end_blk->label);
+        }
+
+        llvm_context_.release_insert_point(cond_blk);
+        llvm_context_.release_insert_point(end_blk);
+
+        is_returned_ = false;
     }
 
     void LLVMGenerator::

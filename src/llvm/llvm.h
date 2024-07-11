@@ -5,6 +5,8 @@
 #include <string>
 #include <map>
 #include <memory>
+#include "common/debug.h"
+
 namespace MLLVM
 {
 
@@ -103,6 +105,57 @@ namespace MLLVM
         void reset_name_counter()
         {
             name_counter = 0;
+        }
+
+        std::shared_ptr<LLVM_Insertion_Point> new_insert_point(std::string label)
+        {
+            std::string label_with_id = label + "_" + std::to_string(name_counter++);
+            return std::make_shared<LLVM_Insertion_Point>(llvm_instructions, label_with_id);
+        }
+
+        std::shared_ptr<LLVM_Insertion_Point> get_current_insert_point()
+        {
+            return llvm_instructions;
+        }
+
+        void set_insert_point(std::shared_ptr<LLVM_Insertion_Point> insert_point)
+        {
+            llvm_instructions = insert_point;
+        }
+
+        void release_insert_point(std::shared_ptr<LLVM_Insertion_Point> insert_point)
+        {
+            // write the content of current insert point to parent insert point
+            if (insert_point->parent_insertion_point != nullptr)
+            {
+                // gen label
+                insert_point->parent_insertion_point->push_back(insert_point->label + ":");
+
+                for (auto it = insert_point->begin(); it != insert_point->end(); ++it)
+                {
+                    insert_point->parent_insertion_point->push_back(*it);
+                }
+                llvm_instructions = insert_point->parent_insertion_point;
+            }
+            else
+            {
+                DEBUG_PRINT("Error: insert point is already at the top level");
+            }
+        }
+
+        bool end_with_term_inst(std::shared_ptr<LLVM_Insertion_Point> insert_point)
+        {
+            if (insert_point->size() == 0)
+            {
+                return false;
+            }
+            std::string last_inst = insert_point->back();
+            if (last_inst.find("ret ") == 0 ||
+                last_inst.find("br ") == 0)
+            {
+                return true;
+            }
+            return false;
         }
 
     public:
