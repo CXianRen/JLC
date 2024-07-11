@@ -243,7 +243,7 @@ namespace JLC::LLVM
         // gen function call
         std::vector<std::pair<std::string, std::string>> llvm_args;
         auto list_expr = e_app->listexpr_;
-        for (int idx = 0; idx < list_expr->size(); idx++)
+        for (size_t idx = 0; idx < list_expr->size(); idx++)
         {
             auto arg_expr = list_expr->at(idx);
             arg_expr->accept(this);

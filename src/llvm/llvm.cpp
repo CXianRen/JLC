@@ -63,7 +63,7 @@ namespace MLLVM
             const std::vector<std::string> &llvm_elements)
     {
         std::string result = llvm_type + " = type {";
-        for (int i = 0; i < llvm_elements.size(); i++)
+        for (size_t i = 0; i < llvm_elements.size(); i++)
         {
             result += " " + llvm_elements[i];
             if (i != llvm_elements.size() - 1)
@@ -116,7 +116,7 @@ namespace MLLVM
             const std::vector<std::string> &llvm_args)
     {
         std::string result = "declare " + llvm_return_type + " @" + llvm_func_name + "(";
-        for (int i = 0; i < llvm_args.size(); i++)
+        for (size_t i = 0; i < llvm_args.size(); i++)
         {
             result += llvm_args[i];
             if (i != llvm_args.size() - 1)
@@ -135,7 +135,7 @@ namespace MLLVM
             const std::vector<std::string> &llvm_args)
     {
         std::string result = "define " + llvm_return_type + " @" + llvm_func_name + "(";
-        for (int i = 0; i < llvm_args.size(); i++)
+        for (size_t i = 0; i < llvm_args.size(); i++)
         {
             result += llvm_args[i];
             if (i != llvm_args.size() - 1)
@@ -207,7 +207,7 @@ namespace MLLVM
         }
 
         result += "call " + llvm_return_type + " @" + llvm_func_name + "(";
-        for (int i = 0; i < llvm_args.size(); i++)
+        for (size_t i = 0; i < llvm_args.size(); i++)
         {
             result += llvm_args[i].first + " " + llvm_args[i].second;
             if (i != llvm_args.size() - 1)

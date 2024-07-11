@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <memory>
 namespace MLLVM
 {
 
@@ -27,6 +28,64 @@ namespace MLLVM
         {LLVM_ptr, "8"},
         {LLVM_void, "0"}};
 
+    class LLVM_Insertion_Point
+    {
+    public:
+        LLVM_Insertion_Point()
+        {
+            parent_insertion_point = nullptr;
+            label = "";
+        }
+        LLVM_Insertion_Point(
+            std::shared_ptr<LLVM_Insertion_Point> parent, std::string label)
+        {
+            parent_insertion_point = parent;
+            this->label = label;
+        }
+
+        ~LLVM_Insertion_Point()
+        {
+        }
+
+        std::shared_ptr<LLVM_Insertion_Point> parent_insertion_point;
+        std::string label;
+        std::vector<std::string> instructions;
+
+        void push_back(std::string instruction)
+        {
+            instructions.push_back(instruction);
+        }
+
+        // [] operator overloading
+        std::string &operator[](int index)
+        {
+            return instructions[index];
+        }
+        // back() method
+        std::string back()
+        {
+            return instructions.back();
+        }
+
+        // begin() method
+        std::vector<std::string>::iterator begin()
+        {
+            return instructions.begin();
+        }
+
+        // end() method
+        std::vector<std::string>::iterator end()
+        {
+            return instructions.end();
+        }
+
+        // size() method
+        int size()
+        {
+            return instructions.size();
+        }
+    };
+
     class LLVM_Context
     {
 
@@ -35,8 +94,8 @@ namespace MLLVM
         ~LLVM_Context();
 
     public:
-        std::vector<std::string> llvm_instructions;
-        std::vector<std::string> global_def;
+        LLVM_Insertion_Point llvm_instructions;
+        LLVM_Insertion_Point global_def;
 
         int name_counter;
 
