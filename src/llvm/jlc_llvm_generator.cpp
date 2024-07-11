@@ -1092,6 +1092,7 @@ namespace JLC::LLVM
 
         auto end_blk = llvm_context_.new_insert_point("end");
 
+        llvm_context_.gen_comment("if(" + std::string(p->print(cond->expr_)) + "){");
         if (cond->expr_)
             cond->expr_->accept(this);
         auto llvm_cond_value = g_llvm_value_;
@@ -1115,11 +1116,67 @@ namespace JLC::LLVM
         {
             llvm_context_.gen_br_inst(end_blk->label);
         }
-
+        llvm_context_.gen_comment("}");
         llvm_context_.release_insert_point(cond_blk);
         llvm_context_.release_insert_point(end_blk);
+    }
 
-        is_returned_ = false;
+    void LLVMGenerator::
+        visitCondElse(CondElse *cond_else)
+    {
+
+        auto cond_blk = llvm_context_.new_insert_point("cond");
+        auto else_blk = llvm_context_.new_insert_point("else");
+        auto end_blk = llvm_context_.new_insert_point("end");
+
+        llvm_context_.gen_comment("if(" + std::string(p->print(cond_else->expr_)) + "){");
+
+        if (cond_else->expr_)
+            cond_else->expr_->accept(this);
+        auto llvm_cond_value = g_llvm_value_;
+
+        llvm_context_.gen_cond_br_inst(
+            llvm_cond_value,
+            cond_blk->label,
+            else_blk->label);
+
+        llvm_context_.set_insert_point(cond_blk);
+        // new block scope
+        current_func_->push_blk();
+        if (cond_else->stmt_1)
+            cond_else->stmt_1->accept(this);
+        // pop block scope
+        current_func_->pop_blk();
+
+        bool need_end_blk = false;
+        if (!llvm_context_.end_with_term_inst(cond_blk))
+        {
+            need_end_blk = true;
+            llvm_context_.gen_br_inst(end_blk->label);
+        }
+        llvm_context_.gen_comment("} else {");
+        llvm_context_.set_insert_point(else_blk);
+        // new block scope
+        current_func_->push_blk();
+        if (cond_else->stmt_2)
+            cond_else->stmt_2->accept(this);
+
+        // pop block scope
+        current_func_->pop_blk();
+
+        if (!llvm_context_.end_with_term_inst(else_blk))
+        {
+            need_end_blk = true;
+            llvm_context_.gen_br_inst(end_blk->label);
+        }
+        llvm_context_.gen_comment("}");
+
+        llvm_context_.release_insert_point(cond_blk);
+        llvm_context_.release_insert_point(else_blk);
+        if (need_end_blk)
+        {
+            llvm_context_.release_insert_point(end_blk);
+        }
     }
 
     void LLVMGenerator::
