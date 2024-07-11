@@ -1139,7 +1139,7 @@ namespace JLC::LLVM
 
         auto current_insert_point_name =
             current_insert_point->label;
-        if(current_insert_point_name == "")
+        if (current_insert_point_name == "")
         {
             current_insert_point_name = "entry";
         }
@@ -1182,7 +1182,59 @@ namespace JLC::LLVM
         llvm_context_.release_insert_point(and_true);
         llvm_context_.release_insert_point(and_end);
     }
-    // void visitEOr(EOr *p) override;     // ||
+
+    // ||
+    void LLVMGenerator::
+        visitEOr(EOr *e_or)
+    {
+        auto current_insert_point =
+            llvm_context_.get_current_insert_point();
+
+        auto current_insert_point_name =
+            current_insert_point->label;
+        if (current_insert_point_name == "")
+        {
+            current_insert_point_name = "entry";
+        }
+
+        auto or_fales = llvm_context_.new_insert_point("or_false");
+        auto or_end = llvm_context_.new_insert_point("or_end");
+
+        if (e_or->expr_1)
+            e_or->expr_1->accept(this);
+        auto llvm_value_left = g_llvm_value_;
+
+        // if first expression is false,
+        // then we need to check the second expression
+        llvm_context_.gen_cond_br_inst(
+            llvm_value_left,
+            or_end->label,
+            or_fales->label);
+        llvm_context_.set_insert_point(or_fales);
+        
+        if (e_or->expr_2)
+            e_or->expr_2->accept(this);
+        auto llvm_value_right = g_llvm_value_;
+        auto llvm_ip_of_value = g_llvm_insert_point_;
+
+        // then to the or-end  block
+
+        llvm_context_.gen_br_inst(or_end->label);
+        llvm_context_.set_insert_point(or_end);
+
+        auto phi_name = llvm_context_.gen_name("or");
+        llvm_context_.gen_phi_inst(
+            phi_name,
+            str(MLLVM::LLVM_i1),
+            llvm_value_left,
+            current_insert_point_name,
+            llvm_value_right,
+            llvm_ip_of_value);
+
+        set_global_llvm_value(phi_name);
+        llvm_context_.release_insert_point(or_fales);
+        llvm_context_.release_insert_point(or_end);
+    }
 
     /************** Control flow ***************/
     void LLVMGenerator::

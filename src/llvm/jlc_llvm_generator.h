@@ -209,7 +209,7 @@ namespace JLC::LLVM
         void visitENot(ENot *p) override; // !
         void visitERel(ERel *p) override; // > < <= == >= !=
         void visitEAnd(EAnd *p) override; // &&
-        // void visitEOr(EOr *p) override;     // ||
+        void visitEOr(EOr *p) override;   // ||
 
         /* control flow */
         void visitCond(Cond *p) override;

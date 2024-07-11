@@ -136,6 +136,7 @@ namespace MLLVM
                     insert_point->parent_insertion_point->push_back(*it);
                 }
                 llvm_instructions = insert_point->parent_insertion_point;
+                llvm_instructions->label = insert_point->label;
             }
             else
             {
