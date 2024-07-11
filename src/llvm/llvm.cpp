@@ -36,6 +36,8 @@ namespace MLLVM
     LLVM_Context::LLVM_Context()
     {
         name_counter = 0;
+        llvm_instructions = std::make_shared<LLVM_Insertion_Point>();
+        global_def = std::make_shared<LLVM_Insertion_Point>();
     }
 
     LLVM_Context::~LLVM_Context()
@@ -46,7 +48,7 @@ namespace MLLVM
     void LLVM_Context::
         gen_comment(std::string comment)
     {
-        llvm_instructions.push_back(std::string(prefix_size, ' ') + "; " + comment);
+        llvm_instructions->push_back(std::string(prefix_size, ' ') + "; " + comment);
     }
 
     std::string LLVM_Context::
@@ -72,7 +74,7 @@ namespace MLLVM
             }
         }
         result += " }";
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     void LLVM_Context::
@@ -92,7 +94,7 @@ namespace MLLVM
             const std::string &llvm_obj_ptr,
             const std::string offset)
     {
-        llvm_instructions.push_back(
+        llvm_instructions->push_back(
             std::string(prefix_size, ' ') +
             llvm_field + " = getelementptr " +
             llvm_type + ", ptr " + llvm_obj_ptr +
@@ -105,7 +107,7 @@ namespace MLLVM
             const std::string &llvm_type,
             const std::string &llvm_value)
     {
-        global_def.push_back(
+        global_def->push_back(
             "@" + llvm_var_name + " = constant " + llvm_type + " " + llvm_value);
     }
 
@@ -125,7 +127,7 @@ namespace MLLVM
             }
         }
         result += ")";
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     void LLVM_Context::
@@ -144,7 +146,7 @@ namespace MLLVM
             }
         }
         result += ") {";
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     /******************* memory operations *******************/
@@ -161,7 +163,7 @@ namespace MLLVM
             const std::string &llvm_value,
             const std::string &llvm_type)
     {
-        llvm_instructions.push_back(
+        llvm_instructions->push_back(
             std::string(prefix_size, ' ') +
             llvm_value + " = alloca " + llvm_type);
     }
@@ -172,7 +174,7 @@ namespace MLLVM
             std::string &llvm_dst,
             LLVM_Type type)
     {
-        llvm_instructions.push_back(
+        llvm_instructions->push_back(
             std::string(prefix_size, ' ') +
             "store " +
             MLLVM::str(type) + " " + llvm_src +
@@ -185,7 +187,7 @@ namespace MLLVM
             std::string &llvm_dst,
             LLVM_Type type)
     {
-        llvm_instructions.push_back(
+        llvm_instructions->push_back(
             std::string(prefix_size, ' ') +
             llvm_dst + " = load " +
             MLLVM::str(type) + ", " + "ptr" + " " + llvm_src);
@@ -217,7 +219,7 @@ namespace MLLVM
         }
         result += ")";
 
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     /******************* math operations *******************/
@@ -241,7 +243,7 @@ namespace MLLVM
         std::string result = std::string(prefix_size, ' ') +
                              llvm_return_value + " = " + add_op + " " +
                              MLLVM::str(type) + " " + llvm_value1 + ", " + llvm_value2;
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     void LLVM_Context::
@@ -264,7 +266,7 @@ namespace MLLVM
         std::string result = std::string(prefix_size, ' ') +
                              llvm_return_value + " = " + sub_op + " " +
                              MLLVM::str(type) + " " + llvm_value1 + ", " + llvm_value2;
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     void LLVM_Context::
@@ -287,7 +289,7 @@ namespace MLLVM
         std::string result = std::string(prefix_size, ' ') +
                              llvm_return_value + " = " + mul_op + " " +
                              MLLVM::str(type) + " " + llvm_value1 + ", " + llvm_value2;
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     void LLVM_Context::
@@ -310,7 +312,7 @@ namespace MLLVM
         std::string result = std::string(prefix_size, ' ') +
                              llvm_return_value + " = " + div_op + " " +
                              MLLVM::str(type) + " " + llvm_value1 + ", " + llvm_value2;
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     void LLVM_Context::
@@ -329,7 +331,7 @@ namespace MLLVM
         std::string result = std::string(prefix_size, ' ') +
                              llvm_return_value + " = " + mod_op + " " +
                              MLLVM::str(type) + " " + llvm_value1 + ", " + llvm_value2;
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     /******************* compare operations *******************/
@@ -342,7 +344,7 @@ namespace MLLVM
         std::string result = std::string(prefix_size, ' ') +
                              llvm_return_value + " = xor " +
                              MLLVM::str(type) + " " + llvm_value + ", 1";
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     void LLVM_Context::gen_equ_inst(
@@ -357,7 +359,7 @@ namespace MLLVM
                              llvm_return_value + " = " + op +
                              MLLVM::str(type) + " " +
                              llvm_value1 + ", " + llvm_value2;
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     void LLVM_Context::gen_ne_inst(
@@ -371,7 +373,7 @@ namespace MLLVM
                              llvm_return_value + " = " + op +
                              MLLVM::str(type) + " " +
                              llvm_value1 + ", " + llvm_value2;
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     void LLVM_Context::gen_lth_inst(
@@ -385,7 +387,7 @@ namespace MLLVM
                              llvm_return_value + " = " + op +
                              MLLVM::str(type) + " " +
                              llvm_value1 + ", " + llvm_value2;
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     void LLVM_Context::gen_le_inst(
@@ -399,7 +401,7 @@ namespace MLLVM
                              llvm_return_value + " = " + op +
                              MLLVM::str(type) + " " +
                              llvm_value1 + ", " + llvm_value2;
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     void LLVM_Context::gen_gth_inst(
@@ -413,7 +415,7 @@ namespace MLLVM
                              llvm_return_value + " = " + op +
                              MLLVM::str(type) + " " +
                              llvm_value1 + ", " + llvm_value2;
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     void LLVM_Context::gen_ge_inst(
@@ -427,7 +429,7 @@ namespace MLLVM
                              llvm_return_value + " = " + op +
                              MLLVM::str(type) + " " +
                              llvm_value1 + ", " + llvm_value2;
-        llvm_instructions.push_back(result);
+        llvm_instructions->push_back(result);
     }
 
     /******************* control flow operations *******************/
@@ -436,7 +438,7 @@ namespace MLLVM
         gen_br_inst(
             const std::string &llvm_label)
     {
-        llvm_instructions.push_back(
+        llvm_instructions->push_back(
             std::string(prefix_size, ' ') +
             "br label %" + llvm_label);
     }
@@ -447,7 +449,7 @@ namespace MLLVM
             const std::string &llvm_true_label,
             const std::string &llvm_false_label)
     {
-        llvm_instructions.push_back(
+        llvm_instructions->push_back(
             std::string(prefix_size, ' ') +
             "br i1 " + llvm_cond +
             ", label %" + llvm_true_label +
@@ -460,13 +462,13 @@ namespace MLLVM
     {
         if (type == LLVM_void)
         {
-            llvm_instructions.push_back(
+            llvm_instructions->push_back(
                 std::string(prefix_size, ' ') +
                 "ret void");
         }
         else
         {
-            llvm_instructions.push_back(
+            llvm_instructions->push_back(
                 std::string(prefix_size, ' ') +
                 "ret " + MLLVM::str(type) + " " + llvm_return_value);
         }
@@ -475,13 +477,13 @@ namespace MLLVM
     std::string LLVM_Context::str()
     {
         std::string result;
-        for (auto &def : global_def)
+        for (auto &def : *global_def)
         {
             result += def + "\n";
         }
         result += "\n";
 
-        for (auto &inst : llvm_instructions)
+        for (auto &inst : *llvm_instructions)
         {
             result += inst + "\n";
         }

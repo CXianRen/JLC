@@ -94,8 +94,8 @@ namespace MLLVM
         ~LLVM_Context();
 
     public:
-        LLVM_Insertion_Point llvm_instructions;
-        LLVM_Insertion_Point global_def;
+        std::shared_ptr<LLVM_Insertion_Point> llvm_instructions;
+        std::shared_ptr<LLVM_Insertion_Point> global_def;
 
         int name_counter;
 
@@ -171,7 +171,7 @@ namespace MLLVM
 
         void gen_label(const std::string &label)
         {
-            llvm_instructions.push_back(label + ":");
+            llvm_instructions->push_back(label + ":");
         }
 
         /*
@@ -181,7 +181,7 @@ namespace MLLVM
          */
         void gen_define_func_end()
         {
-            llvm_instructions.push_back("}");
+            llvm_instructions->push_back("}");
         }
         /******** memory operations ********/
 
