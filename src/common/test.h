@@ -60,4 +60,14 @@
         /*do nothing*/                                               \
     }
 
+#include "parser/Parser.H"
+#include "Printer.H"
+#include "parser/Absyn.H"
+#include "ParserError.H"
+
+Prog *gen_ast(std::string input_str);
+
+extern PrintAbsyn *p;
+extern ShowAbsyn *s;
+
 #endif // __TEST_H__
