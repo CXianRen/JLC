@@ -377,6 +377,19 @@ namespace MLLVM
             const std::string &llvm_true_label,
             const std::string &llvm_false_label);
 
+        /***
+         * Generate a phi instruction
+         * like:
+         * %var = phi i32 [ %var1, %label1 ], [ %var2, %label2 ]
+         */
+        void gen_phi_inst(
+            const std::string &llvm_return_value,
+            const std::string &type,
+            const std::string &llvm_var1,
+            const std::string &llvm_label1,
+            const std::string &llvm_var2,
+            const std::string &llvm_label2);
+
         /**
          * Generate a return instruction
          * like:

@@ -266,7 +266,8 @@ namespace JLC::LLVM
             llvm_args);
 
         g_type_ = *func_obj->return_type;
-        g_llvm_value_ = llvm_return_value;
+        // g_llvm_value_ = llvm_return_value;
+        set_global_llvm_value(llvm_return_value);
     }
 
     /*** Definiton ***/
@@ -356,7 +357,8 @@ namespace JLC::LLVM
              {"i32", "1"}});
 
         // store the return value to the llvm_value
-        g_llvm_value_ = llvm_return_value;
+        // g_llvm_value_ = llvm_return_value;
+        set_global_llvm_value(llvm_return_value);
     }
 
     void LLVMGenerator::
@@ -420,7 +422,8 @@ namespace JLC::LLVM
              {"i32", std::to_string(dim)},
              {"i32", e_type_size}});
 
-        g_llvm_value_ = llvm_return_value;
+        // g_llvm_value_ = llvm_return_value;
+        set_global_llvm_value(llvm_return_value);
     }
 
     void LLVMGenerator::
@@ -482,7 +485,8 @@ namespace JLC::LLVM
              {"i32", std::to_string(dim)},
              {"i32", e_type_size}});
 
-        g_llvm_value_ = llvm_return_value;
+        // g_llvm_value_ = llvm_return_value;
+        set_global_llvm_value(llvm_return_value);
     }
 
     /************** variable access ***************/
@@ -545,7 +549,7 @@ namespace JLC::LLVM
                 "Undefined llvm value of var:" + var_name);
         }
 
-        g_llvm_value_ = var_llvm_value;
+        set_global_llvm_value(var_llvm_value);
         if (!left_value_)
         {
             auto loaded_value = llvm_context_.gen_name(var_name);
@@ -554,7 +558,7 @@ namespace JLC::LLVM
                 var_llvm_value,
                 loaded_value,
                 jlc_type2llvm_type(g_type_));
-            g_llvm_value_ = loaded_value;
+            set_global_llvm_value(loaded_value);
             return;
         }
     }
@@ -586,7 +590,7 @@ namespace JLC::LLVM
                 g_llvm_value_,
                 loaded_value,
                 MLLVM::LLVM_i32);
-            g_llvm_value_ = loaded_value;
+            set_global_llvm_value(loaded_value);
             g_type_ = JLC::TYPE::JLCType(JLC::TYPE::type_enum::INT);
             return;
         }
@@ -615,7 +619,7 @@ namespace JLC::LLVM
                 enum_v,
                 MLLVM::LLVM_i32);
 
-            g_llvm_value_ = enum_v;
+            set_global_llvm_value(enum_v);
 
             // do not set the type of the property
             g_type_ = obj_type;
@@ -665,7 +669,8 @@ namespace JLC::LLVM
 
             if (left_value_)
             {
-                g_llvm_value_ = llvm_offset;
+                // g_llvm_value_ = llvm_offset;
+                set_global_llvm_value(llvm_offset);
             }
             else
             {
@@ -676,7 +681,8 @@ namespace JLC::LLVM
                     loaded_value,
                     jlc_type2llvm_type(*member_type));
 
-                g_llvm_value_ = loaded_value;
+                // g_llvm_value_ = loaded_value;
+                set_global_llvm_value(loaded_value);
             }
             return;
         }
@@ -727,7 +733,8 @@ namespace JLC::LLVM
 
             if (left_value_)
             {
-                g_llvm_value_ = llvm_offset;
+                // g_llvm_value_ = llvm_offset;
+                set_global_llvm_value(llvm_offset);
                 return;
             }
             // gen load
@@ -737,7 +744,8 @@ namespace JLC::LLVM
                 loaded_value,
                 jlc_type2llvm_type(*member));
 
-            g_llvm_value_ = loaded_value;
+            // g_llvm_value_ = loaded_value;
+            set_global_llvm_value(loaded_value);
             return;
         }
         // error
@@ -816,7 +824,8 @@ namespace JLC::LLVM
         }
         if (left_value_)
         {
-            g_llvm_value_ = obj_addr;
+            // g_llvm_value_ = obj_addr;
+            set_global_llvm_value(obj_addr);
         }
         else
         {
@@ -826,7 +835,8 @@ namespace JLC::LLVM
                 obj_addr,
                 loaded_value,
                 jlc_type2llvm_type(base_type));
-            g_llvm_value_ = loaded_value;
+            // g_llvm_value_ = loaded_value;
+            set_global_llvm_value(loaded_value);
         }
 
         g_type_ = base_type;
@@ -862,7 +872,8 @@ namespace JLC::LLVM
             llvm_return_value,
             llvm_var_addr,
             jlc_type2llvm_type(g_type_));
-        g_llvm_value_ = llvm_return_value;
+        // g_llvm_value_ = llvm_return_value;
+        set_global_llvm_value(llvm_return_value);
     }
 
     // --
@@ -895,7 +906,8 @@ namespace JLC::LLVM
             llvm_var_addr,
             jlc_type2llvm_type(g_type_));
 
-        g_llvm_value_ = llvm_return_value;
+        // g_llvm_value_ = llvm_return_value;
+        set_global_llvm_value(llvm_return_value);
     }
 
     // -
@@ -912,7 +924,8 @@ namespace JLC::LLVM
             type.type == JLC::TYPE::type_enum::INT ? "0" : "0.0",
             g_llvm_value_,
             jlc_type2llvm_type(type));
-        g_llvm_value_ = llvm_return_value;
+        // g_llvm_value_ = llvm_return_value;
+        set_global_llvm_value(llvm_return_value);
     }
 
     // x / mod
@@ -967,7 +980,8 @@ namespace JLC::LLVM
                 "Unknown mulop: " + std::to_string(mul_op));
             break;
         }
-        g_llvm_value_ = llvm_ret;
+        // g_llvm_value_ = llvm_ret;
+        set_global_llvm_value(llvm_ret);
     }
 
     // + -
@@ -1015,7 +1029,8 @@ namespace JLC::LLVM
                 "Unknown addop: " + std::to_string(add_op));
             break;
         }
-        g_llvm_value_ = llvm_ret;
+        // g_llvm_value_ = llvm_ret;
+        set_global_llvm_value(llvm_ret);
     }
 
     // !
@@ -1032,7 +1047,8 @@ namespace JLC::LLVM
             g_llvm_value_,
             jlc_type2llvm_type(type));
 
-        g_llvm_value_ = llvm_return_value;
+        // g_llvm_value_ = llvm_return_value;
+        set_global_llvm_value(llvm_return_value);
     }
 
     // > < <= == >= !=
@@ -1110,10 +1126,62 @@ namespace JLC::LLVM
                 "Unknown relop: " + std::to_string(relop));
             break;
         }
-        g_llvm_value_ = llvm_ret;
+        // g_llvm_value_ = llvm_ret;
+        set_global_llvm_value(llvm_ret);
     }
 
-    // void visitEAnd(EAnd *p) override;   // &&
+    // &&
+    void LLVMGenerator::
+        visitEAnd(EAnd *e_and)
+    {
+        auto current_insert_point =
+            llvm_context_.get_current_insert_point();
+
+        auto current_insert_point_name =
+            current_insert_point->label;
+        if(current_insert_point_name == "")
+        {
+            current_insert_point_name = "entry";
+        }
+
+        auto and_true = llvm_context_.new_insert_point("and_true");
+        auto and_end = llvm_context_.new_insert_point("and_end");
+
+        if (e_and->expr_1)
+            e_and->expr_1->accept(this);
+        auto llvm_value_left = g_llvm_value_;
+
+        // if first expression is true,
+        // then we need to check the second expression
+        llvm_context_.gen_cond_br_inst(
+            llvm_value_left,
+            and_true->label,
+            and_end->label);
+
+        llvm_context_.set_insert_point(and_true);
+        if (e_and->expr_2)
+            e_and->expr_2->accept(this);
+        auto llvm_value_right = g_llvm_value_;
+        auto llvm_ip_of_value = g_llvm_insert_point_;
+
+        // then to the and-end  block
+        llvm_context_.gen_br_inst(and_end->label);
+        llvm_context_.set_insert_point(and_end);
+
+        auto phi_name = llvm_context_.gen_name("and");
+
+        llvm_context_.gen_phi_inst(
+            phi_name,
+            str(MLLVM::LLVM_i1),
+            llvm_value_left,
+            current_insert_point_name,
+            llvm_value_right,
+            llvm_ip_of_value);
+
+        set_global_llvm_value(phi_name);
+        llvm_context_.release_insert_point(and_true);
+        llvm_context_.release_insert_point(and_end);
+    }
     // void visitEOr(EOr *p) override;     // ||
 
     /************** Control flow ***************/

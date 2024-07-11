@@ -456,6 +456,22 @@ namespace MLLVM
             ", label %" + llvm_false_label);
     }
 
+    void LLVM_Context::
+        gen_phi_inst(
+            const std::string &llvm_return_value,
+            const std::string &type,
+            const std::string &llvm_var1,
+            const std::string &llvm_label1,
+            const std::string &llvm_var2,
+            const std::string &llvm_label2)
+    {
+        llvm_instructions->push_back(
+            std::string(prefix_size, ' ') +
+            llvm_return_value + " = phi " + type + " [" +
+            llvm_var1 + ", %" + llvm_label1 + "], [" +
+            llvm_var2 + ", %" + llvm_label2 + "]");
+    }
+
     void LLVM_Context::gen_return_inst(
         const std::string &llvm_return_value,
         LLVM_Type type)

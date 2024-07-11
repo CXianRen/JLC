@@ -94,9 +94,18 @@ namespace JLC::LLVM
 
     public:
         std::string g_llvm_value_;
+        std::string g_llvm_insert_point_;
+
         std::vector<
             std::map<std::string, std::string>>
             g_llvm_value_stack_;
+
+        void set_global_llvm_value(const std::string &llvm_value)
+        {
+            g_llvm_value_ = llvm_value;
+            g_llvm_insert_point_ =
+                llvm_context_.get_current_insert_point()->label;
+        }
 
         /**** override skeleton ****/
         void visitProgram(Program *p) override
@@ -109,31 +118,36 @@ namespace JLC::LLVM
         /****  immediate value ****/
         void visitELitNull(ELitNull *p) override
         {
-            g_llvm_value_ = "null";
+            // g_llvm_value_ = "null";
+            set_global_llvm_value("null");
             TypeVisitor::visitELitNull(p);
         }
 
         void visitELitInt(ELitInt *e_lit_int) override
         {
-            g_llvm_value_ = std::to_string(e_lit_int->integer_);
+            // g_llvm_value_ = std::to_string(e_lit_int->integer_);
+            set_global_llvm_value(std::to_string(e_lit_int->integer_));
             TypeVisitor::visitELitInt(e_lit_int);
         }
 
         void visitELitDoub(ELitDoub *e_lit_doub) override
         {
-            g_llvm_value_ = std::to_string(e_lit_doub->double_);
+            // g_llvm_value_ = std::to_string(e_lit_doub->double_);
+            set_global_llvm_value(std::to_string(e_lit_doub->double_));
             TypeVisitor::visitELitDoub(e_lit_doub);
         }
 
         void visitELitTrue(ELitTrue *e_lit_true) override
         {
-            g_llvm_value_ = "1";
+            // g_llvm_value_ = "1";
+            set_global_llvm_value("1");
             TypeVisitor::visitELitTrue(e_lit_true);
         }
 
         void visitELitFalse(ELitFalse *e_lit_false) override
         {
-            g_llvm_value_ = "0";
+            // g_llvm_value_ = "0";
+            set_global_llvm_value("0");
             TypeVisitor::visitELitFalse(e_lit_false);
         }
 
@@ -157,7 +171,8 @@ namespace JLC::LLVM
                     "c\"" + const_string + "\\00\"");
                 const_string_llvm_value_map_[const_string] = "@" + str_name;
             }
-            g_llvm_value_ = const_string_llvm_value_map_[const_string];
+            // g_llvm_value_ = const_string_llvm_value_map_[const_string];
+            set_global_llvm_value(const_string_llvm_value_map_[const_string]);
         }
 
         /**** function ****/
@@ -189,12 +204,11 @@ namespace JLC::LLVM
         void visitENeg(ENeg *p) override;   // -
         void visitEMul(EMul *p) override;   // x / mod
         void visitEAdd(EAdd *p) override;   // + -
-  
 
         /* logic operation */
-        void visitENot(ENot *p) override;   // !
-        void visitERel(ERel *p) override;   // > < <= == >= !=
-        // void visitEAnd(EAnd *p) override;   // &&
+        void visitENot(ENot *p) override; // !
+        void visitERel(ERel *p) override; // > < <= == >= !=
+        void visitEAnd(EAnd *p) override; // &&
         // void visitEOr(EOr *p) override;     // ||
 
         /* control flow */
