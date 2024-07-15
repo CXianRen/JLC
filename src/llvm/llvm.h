@@ -98,6 +98,7 @@ namespace MLLVM
     public:
         std::shared_ptr<LLVM_Insertion_Point> llvm_instructions;
         std::shared_ptr<LLVM_Insertion_Point> global_def;
+        std::shared_ptr<LLVM_Insertion_Point> res;
 
         int name_counter;
 
@@ -120,27 +121,17 @@ namespace MLLVM
 
         void set_insert_point(std::shared_ptr<LLVM_Insertion_Point> insert_point)
         {
+            // DEBUG_PRINT("release insert point:" << llvm_instructions->label << " set: " << insert_point->label);
+            release_insert_point(llvm_instructions);
             llvm_instructions = insert_point;
+            gen_label(insert_point->label);
         }
 
         void release_insert_point(std::shared_ptr<LLVM_Insertion_Point> insert_point)
         {
-            // write the content of current insert point to parent insert point
-            if (insert_point->parent_insertion_point != nullptr)
+            for (auto it = insert_point->begin(); it != insert_point->end(); ++it)
             {
-                // gen label
-                insert_point->parent_insertion_point->push_back(insert_point->label + ":");
-
-                for (auto it = insert_point->begin(); it != insert_point->end(); ++it)
-                {
-                    insert_point->parent_insertion_point->push_back(*it);
-                }
-                llvm_instructions = insert_point->parent_insertion_point;
-                llvm_instructions->label = insert_point->label;
-            }
-            else
-            {
-                DEBUG_PRINT("Error: insert point is already at the top level");
+                res->push_back(*it);
             }
         }
 
@@ -259,8 +250,8 @@ namespace MLLVM
          * store type src, ptr dst
          */
         void gen_store_inst(
-            std::string &llvm_src,
-            std::string &llvm_dst,
+            const std::string &llvm_src,
+            const std::string &llvm_dst,
             LLVM_Type type);
 
         /**

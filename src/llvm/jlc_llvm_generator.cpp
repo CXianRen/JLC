@@ -1179,8 +1179,6 @@ namespace JLC::LLVM
             llvm_ip_of_value);
 
         set_global_llvm_value(phi_name);
-        llvm_context_.release_insert_point(and_true);
-        llvm_context_.release_insert_point(and_end);
     }
 
     // ||
@@ -1211,7 +1209,7 @@ namespace JLC::LLVM
             or_end->label,
             or_fales->label);
         llvm_context_.set_insert_point(or_fales);
-        
+
         if (e_or->expr_2)
             e_or->expr_2->accept(this);
         auto llvm_value_right = g_llvm_value_;
@@ -1232,8 +1230,6 @@ namespace JLC::LLVM
             llvm_ip_of_value);
 
         set_global_llvm_value(phi_name);
-        llvm_context_.release_insert_point(or_fales);
-        llvm_context_.release_insert_point(or_end);
     }
 
     /************** Control flow ***************/
@@ -1250,7 +1246,7 @@ namespace JLC::LLVM
             cond->expr_->accept(this);
         auto llvm_cond_value = g_llvm_value_;
 
-        DEBUG_PRINT("cond value:" << llvm_cond_value);
+        // DEBUG_PRINT("cond value:" << llvm_cond_value);
         // gen cond branch
         llvm_context_.gen_cond_br_inst(
             llvm_cond_value,
@@ -1270,8 +1266,7 @@ namespace JLC::LLVM
             llvm_context_.gen_br_inst(end_blk->label);
         }
         llvm_context_.gen_comment("}");
-        llvm_context_.release_insert_point(cond_blk);
-        llvm_context_.release_insert_point(end_blk);
+        llvm_context_.set_insert_point(end_blk);
     }
 
     void LLVMGenerator::
@@ -1324,11 +1319,9 @@ namespace JLC::LLVM
         }
         llvm_context_.gen_comment("}");
 
-        llvm_context_.release_insert_point(cond_blk);
-        llvm_context_.release_insert_point(else_blk);
         if (need_end_blk)
         {
-            llvm_context_.release_insert_point(end_blk);
+            llvm_context_.set_insert_point(end_blk);
         }
     }
 
@@ -1362,10 +1355,171 @@ namespace JLC::LLVM
         llvm_context_.gen_br_inst(cond_blk->label);
 
         llvm_context_.set_insert_point(end_blk);
-        // release insert point
-        llvm_context_.release_insert_point(cond_blk);
-        llvm_context_.release_insert_point(body_blk);
-        llvm_context_.release_insert_point(end_blk);
+    }
+
+    void LLVMGenerator::
+        visitForLoop(ForLoop *for_loop)
+    {
+        /**
+         * for (int x : arr) {
+         *      for body
+         * }
+         * is equal to
+         * {
+         *  i = 0;
+         *  s = arr.lenght
+         *  while (i < s) {
+         *     i = i +1
+         *     x = arr[i]
+         *    {
+         *      for body
+         *    }
+         *  }
+         * }
+         *
+         */
+
+        auto code = "for (" + std::string(p->print(for_loop->type_)) +
+                    " " + for_loop->ident_ + " : ";
+        code += std::string(p->print(for_loop->expr_));
+        code += " {";
+        llvm_context_.gen_comment(code);
+
+        // new block scope (virtual block)
+        current_func_->push_blk();
+
+        if (for_loop->type_)
+            for_loop->type_->accept(this);
+        auto elem_type = g_type_;
+
+        auto var_name = for_loop->ident_;
+
+        if (for_loop->expr_)
+            for_loop->expr_->accept(this);
+        auto array_type = g_type_;
+        auto llvm_array_value = g_llvm_value_;
+
+        // add the variable to the current scope
+        current_func_->add_var(
+            JLC::VAR::JLCVar(var_name, std::make_shared<JLC::TYPE::JLCType>(elem_type)));
+
+        auto var_llvm_value = get_var_llvm_value(var_name);
+        add_var_llvm_value(var_name, var_llvm_value);
+
+        // get the base type of the array
+        auto base_type = array_type.base_type;
+
+        /*
+         * {
+         *  i = 0;
+         *  s = arr.lenght
+         *  while (i < s) {
+         *     i = i +1
+         *     x = arr[i]
+         *    {
+         *      for body
+         *    }
+         *  }
+         * }
+         */
+        // allocate new variables, idex: i and length: s
+        auto idx = llvm_context_.gen_name("i_");
+        auto a_len = llvm_context_.gen_name("s_");
+        // allocate i
+        llvm_context_.gen_alloc_inst(
+            idx,
+            MLLVM::LLVM_i32);
+        // initialize i = 0
+        llvm_context_.gen_store_inst(
+            "0",
+            idx,
+            MLLVM::LLVM_i32);
+        // get the length of the array
+        llvm_context_.gen_load_inst(
+            llvm_array_value,
+            a_len,
+            MLLVM::LLVM_i32);
+
+        // skip the length field
+        auto arr_addr = llvm_context_.gen_name("a_arr_data");
+        llvm_context_.gen_offset_field_in_type(
+            arr_addr,
+            "[ 0 x " + str(MLLVM::LLVM_i32) + "]",
+            llvm_array_value,
+            1);
+
+        // generate a branch instruction to the condition block
+        auto cond_blk = llvm_context_.new_insert_point("fcond");
+        auto body_blk = llvm_context_.new_insert_point("fbody");
+        auto end_blk = llvm_context_.new_insert_point("fend");
+
+        // jump to the condition block
+        llvm_context_.gen_br_inst(cond_blk->label);
+        llvm_context_.set_insert_point(cond_blk);
+
+        // load the value of i
+        auto i_value = llvm_context_.gen_name("v_i_");
+        llvm_context_.gen_load_inst(
+            idx,
+            i_value,
+            MLLVM::LLVM_i32);
+
+        // compare i < s
+        auto cond_value = llvm_context_.gen_name("cond");
+        llvm_context_.gen_lth_inst(
+            cond_value,
+            i_value,
+            a_len,
+            MLLVM::LLVM_i32);
+
+        // jump to the body block or end block
+        llvm_context_.gen_cond_br_inst(
+            cond_value,
+            body_blk->label,
+            end_blk->label);
+
+        // body block
+        llvm_context_.set_insert_point(body_blk);
+
+        // calculate the address of the element
+        auto elem_addr = llvm_context_.gen_name("a_elem_");
+        llvm_context_.gen_offset_field_in_type(
+            elem_addr,
+            "[ 0 x " + str(jlc_type2llvm_type(*base_type)) + "]",
+            arr_addr,
+            i_value);
+
+        // update var x's llvm value, so that we can access it in the body
+        add_var_llvm_value(var_name, elem_addr);
+
+        // update the index i
+        auto i_plus_1 = llvm_context_.gen_name("i_n_");
+        llvm_context_.gen_add_inst(
+            i_plus_1,
+            i_value,
+            "1",
+            MLLVM::LLVM_i32);
+        llvm_context_.gen_store_inst(
+            i_plus_1,
+            idx,
+            MLLVM::LLVM_i32);
+
+        // new block scope
+        current_func_->push_blk();
+        if (for_loop->stmt_)
+            for_loop->stmt_->accept(this);
+        // pop block scope
+        current_func_->pop_blk();
+
+        // jump to the condition block
+        llvm_context_.gen_br_inst(cond_blk->label);
+
+        // pop block scope
+        current_func_->pop_blk();
+
+        // end block
+        llvm_context_.set_insert_point(end_blk);
+        llvm_context_.gen_comment("}");
     }
 
     void LLVMGenerator::

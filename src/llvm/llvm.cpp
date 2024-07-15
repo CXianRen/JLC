@@ -36,8 +36,9 @@ namespace MLLVM
     LLVM_Context::LLVM_Context()
     {
         name_counter = 0;
-        llvm_instructions = std::make_shared<LLVM_Insertion_Point>();
         global_def = std::make_shared<LLVM_Insertion_Point>();
+        res = std::make_shared<LLVM_Insertion_Point>();
+        llvm_instructions = std::make_shared<LLVM_Insertion_Point>();
     }
 
     LLVM_Context::~LLVM_Context()
@@ -170,8 +171,8 @@ namespace MLLVM
 
     void LLVM_Context::
         gen_store_inst(
-            std::string &llvm_src,
-            std::string &llvm_dst,
+            const std::string &llvm_src,
+            const std::string &llvm_dst,
             LLVM_Type type)
     {
         llvm_instructions->push_back(
@@ -492,6 +493,8 @@ namespace MLLVM
 
     std::string LLVM_Context::str()
     {
+        release_insert_point(llvm_instructions);
+
         std::string result;
         for (auto &def : *global_def)
         {
@@ -499,7 +502,7 @@ namespace MLLVM
         }
         result += "\n";
 
-        for (auto &inst : *llvm_instructions)
+        for (auto &inst : *res)
         {
             result += inst + "\n";
         }
