@@ -129,103 +129,24 @@ About to run tests with these settings:
 [121/140] testsuite/bad/bad042      ... OK
 [122/140] testsuite/bad/array03     ... OK
 [123/140] testsuite/bad/bad032      ... OK
-[124/140] testsuite/extensions/arrays1/array_default ... FAILED
-[125/140] testsuite/extensions/arrays1/array009 ... FAILED
-[126/140] testsuite/extensions/arrays1/array008 ... FAILED
-[127/140] testsuite/extensions/arrays1/array002 ... FAILED
-[128/140] testsuite/extensions/arrays1/array003 ... FAILED
-[129/140] testsuite/extensions/arrays1/array001 ... FAILED
-[130/140] testsuite/extensions/arrays1/array004 ... FAILED
-[131/140] testsuite/extensions/arrays1/array005 ... FAILED
+[124/140] testsuite/extensions/arrays1/array_default ... OK
+[125/140] testsuite/extensions/arrays1/array009 ... OK
+[126/140] testsuite/extensions/arrays1/array008 ... OK
+[127/140] testsuite/extensions/arrays1/array002 ... OK
+[128/140] testsuite/extensions/arrays1/array003 ... OK
+[129/140] testsuite/extensions/arrays1/array001 ... OK
+[130/140] testsuite/extensions/arrays1/array004 ... OK
+[131/140] testsuite/extensions/arrays1/array005 ... OK
 [132/140] testsuite/extensions/arrays1/array006 ... OK
 [133/140] testsuite/extensions/arrays1/bad/bad001 ... OK
 [134/140] testsuite/extensions/arrays1/bad/bad002 ... OK
 [135/140] testsuite/extensions/arrays1/bad/parentheses ... OK
-[136/140] testsuite/extensions/arrays2/array001 ... FAILED
-[137/140] testsuite/extensions/arrays2/array002 ... FAILED
+[136/140] testsuite/extensions/arrays2/array001 ... OK
+[137/140] testsuite/extensions/arrays2/array002 ... OK
 [138/140] testsuite/extensions/arrays2/bad/array_nested_default ... OK
 [139/140] testsuite/extensions/arrays2/bad/bad002 ... OK
 [140/140] testsuite/extensions/arrays2/bad/bad001 ... OK
 
 
-Some tests failed:
----------- !!! testsuite/extensions/arrays1/array_default.jl failed !!! ----------
-
-- stdout expected:
-    0
-- stdout actual:
-    76236880
-
----------- !!! testsuite/extensions/arrays1/array009.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-
-- compiler return code info:
-    compiler return code: -11, 0 expected
-
----------- !!! testsuite/extensions/arrays1/array002.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Array length property is read-only.
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
----------- !!! testsuite/extensions/arrays1/array005.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    ERROR, Type check error:
-     Property length is not defined for type int
-- compiler return code info:
-    compiler return code: 1, 0 expected
-
-Some tests caused build failures:
----------- !!! testsuite/extensions/arrays1/array008.jl failed !!! ----------
-
-    llvm-as failed with:
-    llvm-as: <stdin>:21:11: error: '%tmp5' defined with type 'ptr' but expected 'i32'
-      ret i32 %tmp5
-              ^
-
----------- !!! testsuite/extensions/arrays1/array003.jl failed !!! ----------
-
-    llvm-as failed with:
-    llvm-as: <stdin>:48:70: error: '%j9' defined with type 'ptr' but expected 'i32'
-      %a_elem20 = getelementptr [ 0 x double], ptr %offset19, i32 0, i32 %j9
-                                                                         ^
-
----------- !!! testsuite/extensions/arrays1/array001.jl failed !!! ----------
-
-    llvm-as failed with:
-    llvm-as: <stdin>:36:67: error: '%j5' defined with type 'ptr' but expected 'i32'
-      %a_elem15 = getelementptr [ 0 x i32], ptr %offset14, i32 0, i32 %j5
-                                                                      ^
-
----------- !!! testsuite/extensions/arrays1/array004.jl failed !!! ----------
-
-    llvm-as failed with:
-    llvm-as: <stdin>:44:67: error: '%j9' defined with type 'ptr' but expected 'i32'
-      %a_elem19 = getelementptr [ 0 x i32], ptr %offset18, i32 0, i32 %j9
-                                                                      ^
-
----------- !!! testsuite/extensions/arrays2/array001.jl failed !!! ----------
-
-    llvm-as failed with:
-    llvm-as: <stdin>:88:67: error: '%i15' defined with type 'ptr' but expected 'i32'
-      %a_elem50 = getelementptr [ 0 x ptr], ptr %offset49, i32 0, i32 %i15
-                                                                      ^
-
----------- !!! testsuite/extensions/arrays2/array002.jl failed !!! ----------
-
-    llvm-as failed with:
-    llvm-as: <stdin>:61:67: error: '%i10' defined with type 'ptr' but expected 'i32'
-      %a_elem31 = getelementptr [ 0 x ptr], ptr %offset30, i32 0, i32 %i10
-                                                                      ^
-
+All tests succeeded.
 /chalmers/users/chenhon/lab-group-22

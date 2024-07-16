@@ -75,6 +75,14 @@ namespace JLC::LLVM
     void LLVMGenerator::
         add_internal_func()
     {
+        llvm_context_.gen_comment("--- internal global variables ---");
+        // 0 size array, only has length property
+        llvm_context_.gen_global_const_var(
+            "zero_size_array",
+            "[1 x i32]",
+            "[i32 0]");
+
+        llvm_context_.gen_comment("--- internal functions ---");
         // add printInt declaration
         llvm_context_.gen_declare_func(
             "printInt",
@@ -125,16 +133,22 @@ namespace JLC::LLVM
     void LLVMGenerator::
         add_udt()
     {
+        llvm_context_.gen_comment("--- defined enum ---");
         for (auto &pair : context_->enums)
         {
+            llvm_context_.gen_comment(pair.first);
             gen_enum_type(pair.second);
         }
+        llvm_context_.gen_comment("--- defined struct ---");
         for (auto &pair : context_->structs)
         {
+            llvm_context_.gen_comment(pair.first);
             gen_struct_type(pair.second);
         }
+        llvm_context_.gen_comment("--- defined class ---");
         for (auto &pair : context_->classes)
         {
+            llvm_context_.gen_comment(pair.first);
             gen_class_type(pair.second);
         }
     }
@@ -354,6 +368,13 @@ namespace JLC::LLVM
                 llvm_name,
                 MLLVM::LLVM_i1);
             break;
+        case JLC::TYPE::ARRAY:
+            // init with 0
+            llvm_context_.gen_store_inst(
+                "@zero_size_array",
+                llvm_name,
+                MLLVM::LLVM_ptr);
+            break;
 
         default:
             break;
@@ -392,7 +413,7 @@ namespace JLC::LLVM
         current_func_->add_var(
             JLC::VAR::JLCVar(var_name, var_type));
 
-         // add the variable to the llvm_value stack
+        // add the variable to the llvm_value stack
         add_var_llvm_value(var_name, llvm_name);
 
         g_type_ = decl_type;
@@ -486,6 +507,15 @@ namespace JLC::LLVM
 
         // g_llvm_value_ = llvm_return_value;
         set_global_llvm_value(llvm_return_value);
+
+        // generate N dim array type
+        auto base_type = std::make_shared<JLC::TYPE::JLCType>(type);
+        for (int i = 0; i < dim; i++)
+        {
+            base_type = std::make_shared<JLC::TYPE::JLCType>(
+                JLC::TYPE::type_enum::ARRAY, base_type);
+        }
+        g_type_ = *base_type;
     }
 
     void LLVMGenerator::
@@ -549,6 +579,15 @@ namespace JLC::LLVM
 
         // g_llvm_value_ = llvm_return_value;
         set_global_llvm_value(llvm_return_value);
+
+        // generate N dim array type
+        auto base_type = std::make_shared<JLC::TYPE::JLCType>(type);
+        for (int i = 0; i < dim; i++)
+        {
+            base_type = std::make_shared<JLC::TYPE::JLCType>(
+                JLC::TYPE::type_enum::ARRAY, base_type);
+        }
+        g_type_ = *base_type;
     }
 
     /************** variable access ***************/
@@ -818,21 +857,27 @@ namespace JLC::LLVM
     void LLVMGenerator::
         visitEAcc(EAcc *e_acc)
     {
+        auto t_lv = left_value_;
+        left_value_ = false;
         if (e_acc->expr_)
             e_acc->expr_->accept(this);
         auto obj_type = g_type_;
 
         auto obj_addr = g_llvm_value_;
-        if (left_value_)
-        {
-            auto loaded_value = llvm_context_.gen_name("a_arr");
-            llvm_context_.gen_load_inst(
-                obj_addr,
-                loaded_value,
-                MLLVM::LLVM_ptr);
-            obj_addr = loaded_value;
-        }
+        left_value_ = t_lv;
 
+        // if (left_value_)
+        // {
+        //     auto loaded_value = llvm_context_.gen_name("a_arr");
+        //     llvm_context_.gen_load_inst(
+        //         obj_addr,
+        //         loaded_value,
+        //         MLLVM::LLVM_ptr);
+        //     obj_addr = loaded_value;
+        // }
+
+        t_lv = left_value_;
+        left_value_ = false;
         auto list_dim_expr = e_acc->listdimexpr_;
         int accessed_dim = list_dim_expr->size();
 
@@ -884,6 +929,8 @@ namespace JLC::LLVM
                 obj_addr = loaded_value;
             }
         }
+        left_value_ = t_lv;
+
         if (left_value_)
         {
             // g_llvm_value_ = obj_addr;
@@ -1589,15 +1636,12 @@ namespace JLC::LLVM
     void LLVMGenerator::
         visitVRet(VRet *v_ret)
     {
-        // JLC_FUNC_DEF_Checker::visitVRet(v_ret);
-
         llvm_context_.gen_return_inst("", MLLVM::LLVM_void);
     }
 
     void LLVMGenerator::
         visitRet(Ret *ret)
     {
-        // JLC_FUNC_DEF_Checker::visitRet(ret);
         if (ret->expr_)
             ret->expr_->accept(this);
         auto type = g_type_;
