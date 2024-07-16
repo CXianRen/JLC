@@ -188,25 +188,58 @@ namespace JLC::LLVM
         current_func_ =
             context_->get_func(func_name_with_scope);
 
+        std::vector<std::string> llvm_args;
+        for (auto &arg : current_func_->args)
+        {
+            llvm_args.push_back(
+                {str(jlc_type2llvm_type(*arg.type)) + " %" +
+                 arg.name});
+        }
+
         // function declaration start
         llvm_context_.reset_name_counter();
         llvm_context_.gen_define_func_start(
             func_name,
             str(jlc_type2llvm_type(*current_func_->return_type)),
-            {});
+            llvm_args);
 
         // entry label
-        llvm_context_.gen_label("entry");
+        // llvm_context_.gen_label("entry");
+        // new insert point
+        auto entry_blk = llvm_context_.new_insert_point("entry");
+        llvm_context_.set_insert_point(entry_blk);
 
         // function body scope start
         current_func_->push_blk();
         push_llvm_value_stack();
+
+        // add parameters llvm value to the llvm value stack
+        for (auto &arg : current_func_->args)
+        {
+            // allocate memory for the parameter
+            auto llvm_name = llvm_context_.gen_name(arg.name);
+            llvm_context_.gen_alloc_inst(
+                llvm_name,
+                jlc_type2llvm_type(*arg.type));
+            // store the parameter
+            llvm_context_.gen_store_inst(
+                "%" + arg.name,
+                llvm_name,
+                jlc_type2llvm_type(*arg.type));
+            add_var_llvm_value(arg.name, llvm_name);
+        }
 
         JLC::TC::TypeVisitor::visitFuncDef(func_def);
 
         // function body scope end
         current_func_->pop_blk();
         pop_llvm_value_stack();
+
+        // check if the function has return statement
+        if (!llvm_context_.end_with_term_inst(llvm_context_.llvm_instructions))
+        {
+            llvm_context_.gen_return_inst("", MLLVM::LLVM_void);
+        }
 
         // function declaration end
         llvm_context_.gen_define_func_end();
@@ -297,6 +330,35 @@ namespace JLC::LLVM
             llvm_name,
             jlc_type2llvm_type(*var_type));
 
+        // initialize the variable with default value
+        switch (var_type->type)
+        {
+        case JLC::TYPE::type_enum::INT:
+            // init with 0
+            llvm_context_.gen_store_inst(
+                "0",
+                llvm_name,
+                MLLVM::LLVM_i32);
+            break;
+        case JLC::TYPE::type_enum::DOUB:
+            // init with 0.0
+            llvm_context_.gen_store_inst(
+                "0.0",
+                llvm_name,
+                MLLVM::LLVM_double);
+            break;
+        case JLC::TYPE::type_enum::BOOL:
+            // init with 0
+            llvm_context_.gen_store_inst(
+                "0",
+                llvm_name,
+                MLLVM::LLVM_i1);
+            break;
+
+        default:
+            break;
+        }
+
         // add the variable to the llvm_value stack
         add_var_llvm_value(var_name, llvm_name);
     }
@@ -317,9 +379,6 @@ namespace JLC::LLVM
             llvm_name,
             jlc_type2llvm_type(*var_type));
 
-        // add the variable to the llvm_value stack
-        add_var_llvm_value(var_name, llvm_name);
-
         if (init->expr_)
             init->expr_->accept(this);
         auto llvm_value = g_llvm_value_;
@@ -332,6 +391,9 @@ namespace JLC::LLVM
 
         current_func_->add_var(
             JLC::VAR::JLCVar(var_name, var_type));
+
+         // add the variable to the llvm_value stack
+        add_var_llvm_value(var_name, llvm_name);
 
         g_type_ = decl_type;
     }
@@ -1126,7 +1188,7 @@ namespace JLC::LLVM
                 "Unknown relop: " + std::to_string(relop));
             break;
         }
-        // g_llvm_value_ = llvm_ret;
+        g_type_ = JLC::TYPE::JLCType(JLC::TYPE::type_enum::BOOL);
         set_global_llvm_value(llvm_ret);
     }
 
@@ -1178,6 +1240,7 @@ namespace JLC::LLVM
             llvm_value_right,
             llvm_ip_of_value);
 
+        g_type_ = JLC::TYPE::JLCType(JLC::TYPE::type_enum::BOOL);
         set_global_llvm_value(phi_name);
     }
 
@@ -1229,6 +1292,7 @@ namespace JLC::LLVM
             llvm_value_right,
             llvm_ip_of_value);
 
+        g_type_ = JLC::TYPE::JLCType(JLC::TYPE::type_enum::BOOL);
         set_global_llvm_value(phi_name);
     }
 
@@ -1525,15 +1589,17 @@ namespace JLC::LLVM
     void LLVMGenerator::
         visitVRet(VRet *v_ret)
     {
-        JLC_FUNC_DEF_Checker::visitVRet(v_ret);
+        // JLC_FUNC_DEF_Checker::visitVRet(v_ret);
+
         llvm_context_.gen_return_inst("", MLLVM::LLVM_void);
     }
 
     void LLVMGenerator::
         visitRet(Ret *ret)
     {
-        JLC_FUNC_DEF_Checker::visitRet(ret);
-
+        // JLC_FUNC_DEF_Checker::visitRet(ret);
+        if (ret->expr_)
+            ret->expr_->accept(this);
         auto type = g_type_;
 
         llvm_context_.gen_return_inst(

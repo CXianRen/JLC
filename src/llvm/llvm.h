@@ -86,6 +86,21 @@ namespace MLLVM
         {
             return instructions.size();
         }
+
+    };
+
+    enum LLVM_INST_TYPE
+    {
+        // comment
+        LLVM_COMMENT,
+        // label
+        LLVM_LABEL,
+        // Return
+        LLVM_RET,
+        // Branch
+        LLVM_BR,
+        // UNDEFINED
+        UNDEFINED
     };
 
     class LLVM_Context
@@ -135,13 +150,58 @@ namespace MLLVM
             }
         }
 
+        LLVM_INST_TYPE check_type_of_inst(std::string inst)
+        {
+            // remove the empty space at the start of the string
+            while (inst[0] == ' ')
+            {
+                inst = inst.substr(1);
+            }
+            if (inst[0] == ';')
+            {
+                return LLVM_COMMENT;
+            }
+            if (inst[inst.size() - 1] == ':')
+            {
+                return LLVM_LABEL;
+            }
+            if (inst.find("ret ") == 0)
+            {
+                return LLVM_RET;
+            }
+
+            if (inst.find("br ") == 0)
+            {
+                return LLVM_BR;
+            }
+        }
+
         bool end_with_term_inst(std::shared_ptr<LLVM_Insertion_Point> insert_point)
         {
             if (insert_point->size() == 0)
             {
                 return false;
             }
-            std::string last_inst = insert_point->back();
+            
+            std::string last_inst = "";
+            auto it = insert_point->end();
+            // find the last non-comment instruction
+            while (it != insert_point->begin())
+            {
+                it--;
+                last_inst = *it;
+                if (check_type_of_inst(last_inst) != LLVM_COMMENT)
+                {
+                    break;
+                }
+            }
+
+            // remove the empty space at the start of the string
+            while (last_inst[0] == ' ')
+            {
+                last_inst = last_inst.substr(1);
+            }
+
             if (last_inst.find("ret ") == 0 ||
                 last_inst.find("br ") == 0)
             {
