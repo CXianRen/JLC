@@ -797,10 +797,15 @@ namespace JLC::LLVM
         visitEArrow(EArrow *e_arrow)
     {
 
+        auto t_lv = left_value_;
+        left_value_ = false;
         if (e_arrow->expr_)
             e_arrow->expr_->accept(this);
-
+        left_value_ = t_lv;
+        
         auto obj_type = g_type_;
+        auto addr_llvm_value = g_llvm_value_;
+
         auto prop_name = e_arrow->ident_;
 
         if (obj_type.type == JLC::TYPE::type_enum::STRUCT)
@@ -813,17 +818,17 @@ namespace JLC::LLVM
 
             int member_idx = struct_obj->get_member_index(prop_name);
 
-            auto addr_llvm_value = g_llvm_value_;
-            if (left_value_)
-            {
-                // gen load instruction
-                auto loaded_value = llvm_context_.gen_name("a_" + obj_type.obj_name);
-                llvm_context_.gen_load_inst(
-                    addr_llvm_value,
-                    loaded_value,
-                    MLLVM::LLVM_ptr);
-                addr_llvm_value = loaded_value;
-            }
+            // if (left_value_)
+            // {
+            //     // gen load instruction
+            //     auto loaded_value = llvm_context_.gen_name("a_" + obj_type.obj_name);
+            //     llvm_context_.gen_load_inst(
+            //         addr_llvm_value,
+            //         loaded_value,
+            //         MLLVM::LLVM_ptr);
+            //     addr_llvm_value = loaded_value;
+            // }
+
             // gen offset
             auto llvm_offset = llvm_context_.gen_name("a_" + obj_type.obj_name + "_" + prop_name);
             llvm_context_.gen_offset_field_in_type(

@@ -86,7 +86,6 @@ namespace MLLVM
         {
             return instructions.size();
         }
-
     };
 
     enum LLVM_INST_TYPE
@@ -136,7 +135,22 @@ namespace MLLVM
 
         void set_insert_point(std::shared_ptr<LLVM_Insertion_Point> insert_point)
         {
-            // DEBUG_PRINT("release insert point:" << llvm_instructions->label << " set: " << insert_point->label);
+            // check ip only contains comments and labels
+            bool is_empty = true;
+            for (auto it = llvm_instructions->begin(); it != llvm_instructions->end(); ++it)
+            {
+                auto i_type = check_type_of_inst(*it);
+                if (i_type != LLVM_COMMENT && i_type != LLVM_LABEL)
+                {
+                    is_empty = false;
+                    break;
+                }
+            }
+            if(is_empty){
+                // br from current insert point to the new insert point
+                gen_br_inst(insert_point->label);
+            }
+
             release_insert_point(llvm_instructions);
             llvm_instructions = insert_point;
             gen_label(insert_point->label);
@@ -182,7 +196,7 @@ namespace MLLVM
             {
                 return false;
             }
-            
+
             std::string last_inst = "";
             auto it = insert_point->end();
             // find the last non-comment instruction
@@ -196,14 +210,8 @@ namespace MLLVM
                 }
             }
 
-            // remove the empty space at the start of the string
-            while (last_inst[0] == ' ')
-            {
-                last_inst = last_inst.substr(1);
-            }
-
-            if (last_inst.find("ret ") == 0 ||
-                last_inst.find("br ") == 0)
+            auto i_type = check_type_of_inst(last_inst);
+            if (i_type == LLVM_RET || i_type == LLVM_BR)
             {
                 return true;
             }
