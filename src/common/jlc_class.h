@@ -22,6 +22,17 @@ namespace JLC::CLASS
         std::shared_ptr<JLCClass> parent_class;
 
         bool has_member(const std::string &name) override;
+
+        std::shared_ptr<TYPE::JLCType>
+        get_member_type(const std::string &name);
+
+        int get_member_index(const std::string &name);
+
+        std::vector<std::string> functions;
+
+        void add_function(const std::string &name);
+
+        int get_function_index(const std::string &name);
     };
 
 } // namespace JLC::CLASS

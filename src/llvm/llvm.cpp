@@ -150,6 +150,13 @@ namespace MLLVM
         llvm_instructions->push_back(result);
     }
 
+    void LLVM_Context::
+        gen_custom_inst(const std::string &inst)
+    {
+        auto res = std::string(prefix_size, ' ') + inst;
+        llvm_instructions->push_back(res);
+    }
+
     /******************* memory operations *******************/
     void LLVM_Context::
         gen_alloc_inst(
@@ -223,6 +230,33 @@ namespace MLLVM
         llvm_instructions->push_back(result);
     }
 
+    void LLVM_Context::
+        gen_call_fptr_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_func_ptr,
+            const std::string &llvm_return_type,
+            const std::vector<std::pair<std::string, std::string>> &llvm_args)
+    {
+        std::string result = std::string(prefix_size, ' ');
+
+        if (llvm_return_value != "")
+        {
+            result += llvm_return_value + " = ";
+        }
+
+        result += "call " + llvm_return_type + " " + llvm_func_ptr + "(";
+        for (size_t i = 0; i < llvm_args.size(); i++)
+        {
+            result += llvm_args[i].first + " " + llvm_args[i].second;
+            if (i != llvm_args.size() - 1)
+            {
+                result += ", ";
+            }
+        }
+        result += ")";
+
+        llvm_instructions->push_back(result);
+    }
     /******************* math operations *******************/
     void LLVM_Context::
         gen_add_inst(

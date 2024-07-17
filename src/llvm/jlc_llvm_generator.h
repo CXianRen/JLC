@@ -180,7 +180,7 @@ namespace JLC::LLVM
         void visitBStmt(BStmt *p);
 
         void visitEApp(EApp *p) override;
-        // void visitEFunc(EFunc *p) override;
+        void visitEFunc(EFunc *p) override;
 
         /*** variable declaration ***/
         void visitNoInit(NoInit *p) override;

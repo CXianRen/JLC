@@ -134,7 +134,7 @@ namespace JLC::CONTEXT
                 return func_name;
             }
 
-            return scope + "::" + func_name;
+            return scope + "_" + func_name;
         }
 
         void add_func(const std::string &name,
@@ -174,6 +174,24 @@ namespace JLC::CONTEXT
                 return std::vector<std::string>();
             }
             return scope_funcs_map[scope];
+        }
+
+        std::vector<std::string>
+        gen_funcs_list_of_class(std::string class_name);
+
+        int get_func_idx_of_class(
+            std::string class_name, std::string func_name)
+        {
+            auto funcs = gen_funcs_list_of_class(class_name);
+            for (int i = 0; i < funcs.size(); i++)
+            {
+                auto f = funcs[i].substr(funcs[i].find_first_of('_') + 1);
+                if (f == func_name)
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
 
         std::string str();

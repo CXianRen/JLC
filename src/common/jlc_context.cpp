@@ -1,7 +1,53 @@
 #include "common/jlc_context.h"
-
+#include <algorithm>
 namespace JLC::CONTEXT
 {
+
+    std::vector<std::string> JLCContext::
+        gen_funcs_list_of_class(std::string class_name)
+    {
+        std::vector<std::string> res;
+
+        std::shared_ptr<JLC::CLASS::JLCClass>
+            c = classes[class_name];
+
+        std::vector<std::shared_ptr<JLC::CLASS::JLCClass>> class_list;
+        std::shared_ptr<JLC::CLASS::JLCClass> p = c;
+        while (p)
+        {
+            class_list.push_back(p);
+            p = p->parent_class;
+        }
+        // iterate the class list from root to inherit class
+        for (int i = class_list.size() - 1; i >= 0; i--)
+        {
+            auto &c = class_list[i];
+            auto funcs = get_funcs_in_scope(c->obj_name);
+
+            for (auto &f : funcs)
+            {
+                // check if the function is already in the list
+                bool found = false;
+                for (auto &r : res)
+                {
+                    // remove the scope name
+                    auto name = r.substr(r.find_first_of('_') + 1);
+                    if (name == f)
+                    {
+                        r = get_scope_name(f, c->obj_name);
+                        found = true;
+                        break;
+                    }
+                }
+                if (found)
+                {
+                    continue;
+                }
+                res.push_back(get_scope_name(f, c->obj_name));
+            }
+        }
+        return res;
+    }
 
     std::string JLCContext::str()
     {

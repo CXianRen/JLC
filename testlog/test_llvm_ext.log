@@ -129,11 +129,11 @@ About to run tests with these settings:
 [121/172] testsuite/bad/bad042      ... OK
 [122/172] testsuite/bad/array03     ... OK
 [123/172] testsuite/bad/bad032      ... OK
-[124/172] testsuite/extensions/objects1/linked ... FAILED
-[125/172] testsuite/extensions/objects1/points ... FAILED
-[126/172] testsuite/extensions/objects1/counter ... FAILED
-[127/172] testsuite/extensions/objects1/queue ... FAILED
-[128/172] testsuite/extensions/objects1/shadowedfunction ... FAILED
+[124/172] testsuite/extensions/objects1/linked ... OK
+[125/172] testsuite/extensions/objects1/points ... OK
+[126/172] testsuite/extensions/objects1/counter ... OK
+[127/172] testsuite/extensions/objects1/queue ... OK
+[128/172] testsuite/extensions/objects1/shadowedfunction ... OK
 [129/172] testsuite/extensions/objects1/bad/parentheses ... OK
 [130/172] testsuite/extensions/objects1/bad/cyclic ... OK
 [131/172] testsuite/extensions/objects1/bad/bad005 ... OK
@@ -157,7 +157,7 @@ About to run tests with these settings:
 [149/172] testsuite/extensions/arrays1/bad/bad001 ... OK
 [150/172] testsuite/extensions/arrays1/bad/bad002 ... OK
 [151/172] testsuite/extensions/arrays1/bad/parentheses ... OK
-[152/172] testsuite/extensions/objects2/shapes ... FAILED
+[152/172] testsuite/extensions/objects2/shapes ... OK
 [153/172] testsuite/extensions/objects2/bad/bad001 ... OK
 [154/172] testsuite/extensions/arrays2/array001 ... OK
 [155/172] testsuite/extensions/arrays2/array002 ... OK
@@ -180,63 +180,5 @@ About to run tests with these settings:
 [172/172] testsuite/extensions/advstructs/adv_structs003 ... OK
 
 
-Some tests failed:
----------- !!! testsuite/extensions/objects1/linked.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    terminate called after throwing an instance of 'JLC::JLCError'
-      what():  Undefined llvm value of var:elem
-- compiler return code info:
-    compiler return code: -6, 0 expected
-
----------- !!! testsuite/extensions/objects1/points.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    terminate called after throwing an instance of 'JLC::JLCError'
-      what():  Undefined llvm value of var:x
-- compiler return code info:
-    compiler return code: -6, 0 expected
-
----------- !!! testsuite/extensions/objects1/counter.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    terminate called after throwing an instance of 'JLC::JLCError'
-      what():  Undefined llvm value of var:val
-- compiler return code info:
-    compiler return code: -6, 0 expected
-
----------- !!! testsuite/extensions/objects1/queue.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    terminate called after throwing an instance of 'JLC::JLCError'
-      what():  Undefined llvm value of var:elem
-- compiler return code info:
-    compiler return code: -6, 0 expected
-
----------- !!! testsuite/extensions/objects2/shapes.jl failed !!! ----------
-
-- stderr expected:
-    OK
-- stderr actual:
-    terminate called after throwing an instance of 'JLC::JLCError'
-      what():  Undefined llvm value of var:elem
-- compiler return code info:
-    compiler return code: -6, 0 expected
-
-Some tests caused build failures:
----------- !!! testsuite/extensions/objects1/shadowedfunction.jl failed !!! ----------
-
-    llvm-as failed with:
-    llvm-as: <stdin>:23:12: error: invalid redefinition of function 'wow'
-    define i32 @wow() {
-               ^
-
+All tests succeeded.
 /chalmers/users/chenhon/lab-group-22

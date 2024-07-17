@@ -3,6 +3,8 @@
 
 #include "Printer.H"
 
+#include <algorithm>
+
 static PrintAbsyn *p = new PrintAbsyn();
 
 namespace JLC::LLVM
@@ -43,33 +45,64 @@ namespace JLC::LLVM
     int LLVMGenerator::
         get_obj_size(const std::string &obj_name)
     {
-        // if the obj is a struct or class
-        auto obj = context_->get_struct(obj_name);
-        if (obj == nullptr)
+        // if the obj is a struct
+
+        if (context_->has_struct(obj_name))
         {
-            obj = context_->get_class(obj_name);
-        }
-        if (obj == nullptr)
-        {
-            throw JLCError(
-                "get_obj_size: unknown obj: " +
-                obj_name);
+            auto obj = context_->get_struct(obj_name);
+            int size = 0;
+            for (auto &pair : obj->members)
+            {
+                auto llvm_type = jlc_type2llvm_type(*pair.second);
+                if (MLLVM::LLVM_Type_Size_map.find(llvm_type) ==
+                    MLLVM::LLVM_Type_Size_map.end())
+                {
+                    throw JLCError(
+                        "get_obj_size: unknown type: " +
+                        pair.second->str());
+                }
+                size += std::stoi(MLLVM::LLVM_Type_Size_map.at(llvm_type));
+            }
+            return size;
         }
 
-        int size = 0;
-        for (auto &pair : obj->members)
+        // class
+        if (context_->has_class(obj_name))
         {
-            auto llvm_type = jlc_type2llvm_type(*pair.second);
-            if (MLLVM::LLVM_Type_Size_map.find(llvm_type) ==
-                MLLVM::LLVM_Type_Size_map.end())
+            auto class_obj = context_->get_class(obj_name);
+
+            // inherit list
+            std::vector<std::string> class_list;
+            while (class_obj != nullptr)
             {
-                throw JLCError(
-                    "get_obj_size: unknown type: " +
-                    pair.second->str());
+                class_list.push_back(class_obj->obj_name);
+                class_obj = class_obj->parent_class;
             }
-            size += std::stoi(MLLVM::LLVM_Type_Size_map.at(llvm_type));
+
+            // iterate the class list from the base class to the derived class
+
+            int size = 0;
+
+            for (int i = class_list.size() - 1; i >= 0; i--)
+            {
+                auto class_name = class_list[i];
+                auto class_obj = context_->get_class(class_name);
+                for (auto &pair : class_obj->members)
+                {
+                    auto llvm_type = jlc_type2llvm_type(*pair.second);
+                    if (MLLVM::LLVM_Type_Size_map.find(llvm_type) ==
+                        MLLVM::LLVM_Type_Size_map.end())
+                    {
+                        throw JLCError(
+                            "get_obj_size: unknown type: " +
+                            pair.second->str());
+                    }
+                    size += std::stoi(MLLVM::LLVM_Type_Size_map.at(llvm_type));
+                }
+            }
+            size += std::stoi(MLLVM::LLVM_Type_Size_map.at(MLLVM::LLVM_ptr)); // type id
+            return size;
         }
-        return size;
     }
 
     void LLVMGenerator::
@@ -180,13 +213,69 @@ namespace JLC::LLVM
     void LLVMGenerator::
         gen_class_type(std::shared_ptr<JLCClass> c)
     {
-        std::vector<std::string> elements;
-        for (auto &pair : c->members)
+        // class inherit list
+        std::vector<std::string> class_list;
+        auto class_obj = c;
+        while (class_obj != nullptr)
         {
-            elements.push_back(
-                str(jlc_type2llvm_type(*pair.second)));
+            class_list.push_back(class_obj->obj_name);
+            class_obj = class_obj->parent_class;
         }
+
+        // iterate the class list from the base class to the derived class
+        std::vector<std::string> elements;
+
+        elements.push_back("ptr"); // vtable
+
+        for (int i = class_list.size() - 1; i >= 0; i--)
+        {
+            auto class_name = class_list[i];
+            auto class_obj = context_->get_class(class_name);
+            for (auto &pair : class_obj->members)
+            {
+                elements.push_back(
+                    str(jlc_type2llvm_type(*pair.second)));
+            }
+        }
+
         llvm_context_.gen_define_type(std::string("\%class.") + c->obj_name, elements);
+
+        // gen class functions table
+        auto funcs = context_->gen_funcs_list_of_class(c->obj_name);
+
+        // DEBUG_PRINT("class: " << c->obj_name << " funcs size:" << funcs.size());
+        if (funcs.size() != 0)
+        {
+            std::string funcs_str;
+            for (auto &f : funcs)
+            {
+                auto func_obj = context_->get_func(f);
+
+                std::string param_str;
+                for (auto &arg : func_obj->args)
+                {
+                    param_str += str(jlc_type2llvm_type(*arg.type));
+                    if (&arg != &func_obj->args.back())
+                    {
+                        param_str += ", ";
+                    }
+                }
+
+                funcs_str += "ptr bitcast (" +
+                             str(jlc_type2llvm_type(*func_obj->return_type)) +
+                             " (" + param_str + ")* @" + f + " to ptr)";
+
+                if (f != funcs.back())
+                {
+                    funcs_str += ", ";
+                }
+            }
+
+            llvm_context_.gen_global_const_var(
+                c->obj_name + "_funcs",
+                "[" + std::to_string(funcs.size()) + " x ptr]",
+                "[" + funcs_str + "]");
+        }
     }
 
     /****** override ******/
@@ -195,12 +284,33 @@ namespace JLC::LLVM
         visitFuncDef(FuncDef *func_def)
     {
         std::string func_name = func_def->ident_;
-        auto func_name_with_scope =
+        func_name =
             context_->get_scope_name(func_name,
                                      func_scope_);
 
         current_func_ =
-            context_->get_func(func_name_with_scope);
+            context_->get_func(func_name);
+
+        // if class member function, add self pointer
+        if (func_scope_ != GLOBAL_SCOPE)
+        {
+            // add to the first argument
+
+            // current_func_->add_arg(
+            //     JLC::VAR::JLCVar(
+            //         "self",
+            //         std::make_shared<JLC::TYPE::JLCType>(
+            //             JLC::TYPE::type_enum::CLASS,
+            //             func_scope_)));
+
+            current_func_->args.insert(
+                current_func_->args.begin(),
+                JLC::VAR::JLCVar(
+                    "self",
+                    std::make_shared<JLC::TYPE::JLCType>(
+                        JLC::TYPE::type_enum::CLASS,
+                        func_scope_)));
+        }
 
         std::vector<std::string> llvm_args;
         for (auto &arg : current_func_->args)
@@ -315,6 +425,96 @@ namespace JLC::LLVM
         g_type_ = *func_obj->return_type;
         // g_llvm_value_ = llvm_return_value;
         set_global_llvm_value(llvm_return_value);
+    }
+
+    void LLVMGenerator::
+        visitEFunc(EFunc *e_func)
+    {
+
+        if (e_func->expr_)
+            e_func->expr_->accept(this);
+        auto type = g_type_;
+        auto var_llvm_value = g_llvm_value_;
+
+        auto scope = type.obj_name;
+        auto func_name = e_func->ident_;
+
+        auto funcs = context_->gen_funcs_list_of_class(scope);
+
+        auto funcs_idx = context_->get_func_idx_of_class(scope, func_name);
+
+        if (funcs_idx < 0)
+        {
+            throw JLC::TC::JLCTCError(
+                "Function: " + func_name + " not found in class: " + scope);
+        }
+
+        func_name = funcs[funcs_idx];
+
+        auto func_obj = context_->get_func(func_name);
+
+        if (func_obj == nullptr)
+        {
+            throw JLC::TC::JLCTCError(
+                "Function: " + func_name + " not found in class: " + scope);
+        }
+
+        // gen function call
+        std::vector<std::pair<std::string, std::string>> llvm_args;
+
+        // this pointer
+        llvm_args.push_back(
+            {"ptr", var_llvm_value});
+
+        auto list_expr = e_func->listexpr_;
+        for (size_t idx = 0; idx < list_expr->size(); idx++)
+        {
+            auto arg_expr = list_expr->at(idx);
+            arg_expr->accept(this);
+            auto arg_type = g_type_;
+            llvm_args.push_back(
+                {MLLVM::str(jlc_type2llvm_type(arg_type)),
+                 g_llvm_value_});
+        }
+
+        std::string llvm_return_value = "";
+        if (func_obj->return_type->type != JLC::TYPE::VOID)
+        {
+            llvm_return_value = llvm_context_.gen_name("tmp");
+        }
+
+        // func ptable
+        auto llvm_func_table = llvm_context_.gen_name("ftab");
+        llvm_context_.gen_load_inst(
+            var_llvm_value,
+            llvm_func_table,
+            MLLVM::LLVM_ptr);
+
+        // func ptr
+        auto llvm_func_ptr = llvm_context_.gen_name("fptr");
+        llvm_context_.gen_offset_field_in_type(
+            llvm_func_ptr,
+            "[0 x ptr]",
+            llvm_func_table,
+            std::to_string(funcs_idx));
+        
+        // load func ptr
+        auto llvm_func = llvm_context_.gen_name("func");
+        llvm_context_.gen_load_inst(
+            llvm_func_ptr,
+            llvm_func,
+            MLLVM::LLVM_ptr);
+
+        // call function
+        llvm_context_.gen_call_fptr_inst(
+            llvm_return_value,
+            llvm_func,
+            MLLVM::str(jlc_type2llvm_type(*func_obj->return_type)),
+            llvm_args);
+
+        g_type_ = *func_obj->return_type;
+        set_global_llvm_value(llvm_return_value);
+        return;
     }
 
     /*** Definiton ***/
@@ -439,8 +639,15 @@ namespace JLC::LLVM
             {{"i32", std::to_string(obj_size)},
              {"i32", "1"}});
 
-        // store the return value to the llvm_value
-        // g_llvm_value_ = llvm_return_value;
+        if (type.type == JLC::TYPE::type_enum::CLASS)
+        {
+            // set function table
+            llvm_context_.gen_store_inst(
+                "@" + obj_name + "_funcs",
+                llvm_return_value,
+                MLLVM::LLVM_ptr);
+        }
+
         set_global_llvm_value(llvm_return_value);
     }
 
@@ -639,29 +846,70 @@ namespace JLC::LLVM
         {
             auto var = current_func_->get_var(var_name);
             g_type_ = *var.type;
+            // get llvm_value of var_name
+            auto var_llvm_value = get_var_llvm_value(var_name);
+            set_global_llvm_value(var_llvm_value);
+            if (!left_value_)
+            {
+                auto loaded_value = llvm_context_.gen_name(var_name);
+                // gen load instruction
+                llvm_context_.gen_load_inst(
+                    var_llvm_value,
+                    loaded_value,
+                    jlc_type2llvm_type(g_type_));
+                set_global_llvm_value(loaded_value);
+            }
+            return;
         }
 
-        // get llvm_value of var_name
-        auto var_llvm_value = get_var_llvm_value(var_name);
-        if (var_llvm_value == "")
+        // if the var is a class member
+        if (func_scope_ != GLOBAL_SCOPE)
         {
-            // error
-            throw JLCError(
-                "Undefined llvm value of var:" + var_name);
-        }
+            auto class_obj = context_->get_class(func_scope_);
+            if (class_obj == nullptr)
+            {
+                throw JLC::TC::JLCTCError(
+                    "Undefined class: " + func_scope_);
+            }
 
-        set_global_llvm_value(var_llvm_value);
-        if (!left_value_)
-        {
-            auto loaded_value = llvm_context_.gen_name(var_name);
-            // gen load instruction
+            auto member_type = class_obj->get_member_type(var_name);
+            if (member_type == nullptr)
+            {
+                throw JLC::TC::JLCTCError(
+                    "Undefined member: " + var_name);
+            }
+
+            auto member_idx = class_obj->get_member_index(var_name);
+            g_type_ = *member_type;
+
+            // compute the address of the member
+            auto addr_llvm_value = llvm_context_.gen_name("a_" + var_name);
+            llvm_context_.gen_offset_field_in_type(
+                addr_llvm_value,
+                "%class." + class_obj->obj_name,
+                "%self",
+                member_idx);
+
+            if (left_value_)
+            {
+                // g_llvm_value_ = addr_llvm_value;
+                set_global_llvm_value(addr_llvm_value);
+                return;
+            }
+
+            // gen load
+            auto loaded_value = llvm_context_.gen_name("v_" + var_name);
             llvm_context_.gen_load_inst(
-                var_llvm_value,
+                addr_llvm_value,
                 loaded_value,
-                jlc_type2llvm_type(g_type_));
+                jlc_type2llvm_type(*member_type));
             set_global_llvm_value(loaded_value);
             return;
         }
+
+        // error
+        throw JLCError(
+            "Undefined var:" + var_name);
     }
 
     void LLVMGenerator::
@@ -802,7 +1050,7 @@ namespace JLC::LLVM
         if (e_arrow->expr_)
             e_arrow->expr_->accept(this);
         left_value_ = t_lv;
-        
+
         auto obj_type = g_type_;
         auto addr_llvm_value = g_llvm_value_;
 
@@ -817,17 +1065,6 @@ namespace JLC::LLVM
             g_type_ = *member;
 
             int member_idx = struct_obj->get_member_index(prop_name);
-
-            // if (left_value_)
-            // {
-            //     // gen load instruction
-            //     auto loaded_value = llvm_context_.gen_name("a_" + obj_type.obj_name);
-            //     llvm_context_.gen_load_inst(
-            //         addr_llvm_value,
-            //         loaded_value,
-            //         MLLVM::LLVM_ptr);
-            //     addr_llvm_value = loaded_value;
-            // }
 
             // gen offset
             auto llvm_offset = llvm_context_.gen_name("a_" + obj_type.obj_name + "_" + prop_name);
@@ -870,16 +1107,6 @@ namespace JLC::LLVM
 
         auto obj_addr = g_llvm_value_;
         left_value_ = t_lv;
-
-        // if (left_value_)
-        // {
-        //     auto loaded_value = llvm_context_.gen_name("a_arr");
-        //     llvm_context_.gen_load_inst(
-        //         obj_addr,
-        //         loaded_value,
-        //         MLLVM::LLVM_ptr);
-        //     obj_addr = loaded_value;
-        // }
 
         t_lv = left_value_;
         left_value_ = false;

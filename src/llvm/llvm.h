@@ -296,6 +296,13 @@ namespace MLLVM
         {
             llvm_instructions->push_back("}");
         }
+
+
+        /******** other op ********/
+
+        void gen_custom_inst(const std::string &inst);
+
+
         /******** memory operations ********/
 
         /*
@@ -347,6 +354,11 @@ namespace MLLVM
             const std::string &llvm_return_type,
             const std::vector<std::pair<std::string, std::string>> &llvm_args);
 
+        void gen_call_fptr_inst(
+            const std::string &llvm_return_value,
+            const std::string &llvm_func_ptr,
+            const std::string &llvm_return_type,
+            const std::vector<std::pair<std::string, std::string>> &llvm_args);
         /******** math operations ********/
 
         /**
