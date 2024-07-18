@@ -295,14 +295,6 @@ namespace JLC::LLVM
         if (func_scope_ != GLOBAL_SCOPE)
         {
             // add to the first argument
-
-            // current_func_->add_arg(
-            //     JLC::VAR::JLCVar(
-            //         "self",
-            //         std::make_shared<JLC::TYPE::JLCType>(
-            //             JLC::TYPE::type_enum::CLASS,
-            //             func_scope_)));
-
             current_func_->args.insert(
                 current_func_->args.begin(),
                 JLC::VAR::JLCVar(
@@ -328,7 +320,6 @@ namespace JLC::LLVM
             llvm_args);
 
         // entry label
-        // llvm_context_.gen_label("entry");
         // new insert point
         auto entry_blk = llvm_context_.new_insert_point("entry");
         llvm_context_.set_insert_point(entry_blk);
@@ -423,7 +414,6 @@ namespace JLC::LLVM
             llvm_args);
 
         g_type_ = *func_obj->return_type;
-        // g_llvm_value_ = llvm_return_value;
         set_global_llvm_value(llvm_return_value);
     }
 
@@ -1321,7 +1311,6 @@ namespace JLC::LLVM
                 "Unknown mulop: " + std::to_string(mul_op));
             break;
         }
-        // g_llvm_value_ = llvm_ret;
         set_global_llvm_value(llvm_ret);
     }
 
@@ -1370,7 +1359,6 @@ namespace JLC::LLVM
                 "Unknown addop: " + std::to_string(add_op));
             break;
         }
-        // g_llvm_value_ = llvm_ret;
         set_global_llvm_value(llvm_ret);
     }
 
@@ -1387,8 +1375,6 @@ namespace JLC::LLVM
             llvm_return_value,
             g_llvm_value_,
             jlc_type2llvm_type(type));
-
-        // g_llvm_value_ = llvm_return_value;
         set_global_llvm_value(llvm_return_value);
     }
 
@@ -1589,7 +1575,6 @@ namespace JLC::LLVM
             cond->expr_->accept(this);
         auto llvm_cond_value = g_llvm_value_;
 
-        // DEBUG_PRINT("cond value:" << llvm_cond_value);
         // gen cond branch
         llvm_context_.gen_cond_br_inst(
             llvm_cond_value,

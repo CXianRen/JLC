@@ -2,7 +2,7 @@
 mkdir -p build/llvm
 rm -rf build/llvm/*
 # generate the llvm ir code
-./jlc -s test_code/temp_op.jl > build/llvm/jlc_generated.ll
+./jlc -s $1 > build/llvm/jlc_generated.ll
 # compile the generated llvm ir code
 llvm-as build/llvm/jlc_generated.ll -o build/llvm/jlc_generated.bc
 llvm-as lib/runtime.ll  -o build/llvm/runtime.bc

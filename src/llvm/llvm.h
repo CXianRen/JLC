@@ -7,6 +7,8 @@
 #include <memory>
 #include "common/debug.h"
 
+#include "llvm/llvm_insert_point.h"
+
 namespace MLLVM
 {
 
@@ -29,64 +31,6 @@ namespace MLLVM
         {LLVM_double, "8"},
         {LLVM_ptr, "8"},
         {LLVM_void, "0"}};
-
-    class LLVM_Insertion_Point
-    {
-    public:
-        LLVM_Insertion_Point()
-        {
-            parent_insertion_point = nullptr;
-            label = "";
-        }
-        LLVM_Insertion_Point(
-            std::shared_ptr<LLVM_Insertion_Point> parent, std::string label)
-        {
-            parent_insertion_point = parent;
-            this->label = label;
-        }
-
-        ~LLVM_Insertion_Point()
-        {
-        }
-
-        std::shared_ptr<LLVM_Insertion_Point> parent_insertion_point;
-        std::string label;
-        std::vector<std::string> instructions;
-
-        void push_back(std::string instruction)
-        {
-            instructions.push_back(instruction);
-        }
-
-        // [] operator overloading
-        std::string &operator[](int index)
-        {
-            return instructions[index];
-        }
-        // back() method
-        std::string back()
-        {
-            return instructions.back();
-        }
-
-        // begin() method
-        std::vector<std::string>::iterator begin()
-        {
-            return instructions.begin();
-        }
-
-        // end() method
-        std::vector<std::string>::iterator end()
-        {
-            return instructions.end();
-        }
-
-        // size() method
-        int size()
-        {
-            return instructions.size();
-        }
-    };
 
     enum LLVM_INST_TYPE
     {
@@ -146,7 +90,8 @@ namespace MLLVM
                     break;
                 }
             }
-            if(is_empty){
+            if (is_empty)
+            {
                 // br from current insert point to the new insert point
                 gen_br_inst(insert_point->label);
             }
@@ -297,11 +242,9 @@ namespace MLLVM
             llvm_instructions->push_back("}");
         }
 
-
         /******** other op ********/
 
         void gen_custom_inst(const std::string &inst);
-
 
         /******** memory operations ********/
 
