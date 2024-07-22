@@ -9,6 +9,10 @@ And the back end also generally consists two parts : Type checker and llvm gener
 
 Additionally, for easy debugging of syntax configuration, a simple web interface is provide to show the parsed AST is provided. You can find it at [ast_viewer](./ast_viewer/)
 
+
+![how does jlc work](./doc/jlc.drawio.png)
+
+
 # How to run this project
 ## Clone 
 ```shell 
@@ -64,7 +68,7 @@ Hello World
 # JLC:javelette
 
 # Compiler design 
-![img](./doc/type_checker.png)
+![img](./doc/type_checker.drawio.png)
 
 ## Typer Checker
 In this stage, type checking is seperated into several detail stages. The code is located under src/typechecker.
