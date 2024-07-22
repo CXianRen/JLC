@@ -266,6 +266,41 @@ int main(){
 }
 ```
 
+## Runtime polymorphism
+```c
+class A {
+    void f(){
+        printString("I am A");
+    }
+}
+
+class B extends A {
+    void f(){
+        printString("I am B");
+    }
+}
+
+class C extends B {
+    void f(){
+        printString("I am C");
+    }
+}
+
+int main(){
+    A a = new A;
+    A b = new B;
+    A c = new C;
+
+    a.f();
+    b.f();
+    c.f();
+
+    return 0;
+}
+```
+
+
+
 ## operator
 
 |op|example|comment|
