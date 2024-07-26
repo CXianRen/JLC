@@ -56,6 +56,7 @@ make jlc -j12
 
 bash scripts/build_and_run.sh test_code/temp_op.jl
 ```
+
 you will get
 ```shell 
 OK
@@ -64,6 +65,20 @@ Running the generated llvm ir code:
 Hello World
 -----------------------------------
 ```
+
+### run testsuit
+you can see testlogs we run under [testlog](./testlog/)
+```bash 
+# only test the parser:
+bash scripts/run_test_parser.sh
+
+# only test the basic cases with llvm 
+bash scripts/run_test_llvm.sh
+
+# test llvm with extension
+bash scripts/run_test_llvm_ext.sh
+```
+
 
 # JLC:javelette
 

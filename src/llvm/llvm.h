@@ -7,44 +7,19 @@
 #include <memory>
 #include "common/debug.h"
 
+#include "llvm/llvm_type.h"
+
+#include "llvm/llvm_inst.h"
+
 #include "llvm/llvm_insert_point.h"
 
 namespace MLLVM
 {
 
+    typedef LLVM_Insertion_Point<LLVM_Inst> LLVM_IP;
+
     void set_prefix_size(int size);
     int get_prefix_size();
-
-    enum LLVM_Type
-    {
-        LLVM_i1,
-        LLVM_i32,
-        LLVM_double,
-        LLVM_ptr,
-        LLVM_void
-    };
-    std::string str(const LLVM_Type type);
-
-    const std::map<LLVM_Type, std::string> LLVM_Type_Size_map = {
-        {LLVM_i1, "1"},
-        {LLVM_i32, "4"},
-        {LLVM_double, "8"},
-        {LLVM_ptr, "8"},
-        {LLVM_void, "0"}};
-
-    enum LLVM_INST_TYPE
-    {
-        // comment
-        LLVM_COMMENT,
-        // label
-        LLVM_LABEL,
-        // Return
-        LLVM_RET,
-        // Branch
-        LLVM_BR,
-        // UNDEFINED
-        UNDEFINED
-    };
 
     class LLVM_Context
     {
@@ -54,9 +29,9 @@ namespace MLLVM
         ~LLVM_Context();
 
     public:
-        std::shared_ptr<LLVM_Insertion_Point> llvm_instructions;
-        std::shared_ptr<LLVM_Insertion_Point> global_def;
-        std::shared_ptr<LLVM_Insertion_Point> res;
+        std::shared_ptr<LLVM_IP> llvm_instructions;
+        std::shared_ptr<LLVM_IP> global_def;
+        std::shared_ptr<LLVM_IP> res;
 
         int name_counter;
 
@@ -66,25 +41,24 @@ namespace MLLVM
             name_counter = 0;
         }
 
-        std::shared_ptr<LLVM_Insertion_Point> new_insert_point(std::string label)
+        std::shared_ptr<LLVM_IP> new_insert_point(std::string label)
         {
             std::string label_with_id = label + "_" + std::to_string(name_counter++);
-            return std::make_shared<LLVM_Insertion_Point>(llvm_instructions, label_with_id);
+            return std::make_shared<LLVM_IP>(llvm_instructions, label_with_id);
         }
 
-        std::shared_ptr<LLVM_Insertion_Point> get_current_insert_point()
+        std::shared_ptr<LLVM_IP> get_current_insert_point()
         {
             return llvm_instructions;
         }
 
-        void set_insert_point(std::shared_ptr<LLVM_Insertion_Point> insert_point)
+        void set_insert_point(std::shared_ptr<LLVM_IP> insert_point)
         {
             // check ip only contains comments and labels
             bool is_empty = true;
             for (auto it = llvm_instructions->begin(); it != llvm_instructions->end(); ++it)
             {
-                auto i_type = check_type_of_inst(*it);
-                if (i_type != LLVM_COMMENT && i_type != LLVM_LABEL)
+                if (it->get_type() != LLVM_COMMENT && it->get_type() != LLVM_LABEL)
                 {
                     is_empty = false;
                     break;
@@ -101,7 +75,7 @@ namespace MLLVM
             gen_label(insert_point->label);
         }
 
-        void release_insert_point(std::shared_ptr<LLVM_Insertion_Point> insert_point)
+        void release_insert_point(std::shared_ptr<LLVM_IP> insert_point)
         {
             for (auto it = insert_point->begin(); it != insert_point->end(); ++it)
             {
@@ -109,56 +83,25 @@ namespace MLLVM
             }
         }
 
-        LLVM_INST_TYPE check_type_of_inst(std::string inst)
-        {
-            // remove the empty space at the start of the string
-            while (inst[0] == ' ')
-            {
-                inst = inst.substr(1);
-            }
-            if (inst[0] == ';')
-            {
-                return LLVM_COMMENT;
-            }
-            if (inst[inst.size() - 1] == ':')
-            {
-                return LLVM_LABEL;
-            }
-            if (inst.find("ret ") == 0)
-            {
-                return LLVM_RET;
-            }
-
-            if (inst.find("br ") == 0)
-            {
-                return LLVM_BR;
-            }
-        }
-
-        bool end_with_term_inst(std::shared_ptr<LLVM_Insertion_Point> insert_point)
+        bool end_with_term_inst(std::shared_ptr<LLVM_IP> insert_point)
         {
             if (insert_point->size() == 0)
             {
                 return false;
             }
 
-            std::string last_inst = "";
             auto it = insert_point->end();
             // find the last non-comment instruction
             while (it != insert_point->begin())
             {
                 it--;
-                last_inst = *it;
-                if (check_type_of_inst(last_inst) != LLVM_COMMENT)
+                if (it->get_type() != LLVM_COMMENT)
                 {
-                    break;
+                    if (it->get_type() == LLVM_RET || it->get_type() == LLVM_BR)
+                    {
+                        return true;
+                    }
                 }
-            }
-
-            auto i_type = check_type_of_inst(last_inst);
-            if (i_type == LLVM_RET || i_type == LLVM_BR)
-            {
-                return true;
             }
             return false;
         }
@@ -229,7 +172,7 @@ namespace MLLVM
 
         void gen_label(const std::string &label)
         {
-            llvm_instructions->push_back(label + ":");
+            llvm_instructions->push_back(LLVM_Inst(LLVM_LABEL, label + ":"));
         }
 
         /*
@@ -239,7 +182,8 @@ namespace MLLVM
          */
         void gen_define_func_end()
         {
-            llvm_instructions->push_back("}");
+            llvm_instructions->push_back(
+                LLVM_Inst(LLVM_FUNC_END, "}"));
         }
 
         /******** other op ********/

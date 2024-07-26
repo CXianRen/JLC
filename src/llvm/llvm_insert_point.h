@@ -4,10 +4,12 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include "llvm/llvm_inst.h"
 
 namespace MLLVM
 {
 
+    template <typename T>
     class LLVM_Insertion_Point
     {
     public:
@@ -17,7 +19,8 @@ namespace MLLVM
             label = "";
         }
         LLVM_Insertion_Point(
-            std::shared_ptr<LLVM_Insertion_Point> parent, std::string label)
+            std::shared_ptr<LLVM_Insertion_Point> parent,
+            std::string label)
         {
             parent_insertion_point = parent;
             this->label = label;
@@ -29,32 +32,32 @@ namespace MLLVM
 
         std::shared_ptr<LLVM_Insertion_Point> parent_insertion_point;
         std::string label;
-        std::vector<std::string> instructions;
+        std::vector<T> instructions;
 
-        void push_back(std::string instruction)
+        void push_back(T instruction)
         {
             instructions.push_back(instruction);
         }
 
         // [] operator overloading
-        std::string &operator[](int index)
+        T &operator[](int index)
         {
             return instructions[index];
         }
         // back() method
-        std::string back()
+        T back()
         {
             return instructions.back();
         }
 
         // begin() method
-        std::vector<std::string>::iterator begin()
+        typename std::vector<T>::iterator begin()
         {
             return instructions.begin();
         }
 
         // end() method
-        std::vector<std::string>::iterator end()
+        typename std::vector<T>::iterator end()
         {
             return instructions.end();
         }
