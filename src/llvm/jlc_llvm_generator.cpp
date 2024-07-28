@@ -108,14 +108,16 @@ namespace JLC::LLVM
     void LLVMGenerator::
         add_internal_func()
     {
-        llvm_context_.gen_comment("--- internal global variables ---");
+        llvm_context_.gen_comment("--- internal global variables start ---");
         // 0 size array, only has length property
         llvm_context_.gen_global_const_var(
             "zero_size_array",
             "[1 x i32]",
             "[i32 0]");
 
-        llvm_context_.gen_comment("--- internal functions ---");
+        llvm_context_.gen_comment("--- internal global variables end ---");
+
+        llvm_context_.gen_comment("--- internal functions start ---");
         // add printInt declaration
         llvm_context_.gen_declare_func(
             "printInt",
@@ -161,29 +163,35 @@ namespace JLC::LLVM
             "gen_nda",
             "ptr",
             {"ptr", "i32", "i32"});
+        llvm_context_.gen_comment("--- internal functions end ---");
     }
 
     void LLVMGenerator::
         add_udt()
     {
-        llvm_context_.gen_comment("--- defined enum ---");
+        llvm_context_.gen_comment("--- defined enum start ---");
         for (auto &pair : context_->enums)
         {
             llvm_context_.gen_comment(pair.first);
             gen_enum_type(pair.second);
         }
-        llvm_context_.gen_comment("--- defined struct ---");
+        llvm_context_.gen_comment("--- defined enum end ---");
+
+        llvm_context_.gen_comment("--- defined struct start ---");
         for (auto &pair : context_->structs)
         {
             llvm_context_.gen_comment(pair.first);
             gen_struct_type(pair.second);
         }
-        llvm_context_.gen_comment("--- defined class ---");
+        llvm_context_.gen_comment("--- defined struct end ---");
+
+        llvm_context_.gen_comment("--- defined class start ---");
         for (auto &pair : context_->classes)
         {
             llvm_context_.gen_comment(pair.first);
             gen_class_type(pair.second);
         }
+        llvm_context_.gen_comment("--- defined class end ---");
     }
 
     void LLVMGenerator::
@@ -314,6 +322,8 @@ namespace JLC::LLVM
 
         // function declaration start
         llvm_context_.reset_name_counter();
+        llvm_context_.gen_empyt_line();
+
         llvm_context_.gen_define_func_start(
             func_name,
             str(jlc_type2llvm_type(*current_func_->return_type)),

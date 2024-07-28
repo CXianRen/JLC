@@ -109,6 +109,10 @@ namespace MLLVM
     public:
         void gen_comment(std::string comment);
 
+        void gen_empyt_line(){
+            llvm_instructions->push_back(LLVM_Inst(LLVM_EMPTY, ""));
+        }
+
         std::string gen_name(std::string var_name);
 
         /******** define type ********/

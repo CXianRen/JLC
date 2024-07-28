@@ -58,7 +58,7 @@ namespace MLLVM
         }
         result += " }";
         llvm_instructions->push_back(
-            LLVM_Inst(LLVM_GLOBAL, result, prefix_size));
+            LLVM_Inst(LLVM_GLOBAL, result));
     }
 
     void LLVM_Context::
@@ -544,14 +544,15 @@ namespace MLLVM
         std::string result;
         for (auto &def : *global_def)
         {
-            result += std::string(" ", def.get_prefix_size()) + def.get_inst() + "\n";
+            result += std::string(def.get_prefix_size(), ' ') +
+                      def.get_inst() + "\n";
         }
         result += "\n";
 
         for (auto &inst : *res)
         {
             result +=
-                std::string(" ", inst.get_prefix_size()) +
+                std::string(inst.get_prefix_size(), ' ') +
                 inst.get_inst() + "\n";
         }
         return result;

@@ -56,7 +56,7 @@ namespace MLLVM
         LLVM_Inst(
             LLVM_INST_TYPE type,
             std::string inst,
-            int prefix_size = 2)
+            int prefix_size = 0)
             : type(type),
               inst(inst),
               prefix_size(prefix_size)

@@ -12,6 +12,51 @@ Additionally, for easy debugging of syntax configuration, a simple web interface
 
 ![how does jlc work](./doc/jlc.drawio.png)
 
+Here is the sample code from jlc to .ll 
+```c
+int main()
+{
+  printString("Hello World");
+
+  return 0;
+}
+```
+
+```ll
+;-----------llvm code-----------
+@zero_size_array = constant [1 x i32] [i32 0]
+@str_0 = constant [12 x i8] c"Hello World\00"
+
+  ; --- internal global variables start ---
+  ; --- internal global variables end ---
+  ; --- internal functions start ---
+declare void @printInt(i32)
+declare void @printDouble(double)
+declare void @printString(ptr)
+declare i32 @readInt()
+declare double @readDouble()
+declare ptr @malloc(i32)
+declare ptr @calloc(i32, i32)
+declare ptr @gen_nda(ptr, i32, i32)
+  ; --- internal functions end ---
+  ; --- defined enum start ---
+  ; --- defined enum end ---
+  ; --- defined struct start ---
+  ; --- defined struct end ---
+  ; --- defined class start ---
+  ; --- defined class end ---
+
+define i32 @main() {
+entry_0:
+  ; printString ("Hello World");
+  call void @printString(ptr @str_0)
+  ret i32 0
+}
+
+;-----------llvm code-----------
+
+
+```
 
 # How to run this project
 ## Clone 
